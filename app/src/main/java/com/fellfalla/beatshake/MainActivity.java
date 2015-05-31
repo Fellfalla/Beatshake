@@ -13,7 +13,6 @@ import android.widget.Toast;
 import java.util.HashMap;
 
 
-
 public class MainActivity extends ActionBarActivity {
 
     private SoundPool soundPool;
@@ -23,7 +22,9 @@ public class MainActivity extends ActionBarActivity {
     AudioManager audioManager;
     int counter;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
