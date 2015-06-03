@@ -17,7 +17,7 @@ import java.util.Date;
  * Created by Markus Weber on 01.06.2015.
  * Die Jukebox
  */
-public class MediaPlayerHandler {
+public class Jukebox {
     Map<String,Integer> soundIDs;
     Context context;
     ArrayList<Integer> mStreamIDs ;
@@ -26,12 +26,12 @@ public class MediaPlayerHandler {
     SoundPool soundPool;
     long starttime = 0;
 
-    MediaPlayerHandler(Context context){
+    Jukebox(Context context){
         this.context = context;
         mStreamIDs = new ArrayList<>();
         soundIDs = new HashMap<>(); // todo: auswählen zwischen: HashMap LinkedHashMap Hashtable
+        soundPool = new SoundPool(15, AudioManager.STREAM_MUSIC, 0 );
 
-        soundPool = new SoundPool(50, AudioManager.STREAM_MUSIC, 0 );
 
         // AudioManager audio settings for adjusting the volume
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -47,7 +47,7 @@ public class MediaPlayerHandler {
 
     void playSound(int soundID){
         //todo : priorität mit übergeben
-        int miliSVerzoegerung = 1000/8;
+        int miliSVerzoegerung = 2;
         if (starttime + miliSVerzoegerung < System.currentTimeMillis() ) {
             starttime = System.currentTimeMillis();
             mStreamIDs.add(soundPool.play(soundID, volume, volume, 1, 0, 1f));

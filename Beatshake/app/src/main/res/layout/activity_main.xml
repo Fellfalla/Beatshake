@@ -4,68 +4,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-<TextView
-    android:id="@+id/textView1"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_marginTop="20dp"
-    android:gravity="center"
-    android:text="Press:" >
-    </TextView>
+    android:orientation="vertical"
+    android:background="@drawable/drumkit1">
 
 <Button
-    android:id="@+id/play"
+    android:id="@+id/start_beat_shaker"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
-    android:onClick="playSound"
-    android:text="Play" />
+    android:onClick="startBeatShaker"
+    android:text="Start BeatShake" />
 
-<Button
-    android:id="@+id/play_loop"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:onClick="playLoop"
-    android:text="Play loop" />
-
-<Button
-    android:id="@+id/pause"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:onClick="pauseSound"
-    android:text="Pause" />
-
-<Button
-    android:id="@+id/stop"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:onClick="stopSound"
-    android:text="Stop" />
-
-    <TextView
-        android:id="@+id/sensor_values"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:hint="Sensor Values">
-    </TextView>
-
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/linear">
-            <!-- Content here -->
-        </LinearLayout>
-    </ScrollView>
 
 </LinearLayout>

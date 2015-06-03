@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="max_acceleration_values">3</integer>
+    <integer name="accuracy_seek_bar_span">5000</integer>
+    <integer name="accuracy_seek_bar_max">50000</integer>
+</resources>

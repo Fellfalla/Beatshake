@@ -17,7 +17,9 @@
 
     <!--Naming of InstrumentKits-->
     <string name="DrumKit1">Kit1</string>
-
+    <string name="title_activity_beat_shaker">BeatShakerActivity</string>
+    <string name="drum_set_title">Your Drum set:</string>
+    <string name="sensor_values">Sensorwerte</string>
 
 
 </resources>
