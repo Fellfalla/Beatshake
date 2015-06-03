@@ -67,11 +67,9 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
 
         gravityEnabler.setChecked(true);
 
+
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-
-
 
         // AudioManager audio settings for adjusting the volume
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -116,6 +114,7 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
         getMenuInflater().inflate(R.menu.menu_beat_shaker, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -219,17 +218,17 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
     public void onSensorChanged(SensorEvent event) {
         metronome.AddData(event.values);
         long latestpeak= metronome.getLastPeak();
+        axes[0] = event.values[0];
+        axes[1]= event.values[1];
+        axes[2] = event.values[2];
         int bereich1 = 2;
         int bereich2 = 6;
         int bereich3 = 10;
         int bereich4 = 15;
-
+        // todo: empfindlichkeitsregler
         if (event.sensor.getType()==mAccelerometer.getType()){
             if (latestpeak + miliSVerzoegerung < metronome.calculateNewLastPeak())
                 for (float value : axes){
-                    axes[0] = event.values[0];
-                    axes[1]= event.values[1];
-                    axes[2] = event.values[2];
                     if (isInRange(value,bereich4,200)){
                         String[] samples = new String[2];
                         samples[0] = getString(R.string.instrument_kick);
@@ -358,14 +357,14 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
     @Override
     public void onClick(View v) {
         CheckBox checkbox = (CheckBox) v;
-        sensorManager.unregisterListener(this,mAccelerometer);
+        sensorManager.unregisterListener(this);
         if (checkbox.isChecked()){
             mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
         }
         else {
             mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
         }
 
 
