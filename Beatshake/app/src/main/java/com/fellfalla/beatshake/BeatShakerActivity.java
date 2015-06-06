@@ -1,13 +1,12 @@
 package com.fellfalla.beatshake;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,21 +17,19 @@ import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 
-public class BeatShakerActivity extends ActionBarActivity implements SensorEventListener, SeekBar.OnSeekBarChangeListener, CheckedTextView.OnClickListener {
+public class BeatShakerActivity extends Activity implements SensorEventListener, SeekBar.OnSeekBarChangeListener, CheckedTextView.OnClickListener {
     boolean plays = false, loaded = false;
     float actVolume, maxVolume, volume;
     AudioManager audioManager;
     int counter;
     ArrayList<Integer> mStreamIDs ;
+    float sensitivityFaktor; // todo: auslagern in -resource
 
     Jukebox jukebox;
     Drums drumKit1;
@@ -40,7 +37,7 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
     Sensor mAccelerometer;
     Metronome metronome;
 
-    int miliSVerzoegerung = 1000/8;
+    int miliSVerzoegerung = 1000/10;
     float[] axes;
 
     TextView sensorValues;
@@ -61,15 +58,16 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
         sensorValues = (TextView) findViewById(R.id.sensor_values);
         accuracySeekBar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
         gravityEnabler = (CheckBox) findViewById(R.id.gravity_bool);
+        sensitivityFaktor = 0.7f;
 
         gravityEnabler.setOnClickListener(this);
         accuracySeekBar.setOnSeekBarChangeListener(this);
 
         gravityEnabler.setChecked(true);
 
-
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        metronome.accelerationSensor = mAccelerometer;
 
         // AudioManager audio settings for adjusting the volume
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -103,8 +101,7 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
         //Receive Intent Message
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.KITMESSAGE);
-
-        loadButtons();
+        GenerateUI();
         loadSamples();
     }
 
@@ -115,6 +112,45 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
         return true;
     }
 
+    public void GenerateUI(){
+        //ArrayList<Button> btnList = new ArrayList<>();
+        for (String component : drumKit1.components.keySet()) {
+            GenerateComponentUI(component);
+        }
+    }
+
+    public void GenerateComponentUI(String component){
+        loadPlayButton(component);
+        loadSensitivitySeekBar(component);
+    }
+
+
+    private void loadPlayButton(String component){
+        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+
+        // Generate Button and add to ListLayout
+        Button btn = new Button(getApplicationContext());
+        btn.setText(component);
+        btn.setLayoutParams(param);
+        btn.setOnClickListener(handleOnClick(btn));
+        linear.addView(btn);
+    }
+
+    private void loadSensitivitySeekBar(String component){
+        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+
+        // Generate Button and add to ListLayout
+        SeekBar seekBar = new SeekBar(getApplicationContext());
+        seekBar.setLayoutParams(param);
+        seekBar.setTag(component);
+        seekBar.setOnSeekBarChangeListener(this);
+        linear.addView(seekBar);
+
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -132,23 +168,6 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
     }
 
 
-    public void loadButtons(){
-        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
-
-        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-
-        ArrayList<Button> btnList = new ArrayList<>();
-        for (String sampleName : drumKit1.components.keySet()) {
-            Button btn = new Button(getApplicationContext());
-            btn.setText(sampleName);
-            btn.setLayoutParams(param);
-            btn.setOnClickListener(handleOnClick(btn));
-
-            btnList.add(btn);
-            linear.addView(btn);
-        }
-    }
 
     View.OnClickListener handleOnClick(final Button button) {
         return new View.OnClickListener() {
@@ -221,109 +240,19 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
         axes[0] = event.values[0];
         axes[1]= event.values[1];
         axes[2] = event.values[2];
-        int bereich1 = 2;
-        int bereich2 = 6;
-        int bereich3 = 10;
-        int bereich4 = 15;
-        // todo: empfindlichkeitsregler
-        if (event.sensor.getType()==mAccelerometer.getType()){
-            if (latestpeak + miliSVerzoegerung < metronome.calculateNewLastPeak())
-                for (float value : axes){
-                    if (isInRange(value,bereich4,200)){
-                        String[] samples = new String[2];
-                        samples[0] = getString(R.string.instrument_kick);
-                        samples[1] = getString(R.string.instrument_ride);
-                        playSound(samples);
-                    }
-                    else if (isInRange(value,bereich3,bereich4)){
-                        String[] samples = new String[2];
-                        samples[0] = getString(R.string.instrument_kick);
-                        samples[1] = getString(R.string.instrument_hihat);
-                        playSound(samples);
-
-                    }
-                    else if (isInRange(value,bereich2,bereich3)){
-                        String[] samples = new String[2];
-                        samples[0] = getString(R.string.instrument_hihat);
-                        samples[1] = getString(R.string.instrument_snare);
-                        playSound(samples);
-                    }
-                    else if (isInRange(value,bereich1,bereich2)){
-                        playSound(getString(R.string.instrument_hihat));
+        if (event.sensor.getType()==mAccelerometer.getType()) {
+            long newPeak = metronome.calculateNewLastPeak();
+            if (latestpeak + miliSVerzoegerung < newPeak) //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
+                metronome.peaks.add(newPeak);
+                metronome.peaksDelta.append(newPeak, metronome.latestDelta);
+                for (String component : drumKit1.GetComponents()) {
+                    if (drumKit1.GetSensitivity(component) * sensitivityFaktor < metronome.latestDelta) {
+                        playSound(component);
                     }
                 }
-            }
-        /*
-        switch (event.sensor.getType()) {
-            case type:
-                axes[0] = event.values[0];
-                axes[1]= event.values[1];
-                axes[2] = event.values[2];
-                if (latestpeak + miliSVerzoegerung < metronome.calculateNewLastPeak())
-                    for (float value : axes){
-                        if (isInRange(value,bereich4,200)){
-                            String[] samples = new String[2];
-                            samples[0] = getString(R.string.instrument_kick);
-                            samples[1] = getString(R.string.instrument_ride);
-                            playSound(samples);
-                        }
-                        else if (isInRange(value,bereich3,bereich4)){
-                            String[] samples = new String[2];
-                            samples[0] = getString(R.string.instrument_kick);
-                            samples[1] = getString(R.string.instrument_hihat);
-                            playSound(samples);
-
-                        }
-                        else if (isInRange(value,bereich2,bereich3)){
-                            String[] samples = new String[2];
-                            samples[0] = getString(R.string.instrument_hihat);
-                            samples[1] = getString(R.string.instrument_snare);
-                            playSound(samples);
-                        }
-                        else if (isInRange(value,bereich1,bereich2)){
-                            playSound(getString(R.string.instrument_hihat));
-                        }
-                }
-                break;
-
-            case Sensor.TYPE_ACCELEROMETER:
-                axes[0] = event.values[0];
-                axes[1]= event.values[1];
-                axes[2] = event.values[2];
-                if (latestpeak + miliSVerzoegerung < metronome.calculateNewLastPeak())
-                    for (float value : axes) {
-                        if (isInRange(value, bereich4, 200)) {
-                            String[] samples = new String[2];
-                            samples[0] = getString(R.string.instrument_kick);
-                            samples[1] = getString(R.string.instrument_ride);
-                            playSound(samples);
-                        } else if (isInRange(value, bereich3, bereich4)) {
-                            String[] samples = new String[2];
-                            samples[0] = getString(R.string.instrument_kick);
-                            samples[1] = getString(R.string.instrument_hihat);
-                            playSound(samples);
-
-                        } else if (isInRange(value, bereich2, bereich3)) {
-                            String[] samples = new String[2];
-                            samples[0] = getString(R.string.instrument_hihat);
-                            samples[1] = getString(R.string.instrument_snare);
-                            playSound(samples);
-                        } else if (isInRange(value, bereich1, bereich2)) {
-                            playSound(getString(R.string.instrument_hihat));
-                        }
-                    }
-                break;
-
-            default:
-                break;
         }
-        */
         ShowSensorValues();
 
-    }
-
-    public boolean isInRange(float value, int untergrenze, int obergrenze){
-        return Math.abs(value) < obergrenze && Math.abs(value) > untergrenze;
     }
 
     @Override
@@ -336,12 +265,25 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
         sensorValues.setText(text);
     }
 
-
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        double value = ((double) progress) / getResources().getInteger(R.integer.accuracy_seek_bar_span);
-        seekBarValue.setText("Value: " + value);
-        metronome.AccelerationAccuracy = value;
+        if (seekBar.getTag()!= null){ // hier werden alle gettagged bars als sensitivity bars angenommen
+            SensitivitySeekBarChanged(seekBar.getTag().toString(),progress);
+        }
+        else{
+            double value = ((double) progress) / getResources().getInteger(R.integer.accuracy_seek_bar_span);
+            seekBarValue.setText("Value: " + value);
+            metronome.AccelerationAccuracy = value;
+        }
+    }
+
+    public void SensitivitySeekBarChanged(String component, Integer value)
+    {
+        value -= 1;
+        if (value < 0){
+            value = 0;
+        }
+        drumKit1.SetSensitivity(component,(float) value * sensitivityFaktor);
     }
 
     @Override
@@ -366,7 +308,5 @@ public class BeatShakerActivity extends ActionBarActivity implements SensorEvent
             mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
             sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
         }
-
-
     }
 }
