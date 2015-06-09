@@ -25,6 +25,11 @@
             android:name=".BeatShakerActivity"
             android:label="@string/title_activity_beat_shaker" >
         </activity>
+
+        <activity
+            android:name=".DrawGraphActivity"
+            android:label="@string/title_activity_draw_grap" >
+        </activity>
     </application>
 
 </manifest>

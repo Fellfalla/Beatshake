@@ -7,13 +7,23 @@
     android:orientation="vertical"
     android:background="@drawable/drumkit1">
 
-<Button
-    android:id="@+id/start_beat_shaker"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:onClick="startBeatShaker"
-    android:text="Start BeatShake" />
+    <Button
+        style="@style/DefaultButton"
+        android:id="@+id/start_beat_shaker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:onClick="startBeatShaker"
+        android:text="@string/btn_start_beatshake_activity" />
+
+    <Button
+        style="@style/DefaultButton"
+        android:id="@+id/start_graph_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:onClick="startGraphView"
+        android:text="@string/btn_start_graph_activity" />
 
 
 </LinearLayout>

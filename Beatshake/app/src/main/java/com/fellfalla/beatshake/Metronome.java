@@ -29,8 +29,15 @@ public class Metronome {
     Metronome(double accelerationAccuracy, int maxDataSize){
         AccelerationAccuracy = accelerationAccuracy;
         Data = new LongSparseArray<>(maxDataSize);
+//        for (int i = 0; i< datapoint.length; i++){
+//            datapoint[i] = 0f;
+//        }
+//        for (int i = 0; i< maxDataSize; i++){
+//            Data.append(System.currentTimeMillis(), datapoint.clone());
+//        }
         peaks = new ArrayList<>(maxDataSize);
         peaksDelta = new LongSparseArray<>(maxDataSize);
+        peakTendency = new LongSparseArray<>(maxDataSize);
         Long initPoint = System.currentTimeMillis();
         peaks.add(initPoint);
         peaksDelta.append(initPoint, 0f);
@@ -67,21 +74,22 @@ public class Metronome {
                 break;
             }
             else{
-                long timepoint = Data.keyAt(i);
-                LookForPeak(i);
+                long dataKey = Data.keyAt(i);
+                long previousDataKey = Data.keyAt(i-1);
+                latestPeak = LookForPeak(dataKey,previousDataKey);
             }
         }
         return latestPeak;
     }
-    private void LookForPeak(int datakey){
-        datapoint = Data.get(datakey);
-        previousDatapoint = Data.get(Data.keyAt(datakey-1));
+    private long LookForPeak(long dataKey, long previousDataKey){
+        datapoint = Data.get(dataKey);
+        previousDatapoint = Data.get(previousDataKey);
         Long peak = peaks.get(peaks.size() - 1);
 
         for (int j =0; j < datapoint.length; j++){
             if (datapoint[j] > previousDatapoint[j] + accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
-                peak = Data.keyAt(datakey);
+                peak = dataKey;
                 latestDelta = Math.abs(datapoint[j] - previousDatapoint[j]);
                 peakTendency.append(peak, rising);
                 // todo: die Werte überspringen die in einem Vorherigen durchgang schon negiert wurden
@@ -89,13 +97,15 @@ public class Metronome {
             }
             else if (datapoint[j] < previousDatapoint[j] - accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
-                peak = Data.keyAt(datakey);
+                peak = dataKey;
                 latestDelta = Math.abs(datapoint[j] - previousDatapoint[j]);
                 peakTendency.append(peak, falling);
                 break;
             }
 
         }
+
+        return peak;
     }
 }
 

@@ -37,7 +37,6 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     Sensor mAccelerometer;
     Metronome metronome;
 
-    int miliSVerzoegerung = 1000/10;
     float[] axes;
 
     TextView sensorValues;
@@ -198,8 +197,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         }
     }
     public void playSound() {
-        View v = null;
-        playSound(v);
+        playSound((View) null);
     }
     public void playSound(View v) {
         Random random    = new Random();
@@ -242,7 +240,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         axes[2] = event.values[2];
         if (event.sensor.getType()==mAccelerometer.getType()) {
             long newPeak = metronome.calculateNewLastPeak();
-            if (latestpeak + miliSVerzoegerung < newPeak) //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
+            if (latestpeak + getResources().getInteger(R.integer.milliseconds_between_sample) < newPeak) //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
                 metronome.peaks.add(newPeak);
                 metronome.peaksDelta.append(newPeak, metronome.latestDelta);
                 for (String component : drumKit1.GetComponents()) {

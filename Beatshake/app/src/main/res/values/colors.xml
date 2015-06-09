@@ -24,6 +24,10 @@
     <color name="navy">#000080</color>
     <color name="black">#000000</color>
 
+    <color name="graph_background">#ffbababa</color>
+    <color name="graph_title">#e3445d41</color>
+    <color name="graph">#ffff7631</color>
+
     <integer-array name="android_colors">
         <item>@color/blue</item>
         <item>@color/purple</item>
