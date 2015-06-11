@@ -53,7 +53,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         jukebox = new Jukebox(getApplicationContext());
         drumKit1 = new Drums(getApplicationContext());
         mStreamIDs = new ArrayList<>();
-        metronome = new Metronome(0.00, getResources().getInteger(R.integer.max_acceleration_values));
+        metronome = new Metronome(0.00, getResources().getInteger(R.integer.max_data_size));
         seekBarValue = (TextView) findViewById(R.id.seek_bar_value);
         sensorValues = (TextView) findViewById(R.id.sensor_values);
         accuracySeekBar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
@@ -236,13 +236,13 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     @Override
     public void onSensorChanged(SensorEvent event) {
         metronome.AddData(event.values);
-        long latestpeak= metronome.getLastPeak();
+        lastpeak= metronome.getLastPeak();
         axes[0] = event.values[0];
         axes[1]= event.values[1];
         axes[2] = event.values[2];
         if (event.sensor.getType()==mAccelerometer.getType()) {
             long newPeak = metronome.calculateNewLastPeak();
-            if (latestpeak + miliSVerzoegerung < newPeak) //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
+            if (lastpeak + miliSVerzoegerung < newPeak) //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
                 metronome.peaks.add(newPeak);
                 metronome.peaksDelta.append(newPeak, metronome.latestDelta);
                 for (String component : drumKit1.GetComponents()) {
