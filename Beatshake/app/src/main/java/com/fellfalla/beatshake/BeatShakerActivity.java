@@ -90,13 +90,13 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         loaded = true;
 
         // Add Components to the first DrumKit
-        drumKit1.components.put(getString(R.string.instrument_cowbell), R.raw.kit1cowbell);
-        drumKit1.components.put(getString(R.string.instrument_cym), R.raw.kit1cym1);
-        drumKit1.components.put(getString(R.string.instrument_kick), R.raw.kit1kick);
-        drumKit1.components.put(getString(R.string.instrument_snare), R.raw.kit1snare);
-        drumKit1.components.put(getString(R.string.instrument_hihat), R.raw.kit1hihat);
-        drumKit1.components.put(getString(R.string.instrument_ride), R.raw.kit1ride1);
-        drumKit1.components.put(getString(R.string.instrument_tom), R.raw.kit1tom1);
+        drumKit1.AddComponent(getString(R.string.instrument_cowbell), R.raw.kit1cowbell);
+        drumKit1.AddComponent(getString(R.string.instrument_cym), R.raw.kit1cym1);
+        drumKit1.AddComponent(getString(R.string.instrument_kick), R.raw.kit1kick);
+        drumKit1.AddComponent(getString(R.string.instrument_snare), R.raw.kit1snare);
+        drumKit1.AddComponent(getString(R.string.instrument_hihat), R.raw.kit1hihat);
+        drumKit1.AddComponent(getString(R.string.instrument_ride), R.raw.kit1ride1);
+        drumKit1.AddComponent(getString(R.string.instrument_tom), R.raw.kit1tom1);
 
         //Receive Intent Message
         Intent intent = getIntent();
@@ -193,7 +193,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     public void loadSamples(){
         for (String component : drumKit1.components.keySet()) {
             if (drumKit1.components.get(component) != null) {
-                jukebox.addSample(component, drumKit1.components.get(component));
+                jukebox.addSample(component, drumKit1.components.get(component).getSample());
             }
         }
     }
@@ -235,8 +235,11 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        Datapoint datapoint = new Datapoint(event);
+        metronome.AddData(datapoint);
+
         metronome.AddData(event.values);
-        lastpeak= metronome.getLastPeak();
+        Long lastpeak= metronome.getLastPeak();
         axes[0] = event.values[0];
         axes[1]= event.values[1];
         axes[2] = event.values[2];
@@ -247,7 +250,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
                 metronome.peaksDelta.append(newPeak, metronome.latestDelta);
                 for (String component : drumKit1.GetComponents()) {
                     if (drumKit1.GetSensitivity(component) * sensitivityFaktor < metronome.latestDelta) {
-                        playSound(component);
+                        drumKit1.components.get(component).Play();
                     }
                 }
         }

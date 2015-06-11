@@ -18,33 +18,30 @@ public class Instrument {
     /**
      * Die Komponenten des Instrumentes
      */
-    protected Map<String, Integer> components;
-    /**
-     * Die Sensibilität der einzelnen Komponenten
-     */
-    protected Map<String, Float> sensitivity;
+    protected Map<String, Component> components;
 
     protected Context context;
 
     Instrument(Context context){
         this.context = context;
         components = new HashMap<>();
-        sensitivity = new HashMap<>();
     }
 
-    public void  AddComponent(String newComponent){
-        components.put(newComponent,null);
-        sensitivity.put(newComponent, 99f);
+    public void  AddComponent(String componentName){
+        Component component = new Component(componentName, 99f, context);
+        components.put(componentName,component);
     }
 
-    public void  AddComponent(String newComponent, Integer sampleFile){
-        components.put(newComponent,sampleFile);
-        sensitivity.put(newComponent, 99f);
+    public void  AddComponent(String componentName, Integer sampleFile){
+        Component component = new Component(componentName, 99f, context);
+        component.setSample(sampleFile);
+        components.put(componentName,component);
     }
 
-    public void  AddComponent(String newComponent, Integer sampleFile, Float sensitivity){
-        components.put(newComponent,sampleFile);
-        this.sensitivity.put(newComponent, sensitivity);
+    public void  AddComponent(String componentName, Integer sampleFile, Float sensitivity){
+        Component component = new Component(componentName, sensitivity, context);
+        component.setSample(sampleFile);
+        components.put(componentName,component);
     }
 
     /**
@@ -52,19 +49,18 @@ public class Instrument {
      * @return Liefert die SampleID einer bestimmten Instrumentenkomponente zurück
      */
     public Integer GetSampleIDOfComponent(String component){
-        return this.components.get(component);
+        return this.components.get(component).getSample();
     }
 
     public Float GetSensitivity(String component){
-        return this.sensitivity.get(component);
+        return this.components.get(component).getSensitivity();
     }
 
     public void SetSensitivity(String component, Float value){
-        if (sensitivity.get(component) != null){
-            sensitivity.put(component, value);
+            components.get(component).setSensitivity(value);
             Log.i("Beatshake",component + " sensitivity changed to " + value );
         }
-    }
+
 
     public Set<String> GetComponents(){
         return components.keySet();

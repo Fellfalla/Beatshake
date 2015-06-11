@@ -12,44 +12,27 @@ import java.lang.Long;
  *
  */
 public class Metronome {
-    LongSparseArray<float[]> Data;
     LongSparseArray<Boolean> peakTendency;
     public LongSparseArray<Float> peaksDelta;
-    ArrayList<Long> peaks;
     public float latestDelta = 0f;
     //ArrayList[] Data = new ArrayList[] {DataX, DataY, DataZ};
-    float[] datapoint = new float[3];
-    float[] previousDatapoint = new float[3];
+
     public double AccelerationAccuracy;
     public Sensor accelerationSensor;
-    // todo enum mit tendenz einfüge
+
     boolean rising = true;
     boolean falling= false;
 
-    Metronome(double accelerationAccuracy, int maxDataSize){
+    Data data;
+
+    Metronome(double accelerationAccuracy,Data data){
         AccelerationAccuracy = accelerationAccuracy;
-        Data = new LongSparseArray<>(maxDataSize);
-        peaks = new ArrayList<>(maxDataSize);
-        peaksDelta = new LongSparseArray<>(maxDataSize);
+        this.data = data;
+        peaksDelta = new LongSparseArray<>();
         Long initPoint = System.currentTimeMillis();
-        peaks.add(initPoint);
         peaksDelta.append(initPoint, 0f);
     }
 
-    public void AddData(float data[]){
-        long now = System.currentTimeMillis();
-        datapoint[0]=data[0];
-        datapoint[1]=data[1];
-        datapoint[2]=data[2];
-
-        Data.append(now, datapoint.clone());
-
-//        DataY.add(new LongSparseArray<Double>() {{
-//            append(now,y);}});
-//        DataZ.add(new LongSparseArray<Double>() {{
-//            append(now,z);}});
-
-    }
 
     static void GetMetrum(){
     }
@@ -58,58 +41,59 @@ public class Metronome {
      * @return Gibt den Zeitpunkt des nächsten zu erwartenden Taktschlages zurück
      */
     Long GetNextPeakExpectation(){
-        Long nextPeak = System.currentTimeMillis();
-        if (peaks.size() > 1) {
+        Long nextPeakTime = data.getLastPeak().getTimestamp();
+        if (data.peaks.size() > 1) {
             long sum = 0;
-            for (int i = 1; i < peaks.size(); i++) {
-                sum += peaks.get(i) - peaks.get(i - 1);
+            for (int i = 1; i < data.peaks.size(); i++) {
+                sum += data.peaks.get(i).getTimestamp() - data.peaks.get(i - 1).getTimestamp();
             }
-            nextPeak += sum / (peaks.size() - 1);
+            nextPeakTime += sum / (data.peaks.size() - 1);
         }
-        return nextPeak;
+        return nextPeakTime;
     }
 
-    Long getLastPeak(){
-        return peaks.get(peaks.size() - 1);
-    }
+
 
 
     /**
      * @return Berechnet und gibt den neuesten Peak zurück
      */
-    Long calculateNewLastPeak(){
+    Datapoint calculateNewLastPeak(){
         // Ermittelt den letzten Peakwert
-        Long latestPeak = getLastPeak();
-        for(int i = Data.size()-1; i >0; i--) // >0 da jeder datenpunkt auf den vorherigen schauen muss
+        Datapoint latestPeak = data.getLastPeak();
+        for (Datapoint datapoint : data.data)
         {
-            if (Data.keyAt(i) < latestPeak){
+            if (datapoint.getTimestamp() < latestPeak.getTimestamp()){
                 break;
             }
             else{
-                long timepoint = Data.keyAt(i);
-                LookForPeak(i);
+                LookIfPeak(datapoint);
             }
         }
+//        for(int i = data.data.size()-1; i >0; i--) // >0 da jeder datenpunkt auf den vorherigen schauen muss
+//        {
+//            if (Data.data.keyAt(i) < latestPeak){
+//                break;
+//            }
+//            else{
+//                long timepoint = Data.keyAt(i);
+//                LookForPeak(i);
+//            }
+//        }
         return latestPeak;
     }
 
-    /**
-     * @param peak der Datenzeitpunkt der hinzugefügt werden soll
-     * @param flank Bool ob der peak eine erhöhung (rising) oder verminderung (falling) war
-     */
-    private void AddPeak(Long peak, boolean flank){
-        peaks.add(peak);
-        peakTendency.append(peak, flank);
-    }
+
 
     /**
      * Schaut ob der Messpunkt, der sich hinter dem Übergebenen Datenzeitpunkt verbirgt ein Peak ist.
      * Wenn er einer ist, wird dieser Peak in der Klasse als Peak vermerkt
      * @param datakey
      */
-    private void LookForPeak(int datakey){
+    private void LookIfPeak(Datapoint datapoint){
         datapoint = Data.get(datakey);
-        previousDatapoint = Data.get(Data.keyAt(datakey-1));
+
+        previousDatapoint = data.data.get(data.data.indexOf(datapoint)-1);
         boolean lastPeakType = peakTendency.get(getLastPeak());
         Long peak;
 
@@ -121,6 +105,7 @@ public class Metronome {
                 latestDelta = Math.abs(datapoint[j] - previousDatapoint[j]);
                 AddPeak(peak,rising);
                 // todo: die Werte überspringen die in einem Vorherigen durchgang schon negiert wurden
+                return peak;
                 break;
             }
             else if (lastPeakType && datapoint[j] < previousDatapoint[j] - accelerationSensor.getResolution()){
@@ -128,10 +113,11 @@ public class Metronome {
                 peak = Data.keyAt(datakey);
                 latestDelta = Math.abs(datapoint[j] - previousDatapoint[j]);
                 AddPeak(peak, falling);
+                return peak;
                 break;
             }
-
         }
+        return peak;
     }
 }
 
