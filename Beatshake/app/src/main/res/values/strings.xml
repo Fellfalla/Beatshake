@@ -23,6 +23,8 @@
     <string name="title_activity_draw_grap">DrawGraphActivity</string>
     <string name="btn_start_graph_activity">Start Sensor View</string>
     <string name="btn_start_beatshake_activity">Start BeatShake</string>
+    <string name="Accuracy">Values of SeekBar</string>
+    <string name="accuracy">Genauigkeit</string>
 
 
 </resources>

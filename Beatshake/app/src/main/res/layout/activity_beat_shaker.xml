@@ -56,7 +56,7 @@
                 android:layout_height="fill_parent"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:hint="Values of SeekBar" />
+                android:hint="@string/accuracy" />
             <SeekBar
                 android:id="@+id/seekBar1"
                 android:max="@integer/accuracy_seek_bar_max"
