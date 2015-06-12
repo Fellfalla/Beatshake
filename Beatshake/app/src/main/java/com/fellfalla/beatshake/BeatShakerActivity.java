@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +25,6 @@ import java.util.Random;
 
 
 public class BeatShakerActivity extends Activity implements SensorEventListener, SeekBar.OnSeekBarChangeListener, CheckedTextView.OnClickListener {
-    boolean plays = false, loaded = false;
     float actVolume, maxVolume, volume;
     AudioManager audioManager;
     int counter;
@@ -38,12 +38,15 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     Metronome metronome;
 
     int miliSVerzoegerung = 1000/10;
+
     float[] axes;
 
     TextView sensorValues;
     TextView seekBarValue;
     SeekBar accuracySeekBar;
     CheckBox gravityEnabler;
+
+    Data data;
 
 
     @Override
@@ -53,11 +56,12 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         jukebox = new Jukebox(getApplicationContext());
         drumKit1 = new Drums(getApplicationContext());
         mStreamIDs = new ArrayList<>();
-        metronome = new Metronome(0.00, getResources().getInteger(R.integer.max_data_size));
+        data = new Data(getResources().getInteger(R.integer.max_data_size));
+        metronome = new Metronome(0.00, data);
         seekBarValue = (TextView) findViewById(R.id.seek_bar_value);
         sensorValues = (TextView) findViewById(R.id.sensor_values);
         accuracySeekBar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
-        gravityEnabler = (CheckBox) findViewById(R.id.gravity_bool);
+        gravityEnabler = (CheckBox) findViewById(R.id.gravity_toggle);
         sensitivityFaktor = 0.7f;
 
         gravityEnabler.setOnClickListener(this);
@@ -81,14 +85,6 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         // the counter will help us recognize the stream id of the sound played  now
         counter = 0;
 
-        axes = new float[3];
-        axes[0] = (float) 2.5;
-        axes[1] = (float) 4.5;
-        axes[2] = (float) 11;
-
-
-        loaded = true;
-
         // Add Components to the first DrumKit
         drumKit1.AddComponent(getString(R.string.instrument_cowbell), R.raw.kit1cowbell);
         drumKit1.AddComponent(getString(R.string.instrument_cym), R.raw.kit1cym1);
@@ -103,6 +99,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         String message = intent.getStringExtra(MainActivity.KITMESSAGE);
         GenerateUI();
         loadSamples();
+        toggleGravity(gravityEnabler);
     }
 
     @Override
@@ -181,7 +178,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, mAccelerometer, Constants.SensorDelay);
     }
 
     protected void onPause() {
@@ -215,7 +212,9 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         if (jukebox.soundIDs.containsKey(sampleName)){
             Integer soundID = jukebox.soundIDs.get(sampleName);
             if (soundID != null) {
-                jukebox.playSound(soundID);
+                //jukebox.playSound(soundID);
+                drumKit1.components.get(sampleName).Play();
+                Log.i(getString(R.string.app_name), "Played " + sampleName);
             }
         }}
 
@@ -226,7 +225,8 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
                 Integer soundID = jukebox.soundIDs.get(sampleName);
                 if (soundID != null) {
                     sampleIDs.add(soundID);
-                    //jukebox.playSound(soundID);
+                    jukebox.playSound(soundID);
+
                 }
             }
         }
@@ -235,26 +235,27 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        DataPoint dataPoint = new DataPoint(event);
-        metronome.AddData(dataPoint);
+        MeasurePoint measurePoint = new MeasurePoint(event);
+        data.AddData(measurePoint);
 
-        metronome.AddData(event.values);
-        Long lastpeak= metronome.getLastPeak();
-        axes[0] = event.values[0];
-        axes[1]= event.values[1];
-        axes[2] = event.values[2];
+        MeasurePoint lastPeak= data.getLastPeak();
+
         if (event.sensor.getType()==mAccelerometer.getType()) {
-            long newPeak = metronome.calculateNewLastPeak();
-            if (lastpeak + miliSVerzoegerung < newPeak) //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
-                metronome.peaks.add(newPeak);
-                metronome.peaksDelta.append(newPeak, metronome.latestDelta);
-                for (String component : drumKit1.GetComponents()) {
-                    if (drumKit1.GetSensitivity(component) * sensitivityFaktor < metronome.latestDelta) {
-                        drumKit1.components.get(component).Play();
+            long t1 = getTime(event);
+            long t2 = getTime();
+            if (data.getLastPeak().getTimestamp() + miliSVerzoegerung < getTime()) {
+                Peak newPeak = metronome.calculateNewLastPeak();
+                if (lastPeak.getTimestamp() + miliSVerzoegerung < newPeak.getTimestamp()) //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
+                    data.AddPeak(newPeak); // den ermittelten Peak als Peak verbuchen
+                    for (String component : drumKit1.GetComponents()) {
+                        if (drumKit1.GetSensitivity(component) * sensitivityFaktor < newPeak.getStrength()) {
+                            drumKit1.components.get(component).Play();
+                            Log.i(getString(R.string.app_name), "Played " + component + "with Peakvalues: " + newPeak);
+                        }
                     }
-                }
+            }
         }
-        ShowSensorValues();
+        ShowSensorValues(event);
 
     }
 
@@ -263,8 +264,8 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
     }
 
-    public void ShowSensorValues(){
-        String text = "\nX:" + Float.toString(this.axes[0]) + "\t\tY:" + Float.toString(this.axes[1]) + "\t\tZ:" + Float.toString(this.axes[2]);
+    public void ShowSensorValues(SensorEvent event){
+        String text = "\nX:" + Float.toString(event.values[0]) + "\t\tY:" + Float.toString(event.values[1]) + "\t\tZ:" + Float.toString(event.values[2]);
         sensorValues.setText(text);
     }
 
@@ -302,14 +303,28 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     @Override
     public void onClick(View v) {
         CheckBox checkbox = (CheckBox) v;
+
+    }
+
+
+    public static long getTime(SensorEvent event){
+        return event.timestamp/ Constants.EVENT_TIMESTAMP_TO_TIMESTAMP;
+    }
+
+    public static long getTime(){
+        return System.currentTimeMillis() / Constants.SYSTEM_TIMESTAMP_TO_TIMESTAMP;
+    }
+
+    public void toggleGravity(View view) {
+        gravityEnabler = (CheckBox) findViewById(R.id.gravity_toggle);
         sensorManager.unregisterListener(this);
-        if (checkbox.isChecked()){
+        if (gravityEnabler.isChecked()){
             mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, mAccelerometer, Constants.SensorDelay);
         }
         else {
             mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, mAccelerometer, Constants.SensorDelay);
         }
     }
 }

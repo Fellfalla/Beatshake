@@ -16,10 +16,11 @@
         android:text="Play Random Sound"/>
 
     <CheckBox
-        android:id="@+id/gravity_bool"
+        android:id="@+id/gravity_toggle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:onClick="toggleGravity"
         android:text="Let the Gravity help you"/>
 
 

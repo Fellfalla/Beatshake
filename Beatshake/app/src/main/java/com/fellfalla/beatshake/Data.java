@@ -8,25 +8,45 @@ import java.util.ArrayList;
  */
 public class Data {
 
-    public ArrayList<DataPoint> peaks;
-    public ArrayList<DataPoint> data;
+    private ArrayList<Peak> peaks;
+    private ArrayList<MeasurePoint> measurePoints;
 
-    Data(int maxDataSize){
-        peaks = new ArrayList<>(maxDataSize);
-        data = new ArrayList<>(maxDataSize);
+    Data(final int maxDataSize){
+        peaks = new ArrayList<Peak>(maxDataSize){
+            {for (int i =0; i<maxDataSize; i++){
+                add(i,new Peak());}
+            }
+        };
+        measurePoints = new ArrayList<MeasurePoint>(maxDataSize){
+            {for (int i =0; i<maxDataSize; i++){
+                add(i,new MeasurePoint());}
+            }
+        };
     }
 
-    private void AddPeak(DataPoint dataPoint){
-        peaks.add(dataPoint);
+    public void AddPeak(Peak peak){
+        peaks.add(0,peak);
     }
 
-    DataPoint getLastPeak(){
-        return peaks.get(peaks.size() - 1);
+    public ArrayList<Peak> getPeaks(){
+        return peaks;
     }
 
+    public ArrayList<MeasurePoint> getMeasurePoints(){
+        return measurePoints;
+    }
 
-    public void AddData(DataPoint dataPoint){
-        data.add(dataPoint);
+    Peak getLastPeak(){
+        return peaks.get(0);
+    }
+
+    MeasurePoint getLastMeasurePoint(){
+        return measurePoints.get(0); //measurePoints.get(measurePoints.size() - 1);
+    }
+
+    public void AddData(MeasurePoint measurePoint) {
+        measurePoint.setPreviousMeasurePoint(getLastMeasurePoint());
+        measurePoints.add(0,measurePoint);
     }
 
 

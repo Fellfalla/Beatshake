@@ -3,10 +3,13 @@ package com.fellfalla.beatshake;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.media.ToneGenerator;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Diese Klasse spiegelt eine Komponente eines Instrumentes wie z.b. eine Snare wieder
@@ -27,7 +30,7 @@ public class Component {
 
         mStreamIDs = new ArrayList<>();
         soundIDs = new ArrayList<>();
-        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0 );
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
 
         // AudioManager audio settings for adjusting the volume
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -69,7 +72,7 @@ public class Component {
     }
 
     public void setSample(int sample) {
-        soundIDs.add(soundPool.load(context, getSample(), 1));
+        soundIDs.add(soundPool.load(context, sample, 1));
         Sample = sample;
     }
 
@@ -79,7 +82,12 @@ public class Component {
     public void Play(){
         if (soundIDs.get(0) != null){
             setLastPlayed(System.currentTimeMillis());
-            mStreamIDs.add(soundPool.play(soundIDs.get(0), volume, volume, 1, 0, 1f));
+            Random random = new Random();
+            float minX = .995f;
+            float maxX = 1.005f;
+            float randomFloatRate = random.nextFloat() * (maxX - minX) + minX;
+
+            mStreamIDs.add(soundPool.play(soundIDs.get(0), volume, volume, 1, 0, randomFloatRate));
         }
     }
 }

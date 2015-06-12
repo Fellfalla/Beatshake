@@ -1,7 +1,6 @@
 package com.fellfalla.beatshake;
 
 import android.hardware.Sensor;
-import android.util.LongSparseArray;
 
 import java.lang.Long;
 
@@ -10,25 +9,14 @@ import java.lang.Long;
  *
  */
 public class Metronome {
-    LongSparseArray<Boolean> peakTendency;
-    public LongSparseArray<Float> peaksDelta;
-    public float latestDelta = 0f;
-    //ArrayList[] Data = new ArrayList[] {DataX, DataY, DataZ};
-
     public double AccelerationAccuracy;
     public Sensor accelerationSensor;
-
-    boolean rising = true;
-    boolean falling= false;
 
     Data data;
 
     Metronome(double accelerationAccuracy,Data data){
         AccelerationAccuracy = accelerationAccuracy;
         this.data = data;
-        peaksDelta = new LongSparseArray<>();
-        Long initPoint = System.currentTimeMillis();
-        peaksDelta.append(initPoint, 0f);
     }
 
 
@@ -39,13 +27,13 @@ public class Metronome {
      * @return Gibt den Zeitpunkt des nächsten zu erwartenden Taktschlages zurück
      */
     Long GetNextPeakExpectation(){
-        Long nextPeakTime = data.getLastPeak().getTimestamp();
-        if (data.peaks.size() > 1) {
+        long nextPeakTime = data.getLastPeak().getTimestamp();
+        if (data.getPeaks().size() > 1) {
             long sum = 0;
-            for (int i = 1; i < data.peaks.size(); i++) {
-                sum += data.peaks.get(i).getTimestamp() - data.peaks.get(i - 1).getTimestamp();
+            for (int i = 1; i < data.getPeaks().size(); i++) {
+                sum += data.getPeaks().get(i).getTimestamp() - data.getPeaks().get(i - 1).getTimestamp();
             }
-            nextPeakTime += sum / (data.peaks.size() - 1);
+            nextPeakTime += sum / (data.getPeaks().size() - 1);
         }
         return nextPeakTime;
     }
@@ -56,28 +44,18 @@ public class Metronome {
     /**
      * @return Berechnet und gibt den neuesten Peak zurück
      */
-    DataPoint calculateNewLastPeak(){
+    Peak calculateNewLastPeak(){
         // Ermittelt den letzten Peakwert
-        DataPoint latestPeak = data.getLastPeak();
-        for (DataPoint dataPoint : data.data)
-        {
-            if (dataPoint.getTimestamp() < latestPeak.getTimestamp()){
+        Peak latestPeak = data.getLastPeak();
+        for (MeasurePoint measurePoint : data.getMeasurePoints())
+        {   // todo: die for-schleife läuft in falscher richtung durch
+            if (measurePoint.getTimestamp() < latestPeak.getTimestamp()){
                 break;
             }
             else{
-                LookIfPeak(dataPoint);
+                latestPeak = LookIfPeak(measurePoint);
             }
         }
-//        for(int i = data.data.size()-1; i >0; i--) // >0 da jeder datenpunkt auf den vorherigen schauen muss
-//        {
-//            if (Data.data.keyAt(i) < latestPeak){
-//                break;
-//            }
-//            else{
-//                long timepoint = Data.keyAt(i);
-//                LookForPeak(i);
-//            }
-//        }
         return latestPeak;
     }
 
@@ -85,32 +63,34 @@ public class Metronome {
 
     /**
      * Schaut ob der Messpunkt, der sich hinter dem Übergebenen Datenzeitpunkt verbirgt ein Peak ist.
-     * Wenn er einer ist, wird dieser Peak in der Klasse als Peak vermerkt
-     * @param dataPoint
+     * Wenn er einer ist, wird dieser als Peak zurückgegeben, falls er keiner ist, wird der letzte
+     * Peak zurückgegeben
+     * @param measurePoint Der Messpunkt der überprüft werden soll, ob er ein Peak ist und falls ja, als Peak gecastet zurückgegeben werden soll
      */
-    private void LookIfPeak(DataPoint dataPoint){
-        DataPoint previousDataPoint = data.data.get(data.data.indexOf(dataPoint)-1);
+    private Peak LookIfPeak(MeasurePoint measurePoint){
+        MeasurePoint previousMeasurePoint = measurePoint.getPreviousMeasurePoint(); //data.measurePoints.get(data.measurePoints.lastIndexOf(measurePoint) - 1);
+        Peak lastPeak = data.getLastPeak();
+        Peak peak = lastPeak;
 
-        boolean lastPeakType = previousDataPoint.isTendency();
-        Long peak;
-
-        for (int j =0; j < dataPoint.length; j++){
+        for (int j =0; j < measurePoint.getValues().length; j++){
+            if (previousMeasurePoint == null){
+                break; // todo: das muss auch ohne if-Abfrage gehen, um die performance zu verbessern
+            }
             // Überprüft ob der letzte Peaktyp gegensetzlich war
-            if (!lastPeakType && dataPoint[j] > previousDataPoint[j] + accelerationSensor.getResolution()){
+            if (lastPeak.getTendency() != Tendency.rising && measurePoint.getValues()[j] > previousMeasurePoint.getValues()[j] + accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
-                peak = Data.keyAt(datakey);
-                latestDelta = Math.abs(dataPoint[j] - previousDataPoint[j]);
-                AddPeak(peak,rising);
+                peak = new Peak(measurePoint);
+                peak.setTendency(Tendency.rising);
+                peak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
+
                 // todo: die Werte überspringen die in einem Vorherigen durchgang schon negiert wurden
-                return peak;
                 break;
             }
-            else if (lastPeakType && dataPoint[j] < previousDataPoint[j] - accelerationSensor.getResolution()){
+            else if (lastPeak.getTendency() != Tendency.falling && measurePoint.getValues()[j] < previousMeasurePoint.getValues()[j] - accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
-                peak = Data.keyAt(datakey);
-                latestDelta = Math.abs(dataPoint[j] - previousDataPoint[j]);
-                AddPeak(peak, falling);
-                return peak;
+                peak = new Peak(measurePoint);
+                peak.setTendency(Tendency.falling);
+                peak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
                 break;
             }
         }
