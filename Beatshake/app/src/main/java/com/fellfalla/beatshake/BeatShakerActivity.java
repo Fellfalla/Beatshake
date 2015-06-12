@@ -235,8 +235,8 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Datapoint datapoint = new Datapoint(event);
-        metronome.AddData(datapoint);
+        DataPoint dataPoint = new DataPoint(event);
+        metronome.AddData(dataPoint);
 
         metronome.AddData(event.values);
         Long lastpeak= metronome.getLastPeak();

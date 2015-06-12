@@ -1,10 +1,8 @@
 package com.fellfalla.beatshake;
 
 import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.util.LongSparseArray;
 
-import java.util.ArrayList;
 import java.lang.Long;
 
 /**
@@ -58,16 +56,16 @@ public class Metronome {
     /**
      * @return Berechnet und gibt den neuesten Peak zurück
      */
-    Datapoint calculateNewLastPeak(){
+    DataPoint calculateNewLastPeak(){
         // Ermittelt den letzten Peakwert
-        Datapoint latestPeak = data.getLastPeak();
-        for (Datapoint datapoint : data.data)
+        DataPoint latestPeak = data.getLastPeak();
+        for (DataPoint dataPoint : data.data)
         {
-            if (datapoint.getTimestamp() < latestPeak.getTimestamp()){
+            if (dataPoint.getTimestamp() < latestPeak.getTimestamp()){
                 break;
             }
             else{
-                LookIfPeak(datapoint);
+                LookIfPeak(dataPoint);
             }
         }
 //        for(int i = data.data.size()-1; i >0; i--) // >0 da jeder datenpunkt auf den vorherigen schauen muss
@@ -88,30 +86,29 @@ public class Metronome {
     /**
      * Schaut ob der Messpunkt, der sich hinter dem Übergebenen Datenzeitpunkt verbirgt ein Peak ist.
      * Wenn er einer ist, wird dieser Peak in der Klasse als Peak vermerkt
-     * @param datakey
+     * @param dataPoint
      */
-    private void LookIfPeak(Datapoint datapoint){
-        datapoint = Data.get(datakey);
+    private void LookIfPeak(DataPoint dataPoint){
+        DataPoint previousDataPoint = data.data.get(data.data.indexOf(dataPoint)-1);
 
-        previousDatapoint = data.data.get(data.data.indexOf(datapoint)-1);
-        boolean lastPeakType = peakTendency.get(getLastPeak());
+        boolean lastPeakType = previousDataPoint.isTendency();
         Long peak;
 
-        for (int j =0; j < datapoint.length; j++){
+        for (int j =0; j < dataPoint.length; j++){
             // Überprüft ob der letzte Peaktyp gegensetzlich war
-            if (!lastPeakType && datapoint[j] > previousDatapoint[j] + accelerationSensor.getResolution()){
+            if (!lastPeakType && dataPoint[j] > previousDataPoint[j] + accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
                 peak = Data.keyAt(datakey);
-                latestDelta = Math.abs(datapoint[j] - previousDatapoint[j]);
+                latestDelta = Math.abs(dataPoint[j] - previousDataPoint[j]);
                 AddPeak(peak,rising);
                 // todo: die Werte überspringen die in einem Vorherigen durchgang schon negiert wurden
                 return peak;
                 break;
             }
-            else if (lastPeakType && datapoint[j] < previousDatapoint[j] - accelerationSensor.getResolution()){
+            else if (lastPeakType && dataPoint[j] < previousDataPoint[j] - accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
                 peak = Data.keyAt(datakey);
-                latestDelta = Math.abs(datapoint[j] - previousDatapoint[j]);
+                latestDelta = Math.abs(dataPoint[j] - previousDataPoint[j]);
                 AddPeak(peak, falling);
                 return peak;
                 break;

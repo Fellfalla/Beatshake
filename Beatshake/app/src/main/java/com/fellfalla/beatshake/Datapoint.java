@@ -11,7 +11,7 @@ import android.hardware.SensorEvent;
  *
  * Created by Markus on 11.06.2015.
  */
-public class Datapoint {
+public class DataPoint {
 
     /**
      * Die Datenwerte des Datenpunktes
@@ -23,14 +23,16 @@ public class Datapoint {
      */
     private long timestamp;
 
-    private long timestamp;
 
+    /**
+     * Die Tendenz der Beschleunigung um doppelte interpretation naheliegender Datenpunkte als Peak zu vermeiden
+     */
     private boolean tendency;
 
-    public Datapoint(){
+    public DataPoint(){
     }
 
-    public Datapoint(SensorEvent event){
+    public DataPoint(SensorEvent event){
         setValues(event);
     }
 

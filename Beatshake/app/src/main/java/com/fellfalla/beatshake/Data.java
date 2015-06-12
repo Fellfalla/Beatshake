@@ -1,7 +1,5 @@
 package com.fellfalla.beatshake;
 
-import android.util.LongSparseArray;
-
 import java.util.ArrayList;
 
 /**
@@ -10,25 +8,25 @@ import java.util.ArrayList;
  */
 public class Data {
 
-    public ArrayList<Datapoint> peaks;
-    public ArrayList<Datapoint> data;
+    public ArrayList<DataPoint> peaks;
+    public ArrayList<DataPoint> data;
 
     Data(int maxDataSize){
         peaks = new ArrayList<>(maxDataSize);
         data = new ArrayList<>(maxDataSize);
     }
 
-    private void AddPeak(Datapoint datapoint){
-        peaks.add(datapoint);
+    private void AddPeak(DataPoint dataPoint){
+        peaks.add(dataPoint);
     }
 
-    Datapoint getLastPeak(){
+    DataPoint getLastPeak(){
         return peaks.get(peaks.size() - 1);
     }
 
 
-    public void AddData(Datapoint datapoint){
-        data.add(datapoint);
+    public void AddData(DataPoint dataPoint){
+        data.add(dataPoint);
     }
 
 
