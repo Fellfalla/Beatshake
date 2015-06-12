@@ -33,4 +33,11 @@ public class MainActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    public void startGraphView(View view) {
+        Intent intent;
+        intent = new Intent(this, DrawGraphActivity.class);
+        //intent.putExtra(KITMESSAGE,Soundkit);
+        startActivity(intent);
+    }
+
 }

@@ -3,4 +3,5 @@
     <integer name="max_data_size">8</integer>
     <integer name="accuracy_seek_bar_span">5000</integer>
     <integer name="accuracy_seek_bar_max">50000</integer>
+    <integer name="milliseconds_between_sample">750</integer>
 </resources>
