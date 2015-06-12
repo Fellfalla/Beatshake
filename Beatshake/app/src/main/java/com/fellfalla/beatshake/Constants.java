@@ -1,5 +1,7 @@
 package com.fellfalla.beatshake;
 
+import android.app.usage.UsageEvents;
+import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 
 /**
@@ -7,15 +9,25 @@ import android.hardware.SensorManager;
  * Created by Markus Weber on 12.06.2015.
  */
 public class Constants {
-    /**
-     * Teile durch diese Zahl, um den Timestamp eines SensorEvents in millisekunden darzustellen
-     */
-    public static long EVENT_TIMESTAMP_TO_TIMESTAMP = (long) 10e5; //diese Zahl konvertiert Alle Timestamps zu millisekunden
-    /**
-     * Dividiere durch diese Zahl, um System.currentTimeMillis tatsächlich in millis darzustellen
-     */
-    public static long SYSTEM_TIMESTAMP_TO_TIMESTAMP = EVENT_TIMESTAMP_TO_TIMESTAMP / (long) 10e5;
+
+    public static long getTime(){
+        return System.nanoTime();
+    }
+
+    public static long getTime(SensorEvent sensorEvent){
+        return sensorEvent.timestamp;
+    }
 
     public static int SensorDelay = SensorManager.SENSOR_DELAY_GAME;
+
+    public static double NANOSECONDS_TO_MILLISECONDS =  10E-5;
+
+    public static double MILLISECONDS_TO_NANOSECONDS = 10E5;
+
+    public static int MINIMAL_METRUM_MILLISECONDS = 100;
+
+    public static int MINIMAL_METRUM_NANOSECONDS = (int) (MINIMAL_METRUM_MILLISECONDS*MILLISECONDS_TO_NANOSECONDS);
+
+
 
 }

@@ -19,9 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class BeatShakerActivity extends Activity implements SensorEventListener, SeekBar.OnSeekBarChangeListener, CheckedTextView.OnClickListener {
@@ -31,15 +34,11 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     ArrayList<Integer> mStreamIDs ;
     float sensitivityFaktor; // todo: auslagern in -resource
 
-    Jukebox jukebox;
+    //Jukebox jukebox;
     Drums drumKit1;
     SensorManager sensorManager;
     Sensor mAccelerometer;
     Metronome metronome;
-
-    int miliSVerzoegerung = 1000/10;
-
-    float[] axes;
 
     TextView sensorValues;
     TextView seekBarValue;
@@ -53,11 +52,11 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beat_shaker);
-        jukebox = new Jukebox(getApplicationContext());
+        //jukebox = new Jukebox(getApplicationContext());
         drumKit1 = new Drums(getApplicationContext());
         mStreamIDs = new ArrayList<>();
         data = new Data(getResources().getInteger(R.integer.max_data_size));
-        metronome = new Metronome(0.00, data);
+        metronome = new Metronome(1.00, data);
         seekBarValue = (TextView) findViewById(R.id.seek_bar_value);
         sensorValues = (TextView) findViewById(R.id.sensor_values);
         accuracySeekBar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
@@ -98,7 +97,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.KITMESSAGE);
         GenerateUI();
-        loadSamples();
+        //loadSamples();
         toggleGravity(gravityEnabler);
     }
 
@@ -131,7 +130,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         Button btn = new Button(getApplicationContext());
         btn.setText(component);
         btn.setLayoutParams(param);
-        btn.setOnClickListener(handleOnClick(btn));
+        btn.setOnClickListener(handleOnClick());
         linear.addView(btn);
     }
 
@@ -166,7 +165,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
 
 
-    View.OnClickListener handleOnClick(final Button button) {
+    View.OnClickListener handleOnClick() {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 Button b = (Button)v;
@@ -187,13 +186,14 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     }
 
 
-    public void loadSamples(){
-        for (String component : drumKit1.components.keySet()) {
-            if (drumKit1.components.get(component) != null) {
-                jukebox.addSample(component, drumKit1.components.get(component).getSample());
-            }
-        }
-    }
+//    public void loadSamples(){
+//        for (String component : drumKit1.components.keySet()) {
+//            if (drumKit1.components.get(component) != null) {
+//                jukebox.addSample(component, drumKit1.components.get(component).getSample());
+//            }
+//        }
+//    }
+
     public void playSound() {
         View v = null;
         playSound(v);
@@ -202,62 +202,63 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         Random random    = new Random();
         List<String> keys      = new ArrayList<>(drumKit1.components.keySet());
         String       randomKey = keys.get(random.nextInt(keys.size()) );
-        Integer soundID = jukebox.soundIDs.get(randomKey);
-        if (soundID != null) {
-            jukebox.playSound(soundID);
+        String component = drumKit1.components.get(randomKey).getName();
+        if (component != null) {
+            playSound(component);
         }
     }
 
     public void playSound(String sampleName) {
-        if (jukebox.soundIDs.containsKey(sampleName)){
-            Integer soundID = jukebox.soundIDs.get(sampleName);
-            if (soundID != null) {
-                //jukebox.playSound(soundID);
+        if (drumKit1.components.containsKey(sampleName)){
                 drumKit1.components.get(sampleName).Play();
                 Log.i(getString(R.string.app_name), "Played " + sampleName);
             }
-        }}
+        }
 
     public void playSound(String[] sampleNames) {
         List<Integer> sampleIDs = new ArrayList<>();
         for( String sampleName : sampleNames){
-            if (jukebox.soundIDs.containsKey(sampleName)){
-                Integer soundID = jukebox.soundIDs.get(sampleName);
-                if (soundID != null) {
-                    sampleIDs.add(soundID);
-                    jukebox.playSound(soundID);
-
-                }
-            }
+            playSound(sampleName);
         }
-        jukebox.playSound(sampleIDs);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        MeasurePoint measurePoint = new MeasurePoint(event);
-        data.AddData(measurePoint);
-
-        MeasurePoint lastPeak= data.getLastPeak();
+        data.AddData(new MeasurePoint(event));
 
         if (event.sensor.getType()==mAccelerometer.getType()) {
-            long t1 = getTime(event);
-            long t2 = getTime();
-            if (data.getLastPeak().getTimestamp() + miliSVerzoegerung < getTime()) {
-                Peak newPeak = metronome.calculateNewLastPeak();
-                if (lastPeak.getTimestamp() + miliSVerzoegerung < newPeak.getTimestamp()) //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
-                    data.AddPeak(newPeak); // den ermittelten Peak als Peak verbuchen
-                    for (String component : drumKit1.GetComponents()) {
-                        if (drumKit1.GetSensitivity(component) * sensitivityFaktor < newPeak.getStrength()) {
-                            drumKit1.components.get(component).Play();
-                            Log.i(getString(R.string.app_name), "Played " + component + "with Peakvalues: " + newPeak);
-                        }
+            Peak newPeak = metronome.LookIfPeak(data.getLastMeasurePoint()); //metronome.calculateNewLastPeak();
+            Peak lastPeak = data.getLastPeak();
+            if (lastPeak.getTimestamp() + Constants.MINIMAL_METRUM_NANOSECONDS < newPeak.getTimestamp())
+            {
+                //todo: die letzten peaks müssen den einzelnen instrumenten zugewiesen werden
+                data.AddPeak(newPeak); // den ermittelten Peak als Peak verbuchen
+                //adjustMetronome();
+                for (String component : drumKit1.GetComponents()) {
+                    if (drumKit1.GetSensitivity(component) * sensitivityFaktor < newPeak.getStrength()) {
+                        drumKit1.components.get(component).Play();
+                        Log.i(getString(R.string.app_name), "Played " + component + "with Peakvalues: " + newPeak);
                     }
+                }
             }
         }
         ShowSensorValues(event);
 
     }
+
+    public void adjustMetronome(){
+            metronome.adjustMetrum();
+            final TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    playSound(getString(R.string.instrument_hihat));
+                    adjustMetronome();
+                }
+            };
+            long delayTime = (long) (metronome.getMetrum()* Constants.NANOSECONDS_TO_MILLISECONDS);
+            metronome.metronome.schedule(timerTask, delayTime);
+        }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -277,7 +278,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         else{
             double value = ((double) progress) / getResources().getInteger(R.integer.accuracy_seek_bar_span);
             seekBarValue.setText("Value: " + value);
-            metronome.AccelerationAccuracy = value;
+            metronome.setAccelerationAccuracy(value);
         }
     }
 
@@ -304,15 +305,6 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     public void onClick(View v) {
         CheckBox checkbox = (CheckBox) v;
 
-    }
-
-
-    public static long getTime(SensorEvent event){
-        return event.timestamp/ Constants.EVENT_TIMESTAMP_TO_TIMESTAMP;
-    }
-
-    public static long getTime(){
-        return System.currentTimeMillis() / Constants.SYSTEM_TIMESTAMP_TO_TIMESTAMP;
     }
 
     public void toggleGravity(View view) {

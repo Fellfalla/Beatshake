@@ -1,16 +1,20 @@
 package com.fellfalla.beatshake;
 
 import android.hardware.Sensor;
+import android.util.Log;
 
 import java.lang.Long;
+import java.util.Timer;
 
 /**
  * Created by Markus Weber on 03.06.2015.
  *
  */
 public class Metronome {
-    public double AccelerationAccuracy;
+    private double AccelerationAccuracy;
     public Sensor accelerationSensor;
+    public Timer metronome = new Timer();
+    private long metrum ;
 
     Data data;
 
@@ -19,27 +23,39 @@ public class Metronome {
         this.data = data;
     }
 
-
-    static void GetMetrum(){
-    }
-
     /**
      * @return Gibt den Zeitpunkt des nächsten zu erwartenden Taktschlages zurück
      */
     Long GetNextPeakExpectation(){
         long nextPeakTime = data.getLastPeak().getTimestamp();
-        if (data.getPeaks().size() > 1) {
+        int size = data.getPeaks().size()-1;
+        if (size>4){
+            size = 4;
+        }
+        if (size > 0) {
             long sum = 0;
-            for (int i = 1; i < data.getPeaks().size(); i++) {
-                sum += data.getPeaks().get(i).getTimestamp() - data.getPeaks().get(i - 1).getTimestamp();
+            for (int i = 0; i < size; i++) {
+                sum += data.getPeaks().get(i).getTimestamp() - data.getPeaks().get(i + 1).getTimestamp();
             }
-            nextPeakTime += sum / (data.getPeaks().size() - 1);
+            setMetrum(sum / size);
+            nextPeakTime += getMetrum();
         }
         return nextPeakTime;
     }
 
-
-
+    public void adjustMetrum(){
+        int size = data.getPeaks().size()-1;
+        if (size>4){
+            size = 4;
+        }
+        if (size > 0) {
+            long sum = 0;
+            for (int i = 0; i < size; i++) {
+                sum += data.getPeaks().get(i).getTimestamp() - data.getPeaks().get(i + 1).getTimestamp();
+            }
+            setMetrum(sum / size);
+        }
+    }
 
     /**
      * @return Berechnet und gibt den neuesten Peak zurück
@@ -56,6 +72,7 @@ public class Metronome {
                 latestPeak = LookIfPeak(measurePoint);
             }
         }
+
         return latestPeak;
     }
 
@@ -67,7 +84,7 @@ public class Metronome {
      * Peak zurückgegeben
      * @param measurePoint Der Messpunkt der überprüft werden soll, ob er ein Peak ist und falls ja, als Peak gecastet zurückgegeben werden soll
      */
-    private Peak LookIfPeak(MeasurePoint measurePoint){
+    public Peak LookIfPeak(MeasurePoint measurePoint){
         MeasurePoint previousMeasurePoint = measurePoint.getPreviousMeasurePoint(); //data.measurePoints.get(data.measurePoints.lastIndexOf(measurePoint) - 1);
         Peak lastPeak = data.getLastPeak();
         Peak peak = lastPeak;
@@ -77,16 +94,15 @@ public class Metronome {
                 break; // todo: das muss auch ohne if-Abfrage gehen, um die performance zu verbessern
             }
             // Überprüft ob der letzte Peaktyp gegensetzlich war
-            if (lastPeak.getTendency() != Tendency.rising && measurePoint.getValues()[j] > previousMeasurePoint.getValues()[j] + accelerationSensor.getResolution()){
+            if (lastPeak.getTendency() != Tendency.rising && measurePoint.getValues()[j] > previousMeasurePoint.getValues()[j] + getAccelerationAccuracy()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
                 peak = new Peak(measurePoint);
                 peak.setTendency(Tendency.rising);
                 peak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
-
                 // todo: die Werte überspringen die in einem Vorherigen durchgang schon negiert wurden
                 break;
             }
-            else if (lastPeak.getTendency() != Tendency.falling && measurePoint.getValues()[j] < previousMeasurePoint.getValues()[j] - accelerationSensor.getResolution()){
+            else if (lastPeak.getTendency() != Tendency.falling && measurePoint.getValues()[j] < previousMeasurePoint.getValues()[j] - getAccelerationAccuracy()){ //accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
                 peak = new Peak(measurePoint);
                 peak.setTendency(Tendency.falling);
@@ -95,6 +111,23 @@ public class Metronome {
             }
         }
         return peak;
+    }
+
+    public long getMetrum() {
+        return metrum;
+    }
+
+    public void setMetrum(long metrum) {
+        this.metrum = metrum;
+    }
+
+    public double getAccelerationAccuracy() {
+        return AccelerationAccuracy;
+    }
+
+    public void setAccelerationAccuracy(double accelerationAccuracy) {
+        AccelerationAccuracy = accelerationAccuracy;
+        Log.i("Beatshake","Acceleration Accuracy changed to " + accelerationAccuracy );
     }
 }
 

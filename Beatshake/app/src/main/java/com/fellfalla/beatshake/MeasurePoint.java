@@ -25,6 +25,7 @@ public class MeasurePoint implements IMeasurePoint{
     private MeasurePoint previousMeasurePoint;
 
     public MeasurePoint(){
+        setTimestamp(Constants.getTime());
     }
 
     public MeasurePoint(SensorEvent event){
@@ -40,12 +41,12 @@ public class MeasurePoint implements IMeasurePoint{
         this.timestamp = time;
     }
 
-    public void setTimestamp(SensorEvent event) {
-        this.timestamp = event.timestamp / Constants.EVENT_TIMESTAMP_TO_TIMESTAMP;
+    public void setTimestamp(SensorEvent sensorEvent) {
+        this.timestamp = Constants.getTime(sensorEvent);
     }
 
     public void setTimestamp(){
-        this.timestamp = System.currentTimeMillis()/Constants.SYSTEM_TIMESTAMP_TO_TIMESTAMP;
+        this.timestamp = Constants.getTime();
     }
 
     public float[] getValues() {
