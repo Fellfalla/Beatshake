@@ -30,6 +30,6 @@ public class Constants {
 
     public static int COMPONENT_SENSITIVITY_INITIAL = 99;
 
-    public static float ACCURACY_TOLERANCE_INITIAL = 1.5f;
+    public static float ACCURACY_TOLERANCE_INITIAL = 10f;
 
 }

@@ -89,6 +89,7 @@ public class Metronome {
         Peak lastPeak = data.getLastPeak();
         Peak peak = lastPeak;
 
+        // todo: Alle achsen sollen die gleiche wahrshceinlichkeit haben, dies ist momentan nicht gewährleistet, da abbruch nach X achse, falls dort ein ausschlag ist
         for (int j =0; j < measurePoint.getValues().length; j++){
             if (previousMeasurePoint == null){
                 break; // todo: das muss auch ohne if-Abfrage gehen, um die performance zu verbessern
