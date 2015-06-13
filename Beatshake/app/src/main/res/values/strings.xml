@@ -5,6 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 
+    <string name="view_component">component</string>
+    <string name="view_axe">axe</string>
+
 
     <!--Naming of Audio Files-->
     <string name="instrument_kick">Kick</string>

@@ -16,9 +16,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +118,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     public void GenerateComponentUI(String component){
         loadPlayButton(component);
         loadSensitivitySeekBar(component);
+        loadAxesCheckboxes(component);
     }
 
 
@@ -144,7 +147,28 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         seekBar.setTag(component);
         seekBar.setOnSeekBarChangeListener(this);
         linear.addView(seekBar);
+    }
 
+    private void loadAxesCheckboxes(String component){
+        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        for (Axes axe : Axes.values()) {
+            CheckBox checkBox = new CheckBox(this);
+            checkBox.setText(axe.toString());
+            checkBox.setActivated(true);
+            checkBox.setChecked(true);
+            checkBox.setTag(R.string.view_component, component);
+            checkBox.setTag(R.string.view_axe, axe);
+            this.drumKit1.components.get(component).activatedAxes.add(checkBox);
+            linearLayout.addView(checkBox);
+        }
+
+        linear.addView(linearLayout);
     }
 
     @Override
@@ -235,8 +259,10 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
                 //adjustMetronome();
                 for (String component : drumKit1.GetComponents()) {
                     if (drumKit1.GetSensitivity(component) * sensitivityFaktor < newPeak.getStrength()) {
-                        drumKit1.components.get(component).Play();
-                        Log.i(getString(R.string.app_name), "Played " + component + "with Peakvalues: " + newPeak);
+                        if (drumKit1.components.get(component).isAxeActivated(newPeak.getAxe())) {
+                            drumKit1.components.get(component).Play();
+                            Log.i(getString(R.string.app_name), "Played " + component + "with Peakvalues: " + newPeak);
+                        }
                     }
                 }
             }

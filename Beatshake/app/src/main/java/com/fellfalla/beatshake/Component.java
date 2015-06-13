@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.media.ToneGenerator;
 import android.util.Log;
+import android.widget.CheckBox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,11 +23,13 @@ public class Component {
     float actVolume, maxVolume, volume;
     AudioManager audioManager;
     private Context context;
+    public ArrayList<CheckBox> activatedAxes;
 
     public Component(String name, float sensitivity, Context context){
         ComponentName = name;
         Sensitivity = sensitivity;
         this.context = context;
+        activatedAxes = new ArrayList<>();
 
         soundIDs = new ArrayList<>();
         soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
@@ -91,5 +94,15 @@ public class Component {
             }
             StreamID = newStreamID;
         }
+    }
+
+    public boolean isAxeActivated(Axes axe) {
+        for (CheckBox activatedAxe : activatedAxes){
+            if (activatedAxe.getTag(R.string.view_axe)==axe)
+            {
+                return activatedAxe.isChecked();
+            }
+        }
+        return false;
     }
 }

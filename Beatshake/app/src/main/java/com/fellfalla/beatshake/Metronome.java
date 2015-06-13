@@ -99,6 +99,7 @@ public class Metronome {
                 peak = new Peak(measurePoint);
                 peak.setTendency(Tendency.rising);
                 peak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
+                peak.setAxe(Axes.values()[j]); // setzt den enum der entsprechenden Achse in die achse ein
                 // todo: die Werte überspringen die in einem Vorherigen durchgang schon negiert wurden
                 break;
             }
@@ -107,6 +108,7 @@ public class Metronome {
                 peak = new Peak(measurePoint);
                 peak.setTendency(Tendency.falling);
                 peak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
+                peak.setAxe(Axes.values()[j]);
                 break;
             }
         }

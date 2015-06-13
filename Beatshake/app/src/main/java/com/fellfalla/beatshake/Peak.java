@@ -15,6 +15,8 @@ public class Peak extends MeasurePoint implements IMeasurePoint {
      */
     private Tendency tendency;
 
+    private Axes axe;
+
     public Peak(){
         super();
     }
@@ -65,4 +67,11 @@ public class Peak extends MeasurePoint implements IMeasurePoint {
         return string;
     }
 
+    public Axes getAxe() {
+        return axe;
+    }
+
+    public void setAxe(Axes axe) {
+        this.axe = axe;
+    }
 }
