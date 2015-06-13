@@ -2,11 +2,19 @@ package com.fellfalla.beatshake;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 
 import com.jjoe64.graphview.GraphView;
@@ -18,26 +26,52 @@ import java.util.List;
 import java.util.Random;
 
 
-public class DrawGraphActivity extends FragmentActivity {
+public class DrawGraphActivity extends FragmentActivity implements SensorEventListener, CheckedTextView.OnClickListener {
+    SensorManager sensorManager;
+    Sensor mAccelerometer;
+    private CheckBox gravityEnabler;
+    private Data data;
+    private ArrayList<LineGraphSeries<DataPoint>> lineGraphSeriesArrayList;
+    private int counter;
+    private int dataPoint = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
-        ArrayList<Float> daten = new ArrayList<>();
-
-        Random random = new Random();
-        for (int i = 0; i < 100; i++){
-            daten.add(random.nextFloat());
-        }
+        data = new Data(100);
+        lineGraphSeriesArrayList = new ArrayList<>();
+        MeasurePoint examplePoint = new MeasurePoint();
 
         if (savedInstanceState == null) {
-            createGraph(createSeries(daten));
-            createGraph(createSeries(daten));
-            createGraph(createSeries(daten));
+            for (float ignored : examplePoint.getValues()){
+                LineGraphSeries<DataPoint> lineGraphSeries = new LineGraphSeries<DataPoint>();
+                lineGraphSeriesArrayList.add(lineGraphSeries);
+                createGraph(lineGraphSeries);
+            }
         }
+        gravityEnabler = (CheckBox) findViewById(R.id.gravity_toggle);
+        gravityEnabler.setOnClickListener(this);
+        gravityEnabler.setChecked(true);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        toggleGravity(gravityEnabler);
     }
 
+    public void toggleGravity(View view) {
+        gravityEnabler = (CheckBox) findViewById(R.id.gravity_toggle);
+        sensorManager.unregisterListener(this);
+        if (gravityEnabler.isChecked()){
+            mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
+        else {
+            mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
+    }
 
     /**
      * Nimmt eine Liste von Werten und fügt diese in eine LineGraphSerie ein
@@ -114,5 +148,29 @@ public class DrawGraphActivity extends FragmentActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == mAccelerometer.getType()) {
+            data.AddData(new MeasurePoint(event));
+            for (int axe = 0; axe < lineGraphSeriesArrayList.size(); axe++) {
+                DataPoint dataPoint = new DataPoint(this.dataPoint, event.values[axe]);
+                lineGraphSeriesArrayList.get(axe).appendData(dataPoint, true, 200);
+                this.dataPoint++;
+            }
+
+        }
+    }
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

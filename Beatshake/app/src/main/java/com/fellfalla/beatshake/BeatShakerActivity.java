@@ -247,9 +247,9 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        data.AddData(new MeasurePoint(event));
-
         if (event.sensor.getType()==mAccelerometer.getType()) {
+            data.AddData(new MeasurePoint(event));
+
             Peak newPeak = metronome.LookIfPeak(data.getLastMeasurePoint()); //metronome.calculateNewLastPeak();
             Peak lastPeak = data.getLastPeak();
             if (lastPeak.getTimestamp() + Constants.MINIMAL_METRUM_NANOSECONDS < newPeak.getTimestamp())
@@ -328,8 +328,9 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
     @Override
     public void onClick(View v) {
-        CheckBox checkbox = (CheckBox) v;
-
+        if (v.getId() == R.id.gravity_toggle){
+            toggleGravity(v);
+        }
     }
 
     public void toggleGravity(View view) {
