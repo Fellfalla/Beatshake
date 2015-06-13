@@ -94,7 +94,7 @@ public class Metronome {
                 break; // todo: das muss auch ohne if-Abfrage gehen, um die performance zu verbessern
             }
             // Überprüft ob der letzte Peaktyp gegensetzlich war
-            if (lastPeak.getTendency() != Tendency.rising && measurePoint.getValues()[j] > previousMeasurePoint.getValues()[j] + getAccelerationAccuracy()){
+            if (/*lastPeak.getTendency() != Tendency.rising &&*/ measurePoint.getValues()[j] > previousMeasurePoint.getValues()[j] + getAccelerationAccuracy()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
                 peak = new Peak(measurePoint);
                 peak.setTendency(Tendency.rising);
@@ -102,7 +102,7 @@ public class Metronome {
                 // todo: die Werte überspringen die in einem Vorherigen durchgang schon negiert wurden
                 break;
             }
-            else if (lastPeak.getTendency() != Tendency.falling && measurePoint.getValues()[j] < previousMeasurePoint.getValues()[j] - getAccelerationAccuracy()){ //accelerationSensor.getResolution()){
+            else if (/*lastPeak.getTendency() != Tendency.falling &&*/ measurePoint.getValues()[j] < previousMeasurePoint.getValues()[j] - getAccelerationAccuracy()){ //accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
                 peak = new Peak(measurePoint);
                 peak.setTendency(Tendency.falling);

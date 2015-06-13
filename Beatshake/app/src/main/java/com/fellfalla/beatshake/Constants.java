@@ -28,6 +28,8 @@ public class Constants {
 
     public static int MINIMAL_METRUM_NANOSECONDS = (int) (MINIMAL_METRUM_MILLISECONDS*MILLISECONDS_TO_NANOSECONDS);
 
+    public static int COMPONENT_SENSITIVITY_INITIAL = 99;
 
+    public static float ACCURACY_TOLERANCE_INITIAL = 1.5f;
 
 }

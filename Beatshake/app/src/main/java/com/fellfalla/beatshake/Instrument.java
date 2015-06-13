@@ -28,12 +28,12 @@ public class Instrument {
     }
 
     public void  AddComponent(String componentName){
-        Component component = new Component(componentName, 99f, context);
+        Component component = new Component(componentName, Constants.COMPONENT_SENSITIVITY_INITIAL, context);
         components.put(componentName,component);
     }
 
     public void  AddComponent(String componentName, Integer sampleFile){
-        Component component = new Component(componentName, 99f, context);
+        Component component = new Component(componentName, Constants.COMPONENT_SENSITIVITY_INITIAL, context);
         component.setSample(sampleFile);
         components.put(componentName,component);
     }

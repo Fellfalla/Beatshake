@@ -56,7 +56,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         drumKit1 = new Drums(getApplicationContext());
         mStreamIDs = new ArrayList<>();
         data = new Data(getResources().getInteger(R.integer.max_data_size));
-        metronome = new Metronome(1.00, data);
+        metronome = new Metronome(Constants.ACCURACY_TOLERANCE_INITIAL, data);
         seekBarValue = (TextView) findViewById(R.id.seek_bar_value);
         sensorValues = (TextView) findViewById(R.id.sensor_values);
         accuracySeekBar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
@@ -65,6 +65,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
         gravityEnabler.setOnClickListener(this);
         accuracySeekBar.setOnSeekBarChangeListener(this);
+        accuracySeekBar.setProgress((int)(Constants.ACCURACY_TOLERANCE_INITIAL * getResources().getInteger(R.integer.accuracy_seek_bar_span)));
 
         gravityEnabler.setChecked(true);
 
@@ -80,9 +81,6 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
 
         //Hardware buttons setting to adjust the media sound
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
-        // the counter will help us recognize the stream id of the sound played  now
-        counter = 0;
 
         // Add Components to the first DrumKit
         drumKit1.AddComponent(getString(R.string.instrument_cowbell), R.raw.kit1cowbell);
@@ -142,6 +140,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         // Generate Button and add to ListLayout
         SeekBar seekBar = new SeekBar(getApplicationContext());
         seekBar.setLayoutParams(param);
+        seekBar.setProgress(Constants.COMPONENT_SENSITIVITY_INITIAL);
         seekBar.setTag(component);
         seekBar.setOnSeekBarChangeListener(this);
         linear.addView(seekBar);

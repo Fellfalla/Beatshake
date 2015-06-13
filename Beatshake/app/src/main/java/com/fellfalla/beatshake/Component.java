@@ -16,7 +16,7 @@ import java.util.Random;
  * Created by Markus on 11.06.2015.
  */
 public class Component {
-    ArrayList<Integer> mStreamIDs ;
+    Integer StreamID ;
     SoundPool soundPool;
     ArrayList<Integer> soundIDs ;
     float actVolume, maxVolume, volume;
@@ -28,9 +28,8 @@ public class Component {
         Sensitivity = sensitivity;
         this.context = context;
 
-        mStreamIDs = new ArrayList<>();
         soundIDs = new ArrayList<>();
-        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
 
         // AudioManager audio settings for adjusting the volume
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -86,8 +85,11 @@ public class Component {
             float minX = .995f;
             float maxX = 1.005f;
             float randomFloatRate = random.nextFloat() * (maxX - minX) + minX;
-
-            mStreamIDs.add(soundPool.play(soundIDs.get(0), volume, volume, 1, 0, randomFloatRate));
+            int newStreamID = soundPool.play(soundIDs.get(0), volume, volume, 1, 0, randomFloatRate);
+            if (StreamID != null) {
+                soundPool.stop(StreamID);
+            }
+            StreamID = newStreamID;
         }
     }
 }
