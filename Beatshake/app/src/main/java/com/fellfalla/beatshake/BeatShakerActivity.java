@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -128,7 +129,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
 
         // Generate Button and add to ListLayout
-        Button btn = new Button(getApplicationContext());
+        Button btn = new Button(getApplicationContext(), null,R.style.DefaultButton); // todo: hier muss der style noch richtig geladen werden
         btn.setText(component);
         btn.setLayoutParams(param);
         btn.setOnClickListener(handleOnClick());

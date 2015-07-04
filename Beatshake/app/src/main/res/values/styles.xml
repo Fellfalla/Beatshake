@@ -8,9 +8,11 @@
     </style>
 
 
-    <style name="DefaultButton">
+    <style name="DefaultButton" parent="Widget.AppCompat.Button">
         <item name="android:textColor">@color/black</item>
-        <item name="android:background">@android:drawable/btn_default</item><!-- only way to change this is to change the src image -->
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/abc_text_size_large_material</item>
+        <item name="android:background">@color/silver</item><!-- only way to change this is to change the src image -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
