@@ -34,6 +34,7 @@ public class DrawGraphActivity extends FragmentActivity implements SensorEventLi
     private ArrayList<LineGraphSeries<DataPoint>> lineGraphSeriesArrayList;
     private int counter;
     private int dataPoint = 0;
+    private int maxPoints = 200;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,10 @@ public class DrawGraphActivity extends FragmentActivity implements SensorEventLi
 
         if (savedInstanceState == null) {
             for (float ignored : examplePoint.getValues()){
-                LineGraphSeries<DataPoint> lineGraphSeries = new LineGraphSeries<DataPoint>();
+                LineGraphSeries<DataPoint> lineGraphSeries = new LineGraphSeries<>();
+                for (int i = 0; i < maxPoints; i++){
+                    lineGraphSeries.appendData(new DataPoint(0f,0f) ,true, maxPoints);
+                }
                 lineGraphSeriesArrayList.add(lineGraphSeries);
                 createGraph(lineGraphSeries);
             }
@@ -65,11 +69,11 @@ public class DrawGraphActivity extends FragmentActivity implements SensorEventLi
         sensorManager.unregisterListener(this);
         if (gravityEnabler.isChecked()){
             mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         }
         else {
             mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         }
     }
 
@@ -124,7 +128,6 @@ public class DrawGraphActivity extends FragmentActivity implements SensorEventLi
         graph.setTitleColor(getResources().getColor(R.color.graph_title));
         graph.getViewport().setBackgroundColor(getResources().getColor(R.color.graph_background));
         series.setColor(getResources().getColor(R.color.graph));
-
         linear.addView(graph);
     }
 
@@ -156,7 +159,7 @@ public class DrawGraphActivity extends FragmentActivity implements SensorEventLi
             data.AddData(new MeasurePoint(event));
             for (int axe = 0; axe < lineGraphSeriesArrayList.size(); axe++) {
                 DataPoint dataPoint = new DataPoint(this.dataPoint, event.values[axe]);
-                lineGraphSeriesArrayList.get(axe).appendData(dataPoint, true, 200);
+                lineGraphSeriesArrayList.get(axe).appendData(dataPoint, true, maxPoints);
                 this.dataPoint++;
             }
 

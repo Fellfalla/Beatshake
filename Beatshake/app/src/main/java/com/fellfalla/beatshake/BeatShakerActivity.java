@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,16 +17,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
 import java.util.TimerTask;
 
 
@@ -42,7 +39,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     Sensor mAccelerometer;
     Metronome metronome;
 
-    TextView sensorValues;
+//    TextView sensorValues;
     TextView seekBarValue;
     SeekBar accuracySeekBar;
     CheckBox gravityEnabler;
@@ -60,7 +57,7 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         data = new Data(getResources().getInteger(R.integer.max_data_size));
         metronome = new Metronome(Constants.ACCURACY_TOLERANCE_INITIAL, data);
         seekBarValue = (TextView) findViewById(R.id.seek_bar_value);
-        sensorValues = (TextView) findViewById(R.id.sensor_values);
+//        sensorValues = (TextView) findViewById(R.id.sensor_values);
         accuracySeekBar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
         gravityEnabler = (CheckBox) findViewById(R.id.gravity_toggle);
         sensitivityFaktor = 0.7f;
@@ -116,14 +113,24 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     }
 
     public void GenerateComponentUI(String component){
-        loadPlayButton(component);
-        loadSensitivitySeekBar(component);
-        loadAxesCheckboxes(component);
+        LinearLayout componentLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+        componentLayout.setLayoutParams(params);
+        componentLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        addPlayButton(component, componentLayout);
+        addSensitivitySeekBar(component, componentLayout);
+        addAxesCheckboxes(component, componentLayout);
+
+        // das Erstellt Layout der Komponenten-Liste hinzufügen
+        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
+        linear.addView(componentLayout);
     }
 
 
-    private void loadPlayButton(String component){
-        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
+    private void addPlayButton(String component, LinearLayout layout){
+//        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
 
@@ -132,11 +139,11 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         btn.setText(component);
         btn.setLayoutParams(param);
         btn.setOnClickListener(handleOnClick());
-        linear.addView(btn);
+        layout.addView(btn);
     }
 
-    private void loadSensitivitySeekBar(String component){
-        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
+    private void addSensitivitySeekBar(String component, LinearLayout layout){
+//        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
 
@@ -146,29 +153,30 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
         seekBar.setProgress(Constants.COMPONENT_SENSITIVITY_INITIAL);
         seekBar.setTag(component);
         seekBar.setOnSeekBarChangeListener(this);
-        linear.addView(seekBar);
+        layout.addView(seekBar);
     }
 
-    private void loadAxesCheckboxes(String component){
-        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
+    private void addAxesCheckboxes(String component, LinearLayout layout){
+//        LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
 
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        linearLayout.setLayoutParams(param);
 
         for (Axes axe : Axes.values()) {
             CheckBox checkBox = new CheckBox(this);
             checkBox.setText(axe.toString());
             checkBox.setActivated(true);
-            checkBox.setChecked(true);
+            checkBox.setChecked(false);
             checkBox.setTag(R.string.view_component, component);
             checkBox.setTag(R.string.view_axe, axe);
             this.drumKit1.components.get(component).activatedAxes.add(checkBox);
             linearLayout.addView(checkBox);
         }
 
-        linear.addView(linearLayout);
+        layout.addView(linearLayout);
     }
 
     @Override
@@ -259,15 +267,15 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
                 //adjustMetronome();
                 for (String component : drumKit1.GetComponents()) {
                     if (drumKit1.GetSensitivity(component) * sensitivityFaktor < newPeak.getStrength()) {
-                        if (drumKit1.components.get(component).isAxeActivated(newPeak.getAxe())) {
+                        if (drumKit1.components.get(component).isAxeActivated(newPeak.getAxes())) {
                             drumKit1.components.get(component).Play();
-                            Log.i(getString(R.string.app_name), "Played " + component + "with Peakvalues: " + newPeak);
+                            Log.i(getString(R.string.app_name), "Played " + component + " with Peakvalues: " + newPeak);
                         }
                     }
                 }
             }
         }
-        ShowSensorValues(event);
+//        ShowSensorValues(event);
 
     }
 
@@ -291,8 +299,8 @@ public class BeatShakerActivity extends Activity implements SensorEventListener,
     }
 
     public void ShowSensorValues(SensorEvent event){
-        String text = "\nX:" + Float.toString(event.values[0]) + "\t\tY:" + Float.toString(event.values[1]) + "\t\tZ:" + Float.toString(event.values[2]);
-        sensorValues.setText(text);
+//        String text = "\nX:" + Float.toString(event.values[0]) + "\t\tY:" + Float.toString(event.values[1]) + "\t\tZ:" + Float.toString(event.values[2]);
+//        sensorValues.setText(text);
     }
 
     @Override
