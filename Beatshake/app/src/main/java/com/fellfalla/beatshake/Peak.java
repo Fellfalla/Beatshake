@@ -1,6 +1,9 @@
 package com.fellfalla.beatshake;
 import android.hardware.SensorEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Die Peak-Klasse repräsentiert einen besonders wichtigen Messpunkt, welcher sich von den
  * anderen Punkten hervorhebt
@@ -15,7 +18,7 @@ public class Peak extends MeasurePoint implements IMeasurePoint {
      */
     private Tendency tendency;
 
-    private Axes axe;
+    private List<Axes> axes = new ArrayList<>(Axes.values().length);
 
     public Peak(){
         super();
@@ -67,11 +70,11 @@ public class Peak extends MeasurePoint implements IMeasurePoint {
         return string;
     }
 
-    public Axes getAxe() {
-        return axe;
+    public List<Axes> getAxes() {
+        return axes;
     }
 
-    public void setAxe(Axes axe) {
-        this.axe = axe;
+    public void addAxe(Axes axe) {
+        this.axes.add(axe);
     }
 }

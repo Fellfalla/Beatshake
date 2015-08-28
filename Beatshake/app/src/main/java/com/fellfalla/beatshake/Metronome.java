@@ -82,12 +82,12 @@ public class Metronome {
      * Schaut ob der Messpunkt, der sich hinter dem Übergebenen Datenzeitpunkt verbirgt ein Peak ist.
      * Wenn er einer ist, wird dieser als Peak zurückgegeben, falls er keiner ist, wird der letzte
      * Peak zurückgegeben
+     * todo: Upwind-Verfahren anwenden
      * @param measurePoint Der Messpunkt der überprüft werden soll, ob er ein Peak ist und falls ja, als Peak gecastet zurückgegeben werden soll
      */
     public Peak LookIfPeak(MeasurePoint measurePoint){
         MeasurePoint previousMeasurePoint = measurePoint.getPreviousMeasurePoint(); //data.measurePoints.get(data.measurePoints.lastIndexOf(measurePoint) - 1);
-        Peak lastPeak = data.getLastPeak();
-        Peak peak = lastPeak;
+        Peak newPeak = null;
 
         // todo: Alle achsen sollen die gleiche wahrshceinlichkeit haben, dies ist momentan nicht gewährleistet, da abbruch nach X achse, falls dort ein ausschlag ist
         for (int j =0; j < measurePoint.getValues().length; j++){
@@ -97,23 +97,31 @@ public class Metronome {
             // Überprüft ob der letzte Peaktyp gegensetzlich war
             if (/*lastPeak.getTendency() != Tendency.rising &&*/ measurePoint.getValues()[j] > previousMeasurePoint.getValues()[j] + getAccelerationAccuracy()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
-                peak = new Peak(measurePoint);
-                peak.setTendency(Tendency.rising);
-                peak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
-                peak.setAxe(Axes.values()[j]); // setzt den enum der entsprechenden Achse in die achse ein
+                if ( newPeak == null){  // wird erst hier initialisiert, damit die if-abfrage am ende entscheiden kann, ob es einen neuen Peak gibt
+                    newPeak = new Peak(measurePoint);
+                }
+                newPeak.setTendency(Tendency.rising);
+                newPeak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
+                newPeak.addAxe(Axes.values()[j]); // setzt den enum der entsprechenden Achse in die achse ein
                 // todo: die Werte überspringen die in einem Vorherigen durchgang schon negiert wurden
-                break;
             }
             else if (/*lastPeak.getTendency() != Tendency.falling &&*/ measurePoint.getValues()[j] < previousMeasurePoint.getValues()[j] - getAccelerationAccuracy()){ //accelerationSensor.getResolution()){
                 //Der Sensorwert steigt gerade, allso muss er irgendwo gefallen sein
-                peak = new Peak(measurePoint);
-                peak.setTendency(Tendency.falling);
-                peak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
-                peak.setAxe(Axes.values()[j]);
-                break;
+                if ( newPeak == null){
+                    newPeak = new Peak(measurePoint);
+                }
+                newPeak.setTendency(Tendency.falling);
+                newPeak.setStrength(Math.abs(measurePoint.getValues()[j] - previousMeasurePoint.getValues()[j]));
+                newPeak.addAxe(Axes.values()[j]);
+
             }
         }
-        return peak;
+        if (newPeak == null) {
+            return data.getLastPeak();
+        }
+        else {
+            return newPeak;
+        }
     }
 
     public long getMetrum() {

@@ -23,16 +23,6 @@
         android:onClick="toggleGravity"
         android:text="Enable Gravity"/>
 
-
-    <TextView
-        android:id="@+id/sensor_values"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:hint="@string/sensor_values" >
-    </TextView>
-
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -47,9 +37,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/linear">
             <!-- Content here -->
+
+            </LinearLayout>
             <TextView
                 android:id="@+id/seek_bar_value"
                 android:layout_width="fill_parent"
@@ -63,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
+
     </ScrollView>
 
 </LinearLayout>

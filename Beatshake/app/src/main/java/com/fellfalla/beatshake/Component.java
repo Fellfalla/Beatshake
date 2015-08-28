@@ -9,6 +9,7 @@ import android.widget.CheckBox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -96,11 +97,15 @@ public class Component {
         }
     }
 
-    public boolean isAxeActivated(Axes axe) {
+    public boolean isAxeActivated(List<Axes> axes) { // Der Name der Methode passt nicht wirklich
         for (CheckBox activatedAxe : activatedAxes){
-            if (activatedAxe.getTag(R.string.view_axe)==axe)
-            {
-                return activatedAxe.isChecked();
+            for (Axes axe : axes){
+                if (axe == activatedAxe.getTag(R.string.view_axe))
+                {
+                    if (activatedAxe.isChecked()){  // schaue ob die Axe im Kontropllkästchen aktiviert ist
+                        return true;
+                    }
+                }
             }
         }
         return false;
