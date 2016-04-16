@@ -1,2 +1,2 @@
-# BeatShake
-MusicBox that generates beats depending on the heaviness of the forces influencing the Smartphone
+# Beatshake
+No drums? Need for metronome? Just let's take your phone!
