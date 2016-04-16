@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using Beatshake.Views;
 using Xamarin.Forms;
+using Xamarin.Forms.Platform;
 
 namespace Beatshake
 {
@@ -12,24 +13,15 @@ namespace Beatshake
         public App()
         {
             // The root page of your application
-            MainPage = new ContentPage
-            {
-                Content = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.Center,
-                    Children = {
-                        new Label {
-                            XAlign = TextAlignment.Center,
-                            Text = "Welcome to Xamarin Forms!",
-                        }
-                    }
-                }
-            };
+            MainPage = new MainView();
+            
         }
 
         protected override void OnStart()
         {
             // Handle when your app starts
+            
+            
         }
 
         protected override void OnSleep()
@@ -40,6 +32,7 @@ namespace Beatshake
         protected override void OnResume()
         {
             // Handle when your app resumes
+
         }
     }
 }

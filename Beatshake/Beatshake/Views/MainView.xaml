@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:beatshake="clr-namespace:Beatshake;assembly=Beatshake"
+             xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
+             x:Class="Beatshake.Views.MainView">
+  
+  <ContentPage.BindingContext>
+    <viewModels:MainViewModel></viewModels:MainViewModel>
+  </ContentPage.BindingContext>
+  
+  <StackLayout Orientation="Vertical"
+               VerticalOptions="StartAndExpand">
+    
+    <Label Text="{Binding Title}" FontSize="30" VerticalOptions="Center" HorizontalOptions="Center" VerticalTextAlignment="Center"/>
+    <Button Command="{Binding StartDrumKitCommand}" Text="Start that shit"></Button>
+  </StackLayout>
+
+</ContentPage>

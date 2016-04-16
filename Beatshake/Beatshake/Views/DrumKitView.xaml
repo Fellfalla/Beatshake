@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
+             x:Class="Beatshake.Views.DrumKitView"
+             >
+  <ContentPage.BindingContext>
+    <viewModels:DrumKitViewModel></viewModels:DrumKitViewModel>
+  </ContentPage.BindingContext>
+
+  <Grid >
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"></RowDefinition>
+      <RowDefinition></RowDefinition>
+    </Grid.RowDefinitions>
+    
+    <Label Grid.Row="0" Text="{Binding Title}"  HorizontalOptions="CenterAndExpand" />
+    
+      <ListView Grid.Row="1" ItemsSource="{Binding Components}">
+        <ListView.ItemTemplate>
+          <DataTemplate>
+            <ViewCell>
+              <StackLayout>
+                <Label>This is a testitem</Label>
+                <Button Command="{Binding PlaySoundCommand}" >Push me for sound!</Button>
+              </StackLayout>
+            </ViewCell>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+      </ListView>
+  </Grid>
+</ContentPage>

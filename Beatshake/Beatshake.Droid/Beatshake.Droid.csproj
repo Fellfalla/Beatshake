@@ -96,6 +96,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioPlayerImplementation.cs" />
+    <Compile Include="DependencyServices.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
