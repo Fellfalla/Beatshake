@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -6,10 +7,23 @@ using Prism.Services;
 
 namespace Beatshake.Core
 {
-    public class InstrumentalComponent : BindableBase
+    public class InstrumentalComponent : BindableBase, IInstrumentalComponentIdentification
     {
-        public InstrumentalComponent()
+        public IInstrumentalIdentification ContainingInstrument { get; set; }
+
+        public string Name
         {
+            get { return _name; }
+            set { SetProperty(ref _name, value); }
+        }
+
+        [DefaultValue(1)]
+        public int Number { get; set; }
+
+        public InstrumentalComponent(IInstrumentalIdentification containingInstrument)
+        {
+            Number = 1;
+            ContainingInstrument = containingInstrument;
             PlaySoundCommand = DelegateCommand.FromAsyncHandler(PlaySound);
         }
 
@@ -23,7 +37,7 @@ namespace Beatshake.Core
             try
             {
                 var dependencyService = new DependencyService();
-                await dependencyService.Get<IAudioPlayer>().Play("test");
+                await dependencyService.Get<IInstrumentPlayer>().Play(this);
             }
             catch (Exception e)
             {
@@ -33,6 +47,7 @@ namespace Beatshake.Core
         }
 
         private DelegateCommand _playSoundCommand;
+        private string _name;
 
         public DelegateCommand PlaySoundCommand
         {

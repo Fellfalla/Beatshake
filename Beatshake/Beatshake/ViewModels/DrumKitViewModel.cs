@@ -8,21 +8,24 @@ using Prism.Mvvm;
 
 namespace Beatshake.ViewModels
 {
-    public class DrumKitViewModel : BindableBase
+    public class DrumKitViewModel : BindableBase, IInstrumentalIdentification
     {
         private ObservableCollection<InstrumentalComponent> _components;
         private string _title;
+
 
         public DrumKitViewModel()
         {
             Components = new ObservableCollection<InstrumentalComponent>();
             Title = "DrumKit 1";
 
-            for (int i = 0; i < 5; i++)
+            foreach (var allName in DrumComponentNames.GetAllNames())
             {
-                Components.Add(new InstrumentalComponent());
+                Components.Add(new InstrumentalComponent(this) {Name = allName});
             }
         }
+
+        public string Kit { get; set; }
 
         public ObservableCollection<InstrumentalComponent> Components
         {

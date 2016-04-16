@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Beatshake.Core
 {
-    public interface IAudioPlayer
+    public interface IInstrumentPlayer
     {
-        Task Play(string audioFile);
+        Task Play(IInstrumentalComponentIdentification component);
     }
 }

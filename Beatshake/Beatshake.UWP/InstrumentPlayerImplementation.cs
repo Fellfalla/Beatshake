@@ -14,17 +14,19 @@ using Beatshake.UWP;
 namespace Beatshake.UWP
 {
 
-    class AudioPlayerImplementation : IAudioPlayer
+    class InstrumentPlayerImplementation : IInstrumentPlayer
     {
 
-        public async Task Play(string audioFile)
+
+        public async Task Play(IInstrumentalComponentIdentification component)
         {
             var sample = new MediaElement();
             //sample.Source = new Uri(audioFile);
 
             StorageFolder Folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            Folder = await Folder.GetFolderAsync("MyFolder");
-            StorageFile sf = await Folder.GetFileAsync("MyFile.mp3");
+            Folder = await Folder.GetFolderAsync("Assets");
+            Folder = await Folder.GetFolderAsync(component.ContainingInstrument.Kit);
+            StorageFile sf = await Folder.GetFileAsync( component.Name + component.Number + ".wav");
 
             sample.SetSource(await sf.OpenAsync(FileAccessMode.Read), sf.ContentType);
             sample.Play();

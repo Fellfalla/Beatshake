@@ -5,7 +5,7 @@
              x:Class="Beatshake.Views.DrumKitView"
              >
   <ContentPage.BindingContext>
-    <viewModels:DrumKitViewModel></viewModels:DrumKitViewModel>
+    <viewModels:DrumKitViewModel Kit="Kit1"></viewModels:DrumKitViewModel>
   </ContentPage.BindingContext>
 
   <Grid >
@@ -20,9 +20,9 @@
         <ListView.ItemTemplate>
           <DataTemplate>
             <ViewCell>
-              <StackLayout>
-                <Label>This is a testitem</Label>
-                <Button Command="{Binding PlaySoundCommand}" >Push me for sound!</Button>
+              <StackLayout Orientation="Horizontal">
+                <Label HorizontalOptions="Start" Text="{Binding Name}"></Label>
+                <Button HorizontalOptions="EndAndExpand" Command="{Binding PlaySoundCommand}" Text="Push me!"></Button>
               </StackLayout>
             </ViewCell>
           </DataTemplate>

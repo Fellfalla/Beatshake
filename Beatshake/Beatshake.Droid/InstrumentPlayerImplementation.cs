@@ -17,14 +17,14 @@ using Java.IO;
 namespace Beatshake.UWP
 {
 
-    public class AudioPlayerImplementation : IAudioPlayer
+    public class InstrumentPlayerImplementation : IInstrumentPlayer
     {
         SoundPool soundPool;
         List<int> soundIDs;
         float actVolume, maxVolume, volume;
         AudioManager audioManager;
 
-        public AudioPlayerImplementation()
+        public InstrumentPlayerImplementation()
         {
             soundPool = new SoundPool(2, Stream.Music, 0);
             audioManager = AudioManager.FromContext(Application.Context);
@@ -52,6 +52,16 @@ namespace Beatshake.UWP
             //    }
             //    StreamID = newStreamID;
             //}
+        }
+
+        public Task Play(InstrumentalComponent component)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Play(IInstrumentalComponentIdentification component)
+        {
+            throw new NotImplementedException();
         }
     }
 }

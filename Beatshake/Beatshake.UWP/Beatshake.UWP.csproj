@@ -96,7 +96,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AudioPlayerImplementation.cs" />
+    <Compile Include="InstrumentPlayerImplementation.cs" />
     <Compile Include="DependencyServices.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -111,6 +111,48 @@
     <None Include="Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\Samples\Kit1\cowbell1.wav">
+      <Link>Assets\Kit1\cowbell1.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\cymbal1.wav">
+      <Link>Assets\Kit1\cymbal1.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\cymbal2.wav">
+      <Link>Assets\Kit1\cymbal2.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\cymbal3.wav">
+      <Link>Assets\Kit1\cymbal3.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\cymbal4.wav">
+      <Link>Assets\Kit1\cymbal4.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\cymbal5.wav">
+      <Link>Assets\Kit1\cymbal5.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\hihat1.wav">
+      <Link>Assets\Kit1\hihat1.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\kick1.wav">
+      <Link>Assets\Kit1\kick1.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\ride1.wav">
+      <Link>Assets\Kit1\ride1.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\snare1.wav">
+      <Link>Assets\Kit1\snare1.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\tom1.wav">
+      <Link>Assets\Kit1\tom1.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\tom2.wav">
+      <Link>Assets\Kit1\tom2.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\tom3.wav">
+      <Link>Assets\Kit1\tom3.wav</Link>
+    </Content>
+    <Content Include="..\..\Samples\Kit1\tom4.wav">
+      <Link>Assets\Kit1\tom4.wav</Link>
+    </Content>
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Properties\Default.rd.xml" />
@@ -130,6 +172,7 @@
       <Name>Beatshake</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
