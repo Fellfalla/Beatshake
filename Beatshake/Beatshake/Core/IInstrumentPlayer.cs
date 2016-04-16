@@ -8,6 +8,8 @@ namespace Beatshake.Core
 {
     public interface IInstrumentPlayer
     {
-        Task Play(IInstrumentalComponentIdentification component);
+        Task Play(object audioData);
+
+        Task<object> PreLoadAudio(IInstrumentalComponentIdentification component);
     }
 }

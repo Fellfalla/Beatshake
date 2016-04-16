@@ -12,6 +12,7 @@ namespace Beatshake.ViewModels
     {
         private ObservableCollection<InstrumentalComponent> _components;
         private string _title;
+        private string _kit;
 
 
         public DrumKitViewModel()
@@ -21,11 +22,22 @@ namespace Beatshake.ViewModels
 
             foreach (var allName in DrumComponentNames.GetAllNames())
             {
-                Components.Add(new InstrumentalComponent(this) {Name = allName});
+                Components.Add(new InstrumentalComponent(this, allName));
             }
         }
 
-        public string Kit { get; set; }
+        public string Kit
+        {
+            get { return _kit; }
+            set
+            {
+                SetProperty(ref _kit, value);
+                foreach (var instrumentalComponent in Components)
+                {
+                    instrumentalComponent.PreLoadAudio(); // the whole Kit has changed
+                }
+            }
+        }
 
         public ObservableCollection<InstrumentalComponent> Components
         {

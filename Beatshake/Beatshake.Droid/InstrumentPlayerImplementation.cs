@@ -54,12 +54,22 @@ namespace Beatshake.UWP
             //}
         }
 
-        public Task Play(InstrumentalComponent component)
+        public void Play()
         {
             throw new NotImplementedException();
         }
 
-        public Task Play(IInstrumentalComponentIdentification component)
+        public Task PreLoad(IInstrumentalComponentIdentification component)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Play(object audioData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<object> PreLoadAudio(IInstrumentalComponentIdentification component)
         {
             throw new NotImplementedException();
         }
