@@ -46,9 +46,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Core\BeatshakeSettings.cs" />
+    <Compile Include="Core\DataContainer.cs" />
     <Compile Include="Core\IInstrumentalComponentIdentification.cs" />
     <Compile Include="Core\IInstrumentPlayer.cs" />
     <Compile Include="Core\IInstrumentalIdentification.cs" />
+    <Compile Include="Core\IMotionDataProvider.cs" />
     <Compile Include="Core\IUserNotifier.cs" />
     <Compile Include="DrumComponentNames.cs" />
     <Compile Include="ViewModels\DrumKitViewModel.cs" />
@@ -110,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\mainLogo.png" />
+    <Content Include="StarMath.XML" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Audio\" />

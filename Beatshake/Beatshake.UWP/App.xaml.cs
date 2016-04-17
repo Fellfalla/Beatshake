@@ -30,7 +30,12 @@ namespace Beatshake.UWP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-        }
+
+
+            Xamarin.Forms.DependencyService.Register<InstrumentPlayerImplementation>();
+            Xamarin.Forms.DependencyService.Register<UserNotifierImplementation>();
+            Xamarin.Forms.DependencyService.Register<MotionDataProviderImplementation>();
+    }
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points

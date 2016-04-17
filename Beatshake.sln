@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beatshake.Windows", "Beatsh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beatshake", "Beatshake\Beatshake\Beatshake.csproj", "{99AEC96C-09F0-4298-9549-AC6648B2903A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioHelper.Shared", "..\Downloads\audiohelper-master\AudioHelper\AudioHelper.Shared\AudioHelper.Shared.vcxitems", "{5EFBF973-1194-4298-99BD-507AEEBDF5F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU

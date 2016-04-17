@@ -97,10 +97,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="InstrumentPlayerImplementation.cs" />
-    <Compile Include="DependencyServices.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MotionDataProviderImplementation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserNotifierImplementation.cs" />
   </ItemGroup>

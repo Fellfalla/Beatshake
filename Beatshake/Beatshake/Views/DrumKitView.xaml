@@ -16,13 +16,13 @@
     
     <Label Grid.Row="0" Text="{Binding Title}"  HorizontalOptions="CenterAndExpand" />
     
-      <ListView Grid.Row="1" ItemsSource="{Binding Components}">
+      <ListView Grid.Row="1" ItemsSource="{Binding Components}" VerticalOptions="FillAndExpand">
         <ListView.ItemTemplate>
           <DataTemplate>
             <ViewCell>
               <StackLayout Orientation="Horizontal">
                 <Label HorizontalOptions="Start" Text="{Binding Name}"></Label>
-                <Button HorizontalOptions="EndAndExpand" Command="{Binding PlaySoundCommand}" Text="Push me!"></Button>
+                <Button HeightRequest="30" HorizontalOptions="EndAndExpand" Command="{Binding PlaySoundCommand}" Text="Push me!"></Button>
               </StackLayout>
             </ViewCell>
           </DataTemplate>

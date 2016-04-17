@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Sensors;
 using Windows.Media;
 using Windows.Media.Core;
 using Windows.Storage;
@@ -22,7 +23,11 @@ namespace Beatshake.UWP
         {
             var soundElement = new MediaElement();
             var transmitter = audioData as AudioTransmitter;
-            if (transmitter != null) soundElement.SetSource(transmitter.Stream, transmitter.StorageFile.ContentType);
+            if (transmitter != null)
+            {
+                soundElement.SetSource(transmitter.Stream, transmitter.StorageFile.ContentType);
+                soundElement.Play();
+            }
             //var soundElement = (MediaElement) audioData;
             //if (soundElement != null) await soundElement.Dispatcher.RunAsync(CoreDispatcherPriority.High, soundElement.Play);
             else

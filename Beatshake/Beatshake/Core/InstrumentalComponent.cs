@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Mvvm;
-using Prism.Services;
+using Xamarin.Forms;
+using DependencyService = Prism.Services.DependencyService;
 
 namespace Beatshake.Core
 {
@@ -13,6 +14,8 @@ namespace Beatshake.Core
         private readonly IInstrumentPlayer _player;
 
         private object _audionInstance;
+
+        private Cooldown cooldown = new Cooldown();
 
         public IInstrumentalIdentification ContainingInstrument
         {
@@ -37,8 +40,7 @@ namespace Beatshake.Core
 
         public InstrumentalComponent(IInstrumentalIdentification containingInstrument, string name)
         {
-            var dependencyService = new DependencyService();
-            _player = dependencyService.Get<IInstrumentPlayer>();
+            _player = Xamarin.Forms.DependencyService.Get<IInstrumentPlayer>(DependencyFetchTarget.NewInstance);
 
             Number = 1;
             Name = name;
@@ -62,9 +64,19 @@ namespace Beatshake.Core
         /// <returns></returns>
         public async Task PlaySound()
         {
+            if (cooldown.IsCoolingDown)
+            {
+                //return;
+            }
+
             try
             {
-                await _player.Play(_audionInstance);
+                using (cooldown.Activate())
+                {
+                    await _player.Play(_audionInstance);
+                    await Task.Delay(BeatshakeSettings.InstrumentalCooldown);
+                }
+
             }
             catch (Exception e)
             {
@@ -81,6 +93,22 @@ namespace Beatshake.Core
         {
             get { return _playSoundCommand; }
             set { SetProperty(ref _playSoundCommand, value); }
+        }
+    }
+
+    public class Cooldown : IDisposable
+    {
+        public bool IsCoolingDown;
+
+        public Cooldown Activate()
+        {
+            IsCoolingDown = true;
+            return this;
+        }
+
+        public void Dispose()
+        {
+            IsCoolingDown = false;
         }
     }
 }
