@@ -56,7 +56,7 @@ namespace Beatshake.Core
 
         public async void PreLoadAudio()
         {
-            _audionInstance = await _player.PreLoadAudio(this);
+                _audionInstance = await _player.PreLoadAudio(this).ConfigureAwait(false);
         }
 
         /// <summary>

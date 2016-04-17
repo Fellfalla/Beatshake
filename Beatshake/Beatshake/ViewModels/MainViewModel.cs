@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Beatshake.Core;
 using Beatshake.Views;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -14,13 +16,19 @@ namespace Beatshake.ViewModels
     {
         public MainViewModel()
         {
-            //StartDrumKitCommand = DelegateCommand.FromAsyncHandler(StartDrumKit);
+            StartDrumKitCommand = DelegateCommand.FromAsyncHandler(StartDrumKit);
         }
 
-        //private async Task StartDrumKit()
-        //{
-        //    await ((NavigationPage)Application.Current.MainPage).PushAsync(new DrumKitView(), true);
-        //}
+        private async Task StartDrumKit()
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                MessagingCenter.Send<object>(this,
+                    BeatshakeGlobals.NavigateToDrumKit);
+            });
+
+            //await ((NavigationPage)Application.Current.MainPage).PushAsync(new DrumKitView(), true);
+        }
 
         private DelegateCommand _startDrumKitCommand;
 

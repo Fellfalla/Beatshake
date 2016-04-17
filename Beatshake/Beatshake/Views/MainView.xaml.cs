@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Beatshake.Core;
 using Xamarin.Forms;
 
 namespace Beatshake.Views
@@ -13,6 +13,8 @@ namespace Beatshake.Views
         public MainView()
         {
             InitializeComponent();
+
+
         }
 
         private void Button_OnClicked(object sender, EventArgs e)

@@ -40,6 +40,7 @@ namespace Beatshake.UWP
 
         public async Task<object> PreLoadAudio(IInstrumentalComponentIdentification component)
         {
+            
             if (component.ContainingInstrument == null ||
                 string.IsNullOrWhiteSpace(component.ContainingInstrument.Kit) ||
                 string.IsNullOrWhiteSpace(component.Name))
@@ -58,6 +59,7 @@ namespace Beatshake.UWP
             //soundElement.SetSource( await sf.OpenAsync(FileAccessMode.Read), sf.ContentType);
             
             return new AudioTransmitter(stream, sf);
+
         }
 
     }
