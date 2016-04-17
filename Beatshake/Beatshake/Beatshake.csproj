@@ -49,14 +49,16 @@
     <Compile Include="Core\BeatshakeSettings.cs" />
     <Compile Include="Core\DataContainer.cs" />
     <Compile Include="Core\IInstrumentalComponentIdentification.cs" />
-    <Compile Include="Core\IInstrumentPlayer.cs" />
+    <Compile Include="DependencyServices\IInstrumentPlayer.cs" />
     <Compile Include="Core\IInstrumentalIdentification.cs" />
-    <Compile Include="Core\IMotionDataProvider.cs" />
-    <Compile Include="Core\IUserNotifier.cs" />
+    <Compile Include="DependencyServices\IMotionDataProvider.cs" />
+    <Compile Include="DependencyServices\IUserSoudNotifier.cs" />
+    <Compile Include="DependencyServices\IUserTextNotifier.cs" />
     <Compile Include="DrumComponentNames.cs" />
     <Compile Include="ViewModels\DrumKitViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\InstrumentalComponent.cs" />
+    <Compile Include="Core\InstrumentalKit.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\DrumKitView.xaml.cs">
       <DependentUpon>DrumKitView.xaml</DependentUpon>

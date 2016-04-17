@@ -33,8 +33,9 @@ namespace Beatshake.UWP
 
 
             Xamarin.Forms.DependencyService.Register<InstrumentPlayerImplementation>();
-            Xamarin.Forms.DependencyService.Register<UserNotifierImplementation>();
+            Xamarin.Forms.DependencyService.Register<UserTextNotifierImplementation>();
             Xamarin.Forms.DependencyService.Register<MotionDataProviderImplementation>();
+            Xamarin.Forms.DependencyService.Register<UserSoudNotifierImplementation>();
     }
 
         /// <summary>

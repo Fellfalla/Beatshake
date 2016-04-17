@@ -18,10 +18,16 @@ namespace Beatshake.Views
 
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+        }
 
         protected override bool OnBackButtonPressed()
         {
-            return base.OnBackButtonPressed();  
+            Application.Current.MainPage = new MainView();
+            return true;
+            //return base.OnBackButtonPressed();
         }
     }
 }

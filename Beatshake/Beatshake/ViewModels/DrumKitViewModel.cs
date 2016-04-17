@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Beatshake.Core;
+using Beatshake.DependencyServices;
 using Prism.Mvvm;
 using Prism.Services;
 using Cadenza.Collections;
@@ -14,7 +15,7 @@ using Xamarin.Forms;
 
 namespace Beatshake.ViewModels
 {
-    public class DrumKitViewModel : BindableBase, IInstrumentalIdentification
+    public class DrumKitViewModel : InstrumentalKit
     {
         private ObservableCollection<InstrumentalComponent> _components;
         private string _title;
@@ -31,10 +32,9 @@ namespace Beatshake.ViewModels
                 Components.Add(new InstrumentalComponent(this, allName));
             }
 
-            _dataProvider.RefreshRate = 0;
+            _dataProvider.RefreshRate = BeatshakeSettings.SensorRefreshInterval;
             _dataProvider.MotionDataRefreshed += ProcessMotionData;
         }
-
 
 
         private async void ProcessMotionData(object sender, EventArgs eventArgs)
@@ -53,7 +53,7 @@ namespace Beatshake.ViewModels
             }
         }
 
-        public string Kit
+        public override string Kit
         {
             get { return _kit; }
             set
@@ -64,6 +64,19 @@ namespace Beatshake.ViewModels
                     instrumentalComponent.PreLoadAudio(); // the whole Kit has changed
                 }
             }
+        }
+
+        protected override void Teach(InstrumentalComponent component)
+        {
+            
+
+            // unregister current processing
+            _dataProvider.MotionDataRefreshed -= ProcessMotionData;
+
+            Xamarin.Forms.DependencyService.Get<IUserSoudNotifier>().Notify();
+
+            // reenable motion processing 
+            _dataProvider.MotionDataRefreshed += ProcessMotionData;
         }
 
         public ObservableCollection<InstrumentalComponent> Components

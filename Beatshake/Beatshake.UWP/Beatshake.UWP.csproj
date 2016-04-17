@@ -96,13 +96,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="InstrumentPlayerImplementation.cs" />
+    <Compile Include="DependencyServices\InstrumentPlayerImplementation.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MotionDataProviderImplementation.cs" />
+    <Compile Include="DependencyServices\MotionDataProviderImplementation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserNotifierImplementation.cs" />
+    <Compile Include="DependencyServices\UserSoudNotifierImplementation.cs" />
+    <Compile Include="DependencyServices\UserTextNotifierImplementation.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

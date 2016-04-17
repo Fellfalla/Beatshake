@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Prism.Commands;
@@ -64,24 +66,21 @@ namespace Beatshake.Core
         /// <returns></returns>
         public async Task PlaySound()
         {
+            cooldown.TryAddAsyncRequest(async () => await _player.Play(_audionInstance));
+
             if (cooldown.IsCoolingDown)
             {
-                //return;
+                return;
             }
 
             try
             {
-                using (cooldown.Activate())
-                {
-                    await _player.Play(_audionInstance);
-                    await Task.Delay(BeatshakeSettings.InstrumentalCooldown);
-                }
-
+                await cooldown.Activate();
             }
             catch (Exception e)
             {
                 var dependencyService = new DependencyService();
-                dependencyService.Get<IUserNotifier>().Notify(e);
+                dependencyService.Get<IUserTextNotifier>().Notify(e);
             }
         }
 
@@ -96,19 +95,64 @@ namespace Beatshake.Core
         }
     }
 
-    public class Cooldown : IDisposable
+    public class Cooldown
     {
+        private bool _isCoolingDown;
+        private Func<Task> _request;
+        private Stopwatch _stopwatch = new Stopwatch();
+
+        private int minElapsedSecondsForRequest = BeatshakeSettings.InstrumentalCooldown -
+                                                  BeatshakeSettings.MaxInstrumentalRequestDelay;
+
         public bool IsCoolingDown;
 
-        public Cooldown Activate()
+        public async Task Activate()
         {
-            IsCoolingDown = true;
-            return this;
-        }
+            if (IsCoolingDown) // a new activation ist not supported, while old one is running
+            {
+                throw new InvalidOperationException("Cooldown is in progress");
+            }
 
-        public void Dispose()
-        {
+            while (_request != null)
+            {
+                IsCoolingDown = true;
+                await HandleRequest();
+            }
+
             IsCoolingDown = false;
         }
+
+        private async Task HandleRequest()
+        {
+            // Start request as soon as possible
+            var delay = Task.Delay(BeatshakeSettings.InstrumentalCooldown);
+            var task = _request.Invoke();
+
+            // Set timer and cooldown Data
+            _stopwatch.Start();
+
+            // Wait for task finishing
+            //Task.WaitAll(Task.Delay(BeatshakeSettings.InstrumentalCooldown), task);
+            _request = null; // delete handled request
+            await delay;
+            _stopwatch.Stop();
+            _stopwatch.Reset();
+        }
+
+        /// <summary>
+        /// Returns true, if the request has been added
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public bool TryAddAsyncRequest(Func<Task> func)
+        {
+            if (_request == null && (!_stopwatch.IsRunning || _stopwatch.ElapsedMilliseconds > minElapsedSecondsForRequest))
+            {
+                _request = func;
+                return true;
+            }
+            return false;
+        }
+
     }
 }
