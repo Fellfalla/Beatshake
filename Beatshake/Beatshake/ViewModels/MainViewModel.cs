@@ -14,13 +14,13 @@ namespace Beatshake.ViewModels
     {
         public MainViewModel()
         {
-            StartDrumKitCommand = new DelegateCommand(StartDrumKit);
+            //StartDrumKitCommand = DelegateCommand.FromAsyncHandler(StartDrumKit);
         }
 
-        private void StartDrumKit()
-        {
-            Application.Current.MainPage = new DrumKitView();
-        }
+        //private async Task StartDrumKit()
+        //{
+        //    await ((NavigationPage)Application.Current.MainPage).PushAsync(new DrumKitView(), true);
+        //}
 
         private DelegateCommand _startDrumKitCommand;
 

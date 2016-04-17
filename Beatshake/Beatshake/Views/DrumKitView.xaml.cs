@@ -25,7 +25,8 @@ namespace Beatshake.Views
 
         protected override bool OnBackButtonPressed()
         {
-            Application.Current.MainPage = new MainView();
+            Navigation.PopAsync(true);
+            //((Navigation.Application.Current.MainPage = new MainView();
             return true;
             //return base.OnBackButtonPressed();
         }

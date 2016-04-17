@@ -1,0 +1,30 @@
+﻿<DataTemplate
+    x:Class="Beatshake.Shared.Windows.ComponentTemplate"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Beatshake.Core"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance d:Type=core:InstrumentalComponent}">
+
+    <Grid>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock HorizontalAlignment="Left" Text="{Binding Name}"></TextBlock>
+            <Button Content="Teach me!" 
+                    HorizontalAlignment="Right"
+                    Command="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TeachCommand}" 
+                    CommandParameter="{Binding}"></Button>
+            <Button Command="{Binding PlaySoundCommand}"
+                    HorizontalAlignment="Right" 
+                    ClickMode="Press"
+                    Content="Push me!">
+                <!--<Button.GestureRecognizers>
+                    <TapGestureRecognizer  ">
+                    </TapGestureRecognizer>
+
+                </Button.GestureRecognizers>-->
+            </Button>
+        </StackPanel>
+    </Grid>
+</DataTemplate>

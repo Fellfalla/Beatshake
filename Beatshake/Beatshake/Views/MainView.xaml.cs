@@ -14,5 +14,10 @@ namespace Beatshake.Views
         {
             InitializeComponent();
         }
+
+        private void Button_OnClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new DrumKitView(), true);
+        }
     }
 }

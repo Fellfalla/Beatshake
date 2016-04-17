@@ -13,7 +13,7 @@
                VerticalOptions="StartAndExpand">
     
     <Label Text="{Binding Title}" FontSize="30" VerticalOptions="Center" HorizontalOptions="Center" VerticalTextAlignment="Center"/>
-    <Button Command="{Binding StartDrumKitCommand}" Text="Start that shit"></Button>
+    <Button Clicked="Button_OnClicked" Text="Start that shit"></Button>
   </StackLayout>
 
 </ContentPage>
