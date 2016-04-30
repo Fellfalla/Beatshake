@@ -54,6 +54,7 @@
     <Compile Include="Core\BaseViewModel.cs" />
     <Compile Include="ViewModels\DrumViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
+    <Compile Include="Views\BlurEffect.cs" />
     <Compile Include="Views\DrumView.xaml.cs">
       <DependentUpon>DrumView.xaml</DependentUpon>
     </Compile>
@@ -109,6 +110,14 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\Resources\Beatshake.png">
+      <Link>Assets\Beatshake.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\BeatshakeLogo.png">
+      <Link>Assets\BeatshakeLogo.png</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Forms.2.3.0.38-pre2\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.3.0.38-pre2\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />

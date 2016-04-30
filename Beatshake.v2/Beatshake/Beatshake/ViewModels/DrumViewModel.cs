@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
 using Prism.Navigation;
+using Xamarin.Forms;
 
 namespace Beatshake.ViewModels
 {
@@ -24,7 +25,6 @@ namespace Beatshake.ViewModels
             {
                 Components.Add(new InstrumentalComponent(this, allName));
             }
-
             _dataProvider.RefreshRate = BeatshakeSettings.SensorRefreshInterval;
             _dataProvider.MotionDataRefreshed += ProcessMotionData;
         }

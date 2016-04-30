@@ -6,8 +6,14 @@
              x:Class="Beatshake.Views.DrumView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
              >
+  <ContentPage.BackgroundImage>
+    <FileImageSource File="BeatshakeLogo.png" >
+      <FileImageSource.Effects>
+      </FileImageSource.Effects>
+    </FileImageSource>
+  </ContentPage.BackgroundImage>
 
-  <Grid >
+  <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"></RowDefinition>
       <RowDefinition Height="*"></RowDefinition>

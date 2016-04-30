@@ -109,6 +109,12 @@
     <None Include="Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\..\Resources\Beatshake.png">
+      <Link>Beatshake.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\BeatshakeLogo.png">
+      <Link>BeatshakeLogo.png</Link>
+    </Content>
     <Content Include="..\..\..\Resources\Logo\106x106.png">
       <Link>Assets\106x106.png</Link>
     </Content>

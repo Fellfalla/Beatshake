@@ -6,7 +6,7 @@
              prism:ViewModelLocator.AutowireViewModel="True"
              >
   <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
-    <Label Text="{Binding Title}" VerticalOptions="Center" HorizontalOptions="Center" />
+    <Image Source="Beatshake.png"></Image>
     <Button Command="{Binding NavigateCommand}" Text="Start that shit!" />
   </StackLayout>
 </ContentPage>
