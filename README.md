@@ -1,2 +1,2 @@
 # Beatshake
-No drums? Need for metronome? Just let's take your phone!
+No drums? Need for metronome? Let's take your phone!
