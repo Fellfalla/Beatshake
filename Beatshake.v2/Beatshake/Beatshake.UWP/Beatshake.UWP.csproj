@@ -109,6 +109,24 @@
     <None Include="Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\..\Resources\Logo\106x106.png">
+      <Link>Assets\106x106.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\Logo\120x120.png">
+      <Link>Assets\120x120.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\Logo\170x170.png">
+      <Link>Assets\170x170.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\Logo\360x360.png">
+      <Link>Assets\360x360.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\Logo\744x360.png">
+      <Link>Assets\744x360.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\Logo\950x950.png">
+      <Link>Assets\950x950.png</Link>
+    </Content>
     <Content Include="..\..\..\Samples\Kit1\cowbell1.wav">
       <Link>Assets\Kit1\cowbell1.wav</Link>
     </Content>
@@ -152,13 +170,6 @@
       <Link>Assets\Kit1\tom4.wav</Link>
     </Content>
     <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

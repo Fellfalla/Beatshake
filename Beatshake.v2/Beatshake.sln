@@ -17,6 +17,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beatshake", "Beatshake\Beat
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Beatshake.Shared", "Beatshake.Shared\Beatshake.Shared.shproj", "{DF0F0350-5EAE-442B-9EC0-6374245F6659}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{D2562A67-AEDB-4847-8D11-97E551A1C694}"
+	ProjectSection(SolutionItems) = preProject
+		..\Resources\Beatshake ico.png = ..\Resources\Beatshake ico.png
+		..\Resources\Beatshake.png = ..\Resources\Beatshake.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logo", "Logo", "{AC7CED37-C4EB-4675-A6CB-3B269D182205}"
+	ProjectSection(SolutionItems) = preProject
+		..\Resources\Logo\106x106.png = ..\Resources\Logo\106x106.png
+		..\Resources\Logo\120x120.png = ..\Resources\Logo\120x120.png
+		..\Resources\Logo\170x170.png = ..\Resources\Logo\170x170.png
+		..\Resources\Logo\360x360.png = ..\Resources\Logo\360x360.png
+		..\Resources\Logo\740x360.png = ..\Resources\Logo\740x360.png
+		..\Resources\Logo\950x950.png = ..\Resources\Logo\950x950.png
+		..\Resources\Logo\Beatshake.png = ..\Resources\Logo\Beatshake.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Beatshake.Shared\Beatshake.Shared.projitems*{df0f0350-5eae-442b-9ec0-6374245f6659}*SharedItemsImports = 13
@@ -411,5 +428,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AC7CED37-C4EB-4675-A6CB-3B269D182205} = {D2562A67-AEDB-4847-8D11-97E551A1C694}
 	EndGlobalSection
 EndGlobal
