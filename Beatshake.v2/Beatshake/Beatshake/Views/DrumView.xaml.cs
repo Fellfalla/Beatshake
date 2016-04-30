@@ -9,7 +9,7 @@ using Xamarin.Forms;
 
 namespace Beatshake.Views
 {
-    public partial class DrumView : ContentPage
+    public partial class DrumView
     {
         public DrumView()
         {
@@ -22,12 +22,13 @@ namespace Beatshake.Views
             base.OnAppearing();
         }
 
-        protected override bool OnBackButtonPressed()
-        {
-            Navigation.PopAsync(true);
-            //((Navigation.Application.Current.MainPage = new MainView();
-            return true;
-            //return base.OnBackButtonPressed();
-        }
+        //protected override bool OnBackButtonPressed()
+        //{
+        //    var task = ViewModel.NavigateBackCommand.Execute();
+        //    task.Wait();
+        //    //((Navigation.Application.Current.MainPage = new MainView();
+        //    return true;
+        //    //return base.OnBackButtonPressed();
+        //}
     }
 }

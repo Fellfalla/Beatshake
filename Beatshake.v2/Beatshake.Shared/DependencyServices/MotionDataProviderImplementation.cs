@@ -27,7 +27,7 @@ using Beatshake.DependencyServices;
                 Acceleration.Trans[0] = args.Reading.AccelerationX;
                 Acceleration.Trans[1] = args.Reading.AccelerationY;
                 Acceleration.Trans[2] = args.Reading.AccelerationZ;
-                MotionDataRefreshed?.Invoke(this, EventArgs.Empty);
+                MotionDataRefreshed?.Invoke(this);
             });
         }
 
@@ -49,7 +49,7 @@ using Beatshake.DependencyServices;
             }
         }
 
-        public event EventHandler MotionDataRefreshed;
+        public event Custom.TypedEventHandler<IMotionDataProvider> MotionDataRefreshed;
 
 
     }

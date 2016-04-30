@@ -56,6 +56,7 @@ namespace Beatshake
         {
             Container.RegisterTypeForNavigation<DrumView, DrumViewModel>();
             Container.RegisterTypeForNavigation<MainMenuView, MainMenuViewModel>();
+            Container.RegisterTypeForNavigation<StatisticsView, StatisticsViewModel>();
             //foreach (var exportedType in GetType().GetTypeInfo().Assembly.DefinedTypes)
             //{
             //    Container.RegisterType(exportedType.AsType());
