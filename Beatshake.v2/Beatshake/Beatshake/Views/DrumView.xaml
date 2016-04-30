@@ -6,14 +6,18 @@
              x:Class="Beatshake.Views.DrumView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
              >
-  <ContentPage.BackgroundImage>
-    <FileImageSource File="BeatshakeLogo.png" >
-      <FileImageSource.Effects>
-      </FileImageSource.Effects>
-    </FileImageSource>
-  </ContentPage.BackgroundImage>
-
-  <Grid>
+<RelativeLayout>
+  <Image Source="BeatshakeLogo.png" Opacity="0.5"
+             RelativeLayout.WidthConstraint=
+                  "{ConstraintExpression Type=RelativeToParent, Property=Width}"
+             RelativeLayout.HeightConstraint=
+                  "{ConstraintExpression Type=RelativeToParent, Property=Height}"/>
+  <Grid
+    RelativeLayout.WidthConstraint=
+              "{ConstraintExpression Type=RelativeToParent, Property=Width}"
+            RelativeLayout.HeightConstraint=
+              "{ConstraintExpression Type=RelativeToParent, Property=Height}"
+    >
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"></RowDefinition>
       <RowDefinition Height="*"></RowDefinition>
@@ -46,4 +50,5 @@
       </ListView.ItemTemplate>
     </ListView>
   </Grid>
+</RelativeLayout>
 </ContentPage>
