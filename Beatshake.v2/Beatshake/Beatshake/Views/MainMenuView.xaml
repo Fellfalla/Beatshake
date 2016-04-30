@@ -5,8 +5,8 @@
              x:Class="Beatshake.Views.MainMenuView"
              prism:ViewModelLocator.AutowireViewModel="True"
              >
-  <StackLayout>
+  <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
     <Label Text="{Binding Title}" VerticalOptions="Center" HorizontalOptions="Center" />
-    <Button Command="{Binding NavigateCommand}" Text="Navigate" />
+    <Button Command="{Binding NavigateCommand}" Text="Start that shit!" />
   </StackLayout>
 </ContentPage>

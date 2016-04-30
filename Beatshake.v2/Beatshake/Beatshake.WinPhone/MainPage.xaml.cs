@@ -29,7 +29,7 @@ namespace Beatshake.WinPhone
 
             this.NavigationCacheMode = NavigationCacheMode.Required;
 
-            LoadApplication(new Beatshake.App());
+            LoadApplication(new WinPhoneApplication());
         }
 
         /// <summary>

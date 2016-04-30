@@ -32,7 +32,7 @@ namespace Beatshake.ViewModels
 
         void Navigate()
         {
-            NavigationService.Navigate<DrumView>();
+            NavigationService.Navigate<DrumViewModel>();
         }
     }
 }

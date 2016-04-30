@@ -89,6 +89,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WinPhoneApplication.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -96,6 +97,48 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\..\samples\kit1\cowbell1.wav">
+      <Link>Assets\Kit1\cowbell1.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\cymbal1.wav">
+      <Link>Assets\Kit1\cymbal1.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\cymbal2.wav">
+      <Link>Assets\Kit1\cymbal2.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\cymbal3.wav">
+      <Link>Assets\Kit1\cymbal3.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\cymbal4.wav">
+      <Link>Assets\Kit1\cymbal4.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\cymbal5.wav">
+      <Link>Assets\Kit1\cymbal5.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\hihat1.wav">
+      <Link>Assets\Kit1\hihat1.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\kick1.wav">
+      <Link>Assets\Kit1\kick1.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\ride1.wav">
+      <Link>Assets\Kit1\ride1.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\snare1.wav">
+      <Link>Assets\Kit1\snare1.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\tom1.wav">
+      <Link>Assets\Kit1\tom1.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\tom2.wav">
+      <Link>Assets\Kit1\tom2.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\tom3.wav">
+      <Link>Assets\Kit1\tom3.wav</Link>
+    </Content>
+    <Content Include="..\..\..\samples\kit1\tom4.wav">
+      <Link>Assets\Kit1\tom4.wav</Link>
+    </Content>
     <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
@@ -163,7 +206,8 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="..\..\..\Beatshake.Shared\Beatshake.Shared.projitems" Label="Shared" />
+  <ItemGroup />
+  <Import Project="..\..\Beatshake.Shared\Beatshake.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

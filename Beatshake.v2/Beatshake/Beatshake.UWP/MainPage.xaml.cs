@@ -21,7 +21,7 @@ namespace Beatshake.UWP
         {
             this.InitializeComponent();
 
-            LoadApplication(new Beatshake.App());
+            LoadApplication(new UniversalApplication());
         }
     }
 }

@@ -9,34 +9,8 @@ using Xamarin.Forms;
 
 namespace Beatshake.Core
 {
-    public class Bootstrapper : UnityBootstrapper
-    {
-        protected override Page CreateMainPage()
-        {
-            return Container.Resolve<MainMenuView>();
-        }
+    //public class Bootstrapper : UnityBootstrapper
+    //{
 
-        protected override Prism.Navigation.INavigationService CreateNavigationService()
-        {
-            return new UnityPageNavigationService(Container);
-        }
-
-        protected override void OnInitialized()
-        {
-        }
-
-        protected override void RegisterTypes()
-        {
-            Container.RegisterTypeForNavigation<DrumView>();
-            Container.RegisterTypeForNavigation<MainMenuView>();
-            foreach (var exportedType in GetType().GetTypeInfo().Assembly.ExportedTypes)
-            {
-                Container.RegisterType(exportedType);
-            }
-            //Container.RegisterType<MainMenuView>();
-            //Container.RegisterType<MainMenuViewModel>();
-            //Container.RegisterType<DrumViewModel>();
-            //Container.RegisterType<DrumView>();
-        }
-    }
+    //}
 }

@@ -30,6 +30,8 @@ namespace Beatshake.UWP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            Utilities.RegisterDependencyServices();
         }
 
         /// <summary>

@@ -2,8 +2,42 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
              x:Class="Beatshake.Views.DrumView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
              >
-  <Label Text="{Binding Heading}" VerticalOptions="Center" HorizontalOptions="Center" />
+
+  <Grid >
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"></RowDefinition>
+      <RowDefinition Height="*"></RowDefinition>
+    </Grid.RowDefinitions>
+
+    <Label Grid.Row="0" Text="{Binding Title}"  HorizontalOptions="CenterAndExpand" />
+
+    <ListView Grid.Row="1" ItemsSource="{Binding Components}" VerticalOptions="FillAndExpand">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell>
+            <StackLayout Orientation="Horizontal">
+              <Label HorizontalOptions="Start" Text="{Binding Name}"></Label>
+              <!--<Button Text="Teach me!"
+                      HorizontalOptions="End"
+                      Command="{Binding Source={x:Reference KitViewModel}, Path=TeachCommand}"
+                      CommandParameter="{Binding}"></Button>-->
+              <Button HeightRequest="30"
+                      HorizontalOptions="End"
+                      Text="Push me!">
+                <Button.GestureRecognizers>
+                  <TapGestureRecognizer  Command="{Binding PlaySoundCommand}">
+                  </TapGestureRecognizer>
+
+                </Button.GestureRecognizers>
+              </Button>
+            </StackLayout>
+          </ViewCell>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+  </Grid>
 </ContentPage>

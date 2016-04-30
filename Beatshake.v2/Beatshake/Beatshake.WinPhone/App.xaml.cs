@@ -25,8 +25,7 @@ namespace Beatshake.WinPhone
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
-            
-
+            Utilities.RegisterDependencyServices();
         }
 
         /// <summary>
