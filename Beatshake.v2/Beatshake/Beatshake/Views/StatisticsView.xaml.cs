@@ -8,7 +8,7 @@ using Xamarin.Forms;
 
 namespace Beatshake.Views
 {
-    public partial class StatisticsView : BaseContentPage
+    public partial class StatisticsView
     {
         public StatisticsView()
         {

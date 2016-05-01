@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Beatshake.Core;
+using Beatshake.DependencyServices;
 using Beatshake.ViewModels;
 using Beatshake.Views;
 using Microsoft.Practices.Unity;
@@ -57,6 +58,8 @@ namespace Beatshake
             Container.RegisterTypeForNavigation<DrumView, DrumViewModel>();
             Container.RegisterTypeForNavigation<MainMenuView, MainMenuViewModel>();
             Container.RegisterTypeForNavigation<StatisticsView, StatisticsViewModel>();
+            Container.RegisterInstance<IMotionDataProvider>(
+                Xamarin.Forms.DependencyService.Get<IMotionDataProvider>(DependencyFetchTarget.GlobalInstance));
             //foreach (var exportedType in GetType().GetTypeInfo().Assembly.DefinedTypes)
             //{
             //    Container.RegisterType(exportedType.AsType());

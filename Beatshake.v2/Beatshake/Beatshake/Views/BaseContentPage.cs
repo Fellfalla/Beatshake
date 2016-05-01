@@ -8,18 +8,42 @@ using Xamarin.Forms;
 
 namespace Beatshake.Views
 {
-    public abstract class BaseContentPage : ContentPage
-    {
-        protected sealed override bool OnBackButtonPressed()
+    public static class PageExtensionMethods
+{
+        public static bool NavigateBackWithViewModel(this Page page)
         {
-            var navigator = BindingContext as INavigationService;
+            var navigator = page.BindingContext as INavigationService;
             if (navigator != null)
             {
                 navigator.GoBack();
                 return true;
             }
+            return false;
+        }
+}
 
-            return base.OnBackButtonPressed();
+    public abstract class BaseContentPage : ContentPage
+    {
+        protected sealed override bool OnBackButtonPressed()
+        {
+            if (!this.NavigateBackWithViewModel())
+            {
+                return base.OnBackButtonPressed();
+            }
+            return true;
+        }
+    }
+
+
+    public abstract class BaseCarouselPage : CarouselPage
+    {
+        protected sealed override bool OnBackButtonPressed()
+        {
+            if (!this.NavigateBackWithViewModel())
+            {
+                return base.OnBackButtonPressed();
+            }
+            return true;
         }
     }
 }

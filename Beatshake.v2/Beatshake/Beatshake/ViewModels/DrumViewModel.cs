@@ -39,19 +39,25 @@ namespace Beatshake.ViewModels
         private string _title;
         private string _kit;
 
-
-
         protected override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
             if (motionDataProvider != null)
             {
 
-                if (motionDataProvider.Acceleration.Trans.Any(d => d > 0.2))
+                if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
                 {
-                    foreach (var component in Components)
+                    var tasks = new Task[Components.Count];
+
+                    for (int i = 0; i < Components.Count; i++)
                     {
-                        await component.PlaySoundCommand.Execute();
+                        tasks[i] = Components[i].PlaySoundCommand.Execute();
                     }
+                      
+                    //foreach (var component in Components)
+                    //{
+                    //    await component.PlaySoundCommand.Execute();
+                    //}
+                    await Task.WhenAll(tasks);
                 }
             }
         }
