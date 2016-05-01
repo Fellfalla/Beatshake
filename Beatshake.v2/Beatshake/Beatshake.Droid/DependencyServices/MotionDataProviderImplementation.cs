@@ -25,8 +25,15 @@ namespace Beatshake.Droid.DependencyServices
         public MotionDataProviderImplementation()
         {
             _sensorManager = (SensorManager) Application.Context.GetSystemService(Context.SensorService);
-            _accelerometer = _sensorManager.GetDefaultSensor(SensorType.Accelerometer);
-            _sensorManager.RegisterListener(this, _accelerometer, SensorDelay.Game);
+            _accelerometer = _sensorManager.GetDefaultSensor(SensorType.LinearAcceleration);
+            _sensorManager.RegisterListener(this, _accelerometer, SensorDelay.Normal);
+
+            Sensor sens = _sensorManager.GetDefaultSensor(SensorType.Accelerometer);
+            _sensorManager.RegisterListener(this, sens, SensorDelay.Normal);
+
+            sens = _sensorManager.GetDefaultSensor(SensorType.Gyroscope);
+            _sensorManager.RegisterListener(this, sens, SensorDelay.Normal);
+
         }
 
 

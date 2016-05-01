@@ -70,7 +70,7 @@ namespace Beatshake.Droid.DependencyServices
             //var memoryStream = new InMemoryRandomAccessStream();
             //await memoryStream.WriteAsync(buffer);
 
-            string path = string.Format(@"Assets\{0}\{1}", component.ContainingInstrument.Kit, fileName);
+            string path = string.Format(@"{0}/{1}", component.ContainingInstrument.Kit, fileName);
             // return prefetched stream
             var transmitter = new AudioTransmitter();
             try

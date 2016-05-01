@@ -48,6 +48,10 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dotMemory.Unit, Version=103.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JetBrains.dotMemoryUnit.2.2.20160412.92019\lib\dotMemory.Unit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FormsViewGroup, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Forms.2.3.0.38-pre2\lib\MonoAndroid10\FormsViewGroup.dll</HintPath>
       <Private>True</Private>
@@ -162,12 +166,56 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\Resources\Beatshake.png">
+    <AndroidResource Include="..\..\..\Resources\Beatshake.png">
       <Link>Resources\drawable\Beatshake.png</Link>
-    </Content>
-    <Content Include="..\..\..\Resources\BeatshakeLogo.png">
+    </AndroidResource>
+    <AndroidResource Include="..\..\..\Resources\BeatshakeLogo.png">
       <Link>Resources\drawable\BeatshakeLogo.png</Link>
-    </Content>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="..\..\..\samples\kit1\cowbell1.wav">
+      <Link>Assets\Kit1\cowbell1.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\cymbal1.wav">
+      <Link>Assets\Kit1\cymbal1.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\cymbal2.wav">
+      <Link>Assets\Kit1\cymbal2.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\cymbal3.wav">
+      <Link>Assets\Kit1\cymbal3.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\cymbal4.wav">
+      <Link>Assets\Kit1\cymbal4.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\cymbal5.wav">
+      <Link>Assets\Kit1\cymbal5.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\hihat1.wav">
+      <Link>Assets\Kit1\hihat1.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\kick1.wav">
+      <Link>Assets\Kit1\kick1.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\ride1.wav">
+      <Link>Assets\Kit1\ride1.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\snare1.wav">
+      <Link>Assets\Kit1\snare1.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\tom1.wav">
+      <Link>Assets\Kit1\tom1.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\tom2.wav">
+      <Link>Assets\Kit1\tom2.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\tom3.wav">
+      <Link>Assets\Kit1\tom3.wav</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\..\samples\kit1\tom4.wav">
+      <Link>Assets\Kit1\tom4.wav</Link>
+    </AndroidAsset>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" />
