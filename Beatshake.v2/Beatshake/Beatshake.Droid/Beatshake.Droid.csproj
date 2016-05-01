@@ -78,14 +78,6 @@
       <HintPath>..\..\packages\Prism.Unity.Forms.6.2.0-pre4\lib\MonoAndroid1.0\Prism.Unity.Forms.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpDX.3.0.2\lib\portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1\SharpDX.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SharpDX.XAudio2, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpDX.XAudio2.3.0.2\lib\portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1\SharpDX.XAudio2.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -140,11 +132,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AndroidApplication.cs" />
+    <Compile Include="DependencyServices\InstrumentPlayerImplementation.cs" />
+    <Compile Include="DependencyServices\MotionDataProviderImplementation.cs" />
+    <Compile Include="DependencyServices\UserSoudNotifierImplementation.cs" />
+    <Compile Include="DependencyServices\UserTextNotifierImplementation.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />

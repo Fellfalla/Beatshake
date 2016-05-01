@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Windows.Devices.Sensors;
 using Windows.UI.Core;
 using Beatshake.Core;

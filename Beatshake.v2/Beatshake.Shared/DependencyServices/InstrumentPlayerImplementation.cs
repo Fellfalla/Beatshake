@@ -1,20 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Devices.HumanInterfaceDevice;
-using Windows.Foundation.Diagnostics;
-using Windows.Media.Effects;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.UI.ViewManagement;
-using Windows.UI.Xaml.Controls;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
 using Beatshake.ExtensionMethods;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Buffer = Windows.Storage.Streams.Buffer;
 
 
 class InstrumentPlayerImplementation : IInstrumentPlayer
@@ -67,11 +57,11 @@ class InstrumentPlayerImplementation : IInstrumentPlayer
         string fileName = component.Name + component.Number + ".wav";
 
         // Load file into stream
-        StorageFolder Folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-        Folder = await Folder.GetFolderAsync("Assets");
-        Folder = await Folder.GetFolderAsync(component.ContainingInstrument.Kit);
-        StorageFile sf = await Folder.GetFileAsync(fileName);
-        var stream = await sf.OpenStreamForReadAsync();
+        //StorageFolder Folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+        //Folder = await Folder.GetFolderAsync("Assets");
+        //Folder = await Folder.GetFolderAsync(component.ContainingInstrument.Kit);
+        //StorageFile sf = await Folder.GetFileAsync(fileName);
+        //var stream = await sf.OpenStreamForReadAsync();
 
         // prefetch stream into memory
         //IBuffer buffer = new Buffer((uint) stream.Size);
@@ -82,7 +72,14 @@ class InstrumentPlayerImplementation : IInstrumentPlayer
         string path = string.Format(@"Assets\{0}\{1}", component.ContainingInstrument.Kit, fileName);
         // return prefetched stream
         var transmitter = new AudioTransmitter();
-        transmitter.SoundEffect = SoundEffect.FromStream(TitleContainer.OpenStream(path));
+        try
+        {
+            transmitter.SoundEffect = SoundEffect.FromStream(TitleContainer.OpenStream(path));
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Debug.WriteLine(e);
+        }
         //if (transmitter.SoundEffect == null)
         //{
         //    var buffer = new byte[stream.Length];
@@ -95,16 +92,11 @@ class InstrumentPlayerImplementation : IInstrumentPlayer
 
 class AudioTransmitter
 {
-    public AudioTransmitter()
-    {
+    //public IRandomAccessStream Stream;
 
-    }
-
-    public IRandomAccessStream Stream;
-
-    public IBuffer Buffer;
+    //public IBuffer Buffer;
 
     public SoundEffect SoundEffect;
 
-    public StorageFile StorageFile;
+    //public StorageFile StorageFile;
 }
