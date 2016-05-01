@@ -11,6 +11,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
+using Beatshake.ExtensionMethods;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Buffer = Windows.Storage.Streams.Buffer;
@@ -19,7 +20,7 @@ using Buffer = Windows.Storage.Streams.Buffer;
 class InstrumentPlayerImplementation : IInstrumentPlayer
 {
     //private readonly InstancePool<SoundEffect> _mediaElementPool = new InstancePool<SoundEffect>(200);
-
+    private Random random = new Random();
     public async Task Play(object audioData)
     {
         
@@ -33,7 +34,10 @@ class InstrumentPlayerImplementation : IInstrumentPlayer
             //transmitter.Stream.Seek(0);
             
             //var soundElement = SoundEffect.FromStream(transmitter.Stream.AsStreamForRead());
-            transmitter.SoundEffect.Play();
+            
+            transmitter.SoundEffect.Play(1f, 
+                (float) random.NextDouble(-BeatshakeSettings.RandomPitchRange, BeatshakeSettings.RandomPitchRange), 
+                (float)random.NextDouble(-BeatshakeSettings.RandomPan, BeatshakeSettings.RandomPan));
             //soundElement.SetSource(transmitter.Stream, transmitter.StorageFile.ContentType);
             //soundElement.Play();
         }

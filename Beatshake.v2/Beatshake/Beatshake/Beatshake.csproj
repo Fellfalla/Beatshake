@@ -42,6 +42,8 @@
     <Compile Include="Core\IInstrumentalIdentification.cs" />
     <Compile Include="Core\InstancePool.cs" />
     <Compile Include="Core\InstrumentalComponent.cs" />
+    <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
+    <Compile Include="ExtensionMethods\RandomExtensions.cs" />
     <Compile Include="ViewModels\InstrumentViewModelBase.cs" />
     <Compile Include="Core\BeatshakeSettings.cs" />
     <Compile Include="Core\Bootstrapper.cs" />

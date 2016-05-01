@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
+using Beatshake.ExtensionMethods;
 using Prism.Navigation;
 using Xamarin.Forms;
 
@@ -41,25 +42,24 @@ namespace Beatshake.ViewModels
 
         protected override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
-            if (motionDataProvider != null)
+            if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
             {
+                await Components.Random().PlaySoundCommand.Execute();
 
-                if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
-                {
-                    var tasks = new Task[Components.Count];
+                //var tasks = new Task[Components.Count];
 
-                    for (int i = 0; i < Components.Count; i++)
-                    {
-                        tasks[i] = Components[i].PlaySoundCommand.Execute();
-                    }
+                //for (int i = 0; i < Components.Count; i++)
+                //{
+                //    tasks[i] = Components[i].PlaySoundCommand.Execute();
+                //}
                       
-                    //foreach (var component in Components)
-                    //{
-                    //    await component.PlaySoundCommand.Execute();
-                    //}
-                    await Task.WhenAll(tasks);
-                }
+                ////foreach (var component in Components)
+                ////{
+                ////    await component.PlaySoundCommand.Execute();
+                ////}
+                //await Task.WhenAll(tasks);
             }
+            
         }
 
         public override string Kit
