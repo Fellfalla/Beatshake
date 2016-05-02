@@ -43,6 +43,7 @@
     <Compile Include="Core\IInstrumentalIdentification.cs" />
     <Compile Include="Core\InstancePool.cs" />
     <Compile Include="Core\InstrumentalComponent.cs" />
+    <Compile Include="Core\Teachement.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\RandomExtensions.cs" />
     <Compile Include="ViewModels\InstrumentViewModelBase.cs" />

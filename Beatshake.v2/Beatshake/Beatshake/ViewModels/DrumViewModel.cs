@@ -39,6 +39,7 @@ namespace Beatshake.ViewModels
         private ObservableCollection<InstrumentalComponent> _components;
         private string _title;
         private string _kit;
+        private Teachement _teachement;
 
         protected override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
@@ -75,13 +76,22 @@ namespace Beatshake.ViewModels
             }
         }
 
-        protected override void Teach(InstrumentalComponent component)
+        public Teachement Teachement
         {
+            get { return _teachement; }
+            set { SetProperty(ref _teachement, value); }
+        }
+
+        protected override void Teach()
+        {
+            
 
             // unregister current processing
             MotionDataProvider.MotionDataRefreshed -= ProcessMotionData;
 
             Xamarin.Forms.DependencyService.Get<IUserSoudNotifier>().Notify();
+
+            Teachement = TeachMovement();
 
             // reenable motion processing 
             MotionDataProvider.MotionDataRefreshed += ProcessMotionData;

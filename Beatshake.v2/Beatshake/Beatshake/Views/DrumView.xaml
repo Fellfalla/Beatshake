@@ -49,6 +49,17 @@
 
                 </Button.GestureRecognizers>
               </Button>
+              <Button Text="Teach me!" Command="{Binding TeachCommand}">
+                <Button.GestureRecognizers>
+                  <TapGestureRecognizer  Command="{Binding TeachCommand}">
+                  </TapGestureRecognizer>
+
+                </Button.GestureRecognizers>                
+              </Button>
+              
+              <Label Text="{Binding Teachement.XCoefficients}"></Label>
+              <Label Text="{Binding Teachement.YCoefficients}"></Label>
+              <Label Text="{Binding Teachement.ZCoefficients}"></Label>
             </StackLayout>
           </ViewCell>
         </DataTemplate>
