@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseCarouselPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converter="clr-namespace:Beatshake.Converter;assembly=Beatshake"
+             xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
+             xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             x:Class="Beatshake.Views.StatisticsView"
+             mvvm:ViewModelLocator.AutowireViewModel="True"
+                       >
+  <CarouselPage.Resources>
+    <ResourceDictionary>
+      <converter:ToStringConverter x:Key="ToStringConverter"></converter:ToStringConverter>
+    </ResourceDictionary>
+  </CarouselPage.Resources>
+  <ContentPage>
+
+    <StackLayout HorizontalOptions="End">
+    <Label Text="{Binding XAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=X: , Mode=OneWay}" />
+    <Label Text="{Binding YAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=Y: , Mode=OneWay }" />
+    <Label Text="{Binding ZAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=Z: , Mode=OneWay }" />
+    <Label Text="{Binding MeasureTimeJitter, Converter={StaticResource ToStringConverter}, ConverterParameter=Jitter: , Mode=OneWay }" />
+    <Label Text="{Binding AverageMeasureTime, Converter={StaticResource ToStringConverter}, ConverterParameter=AverageTime: , Mode=OneWay }" />
+    </StackLayout>
+    </ContentPage>
+    <ContentPage>
+      <Label Text="This is for Testing purposes" VerticalOptions="Center" HorizontalOptions="Center" />
+    </ContentPage>
+
+</views:BaseCarouselPage>

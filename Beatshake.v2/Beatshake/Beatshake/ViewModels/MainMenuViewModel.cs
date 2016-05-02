@@ -20,6 +20,7 @@ namespace Beatshake.ViewModels
             set { SetProperty(ref _title, value); }
         }
         public DelegateCommand NavigateCommand { get; set; }
+        public DelegateCommand ShowStatisticsCommand { get; set; }
 
         /// <summary>
         /// 
@@ -28,11 +29,16 @@ namespace Beatshake.ViewModels
         public MainMenuViewModel(INavigationService navigationService) : base(navigationService)
         {
             NavigateCommand = new DelegateCommand(Navigate);
+            ShowStatisticsCommand = new DelegateCommand(ShowStatistics);
         }
 
         void Navigate()
         {
             NavigationService.Navigate<DrumViewModel>();
+        }
+        void ShowStatistics()
+        {
+            NavigationService.Navigate<StatisticsViewModel>();
         }
     }
 }

@@ -1,13 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<views:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
+             xmlns:converter="clr-namespace:Beatshake.Converter;assembly=Beatshake"
+             xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
              x:Class="Beatshake.Views.DrumView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
+             
              >
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <converter:ToStringConverter x:Key="ToStringConverter"></converter:ToStringConverter>
+    </ResourceDictionary>
+  </ContentPage.Resources>
+<RelativeLayout>
+  <Image Source="BeatshakeLogo.png" Opacity="0.5"
+             RelativeLayout.WidthConstraint=
+                  "{ConstraintExpression Type=RelativeToParent, Property=Width}"
+             RelativeLayout.HeightConstraint=
+                  "{ConstraintExpression Type=RelativeToParent, Property=Height}"/>
+  <RelativeLayout
+      RelativeLayout.WidthConstraint=
+              "{ConstraintExpression Type=RelativeToParent, Property=Width}"
+            RelativeLayout.HeightConstraint=
+              "{ConstraintExpression Type=RelativeToParent, Property=Height}">
 
-  <Grid >
+    <Grid VerticalOptions="Center" HorizontalOptions="Center">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"></RowDefinition>
       <RowDefinition Height="*"></RowDefinition>
@@ -15,16 +34,12 @@
 
     <Label Grid.Row="0" Text="{Binding Title}"  HorizontalOptions="CenterAndExpand" />
 
-    <ListView Grid.Row="1" ItemsSource="{Binding Components}" VerticalOptions="FillAndExpand">
+    <ListView Grid.Row="1" ItemsSource="{Binding Components}" VerticalOptions="Center" HorizontalOptions="Center">
       <ListView.ItemTemplate>
         <DataTemplate>
           <ViewCell>
             <StackLayout Orientation="Horizontal">
               <Label HorizontalOptions="Start" Text="{Binding Name}"></Label>
-              <!--<Button Text="Teach me!"
-                      HorizontalOptions="End"
-                      Command="{Binding Source={x:Reference KitViewModel}, Path=TeachCommand}"
-                      CommandParameter="{Binding}"></Button>-->
               <Button HeightRequest="30"
                       HorizontalOptions="End"
                       Text="Push me!">
@@ -40,4 +55,6 @@
       </ListView.ItemTemplate>
     </ListView>
   </Grid>
-</ContentPage>
+  </RelativeLayout>
+</RelativeLayout>
+</views:BaseContentPage>

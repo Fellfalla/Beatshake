@@ -35,13 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Converter\ToStringConverter.cs" />
     <Compile Include="CoreApplication.cs" />
     <Compile Include="Core\DataAnalyzer.cs" />
     <Compile Include="Core\DataContainer.cs" />
     <Compile Include="Core\IInstrumentalComponentIdentification.cs" />
     <Compile Include="Core\IInstrumentalIdentification.cs" />
+    <Compile Include="Core\InstancePool.cs" />
     <Compile Include="Core\InstrumentalComponent.cs" />
-    <Compile Include="Core\InstrumentViewModelBase.cs" />
+    <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
+    <Compile Include="ExtensionMethods\RandomExtensions.cs" />
+    <Compile Include="ViewModels\InstrumentViewModelBase.cs" />
     <Compile Include="Core\BeatshakeSettings.cs" />
     <Compile Include="Core\Bootstrapper.cs" />
     <Compile Include="Core\TypedEventHandler.cs" />
@@ -54,14 +58,21 @@
     <Compile Include="ExtensionMethods\PrimitiveExtensions.cs" />
     <Compile Include="ExtensionMethods\TupleExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\BaseViewModel.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\DrumViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
+    <Compile Include="ViewModels\MeasureViewModelBase.cs" />
+    <Compile Include="ViewModels\StatisticsViewModel.cs" />
+    <Compile Include="Views\BaseContentPage.cs" />
+    <Compile Include="Views\BlurEffect.cs" />
     <Compile Include="Views\DrumView.xaml.cs">
       <DependentUpon>DrumView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainMenuView.xaml.cs">
       <DependentUpon>MainMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StatisticsView.xaml.cs">
+      <DependentUpon>StatisticsView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +91,10 @@
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Unity.4.0.1\lib\portable-net45+wp80+win8+wpa81+MonoAndroid10+MonoTouch10\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MonoGame.Framework.Portable.3.2.99.1-Beta\lib\portable-net45+win+wpa81+Xamarin.iOS10+MonoAndroid10+MonoTouch10\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Prism, Version=6.1.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
@@ -109,6 +124,20 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\DrumView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\Resources\Beatshake.png">
+      <Link>Assets\Beatshake.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\BeatshakeLogo.png">
+      <Link>Assets\BeatshakeLogo.png</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\StatisticsView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>

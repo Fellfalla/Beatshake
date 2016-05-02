@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
+using Beatshake.ExtensionMethods;
 using Prism.Navigation;
+using Xamarin.Forms;
 
 namespace Beatshake.ViewModels
 {
     public class DrumViewModel : InstrumentViewModelBase
     {
 
-        public DrumViewModel(INavigationService navigationService, IMotionDataProvider motionDataProvider) : base(navigationService)
+        public DrumViewModel(INavigationService navigationService, IMotionDataProvider motionDataProvider) : base(navigationService, motionDataProvider)
         {
-
-            _dataProvider = motionDataProvider;
             Components = new ObservableCollection<InstrumentalComponent>();
             Title = "DrumKit 1";
             Kit = "Kit1";
@@ -24,9 +25,7 @@ namespace Beatshake.ViewModels
             {
                 Components.Add(new InstrumentalComponent(this, allName));
             }
-
-            _dataProvider.RefreshRate = BeatshakeSettings.SensorRefreshInterval;
-            _dataProvider.MotionDataRefreshed += ProcessMotionData;
+            MotionDataProvider.RefreshRate = BeatshakeSettings.SensorRefreshInterval;
         }
 
         private string _heading = "Shake your Drums!";
@@ -40,22 +39,27 @@ namespace Beatshake.ViewModels
         private ObservableCollection<InstrumentalComponent> _components;
         private string _title;
         private string _kit;
-        private IMotionDataProvider _dataProvider;
 
-        private async void ProcessMotionData(object sender, EventArgs eventArgs)
+        protected override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
-            var dataProvider = sender as IMotionDataProvider;
-
-            if (dataProvider != null)
+            if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
             {
-                if (dataProvider.Acceleration.Trans.Any(d => d > 0.2))
-                {
-                    foreach (var component in Components)
-                    {
-                        await component.PlaySoundCommand.Execute();
-                    }
-                }
+                await Components.Random().PlaySoundCommand.Execute();
+
+                //var tasks = new Task[Components.Count];
+
+                //for (int i = 0; i < Components.Count; i++)
+                //{
+                //    tasks[i] = Components[i].PlaySoundCommand.Execute();
+                //}
+                      
+                ////foreach (var component in Components)
+                ////{
+                ////    await component.PlaySoundCommand.Execute();
+                ////}
+                //await Task.WhenAll(tasks);
             }
+            
         }
 
         public override string Kit
@@ -74,14 +78,13 @@ namespace Beatshake.ViewModels
         protected override void Teach(InstrumentalComponent component)
         {
 
-
             // unregister current processing
-            _dataProvider.MotionDataRefreshed -= ProcessMotionData;
+            MotionDataProvider.MotionDataRefreshed -= ProcessMotionData;
 
             Xamarin.Forms.DependencyService.Get<IUserSoudNotifier>().Notify();
 
             // reenable motion processing 
-            _dataProvider.MotionDataRefreshed += ProcessMotionData;
+            MotionDataProvider.MotionDataRefreshed += ProcessMotionData;
         }
 
         public ObservableCollection<InstrumentalComponent> Components

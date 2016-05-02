@@ -4,15 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Xamarin.Forms;
-
 namespace Beatshake.Views
 {
-    public partial class MainMenuView
+    class BlurEffect
     {
-        public MainMenuView()
-        {
-            InitializeComponent();
-        }
     }
 }
