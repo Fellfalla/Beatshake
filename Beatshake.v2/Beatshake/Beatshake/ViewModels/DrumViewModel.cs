@@ -40,6 +40,10 @@ namespace Beatshake.ViewModels
         private string _title;
         private string _kit;
         private Teachement _teachement;
+        private bool _testTeachement;
+        private double _teachementTolerance;
+
+        
 
         protected override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
@@ -101,6 +105,19 @@ namespace Beatshake.ViewModels
         {
             get { return _components; }
             set { SetProperty(ref _components, value); }
+        }
+
+        public bool TestTeachement
+        {
+            get { return _testTeachement; }
+            set { SetProperty(ref _testTeachement, value); }
+        }
+
+
+        public double TeachementTolerance
+        {
+            get { return _teachementTolerance; }
+            set { SetProperty(ref _teachementTolerance, value); }
         }
 
         public string Title

@@ -30,6 +30,8 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"></RowDefinition>
       <RowDefinition Height="*"></RowDefinition>
+      <RowDefinition Height="*"></RowDefinition>
+      <RowDefinition Height="*"></RowDefinition>
     </Grid.RowDefinitions>
 
     <Label Grid.Row="0" Text="{Binding Title}"  HorizontalOptions="CenterAndExpand" />
@@ -49,7 +51,7 @@
 
                 </Button.GestureRecognizers>
               </Button>
-              <Button Text="Teach me!" Command="{Binding TeachCommand}">
+              <Button Text="Teach me!"  HeightRequest="30" Command="{Binding TeachCommand}">
                 <Button.GestureRecognizers>
                   <TapGestureRecognizer  Command="{Binding TeachCommand}">
                   </TapGestureRecognizer>
@@ -65,6 +67,8 @@
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
+      <Switch Grid.Row="2" IsToggled="{Binding TestTeachement}"></Switch>
+      <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="2"></Slider>
   </Grid>
   </RelativeLayout>
 </RelativeLayout>
