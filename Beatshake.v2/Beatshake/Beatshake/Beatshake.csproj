@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CoreApplication.cs" />
+    <Compile Include="Core\DataAnalyzer.cs" />
     <Compile Include="Core\DataContainer.cs" />
     <Compile Include="Core\IInstrumentalComponentIdentification.cs" />
     <Compile Include="Core\IInstrumentalIdentification.cs" />
@@ -50,6 +51,8 @@
     <Compile Include="DependencyServices\IUserTextNotifier.cs" />
     <Compile Include="DrumComponentNames.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
+    <Compile Include="ExtensionMethods\PrimitiveExtensions.cs" />
+    <Compile Include="ExtensionMethods\TupleExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\BaseViewModel.cs" />
     <Compile Include="ViewModels\DrumViewModel.cs" />
