@@ -56,9 +56,9 @@ class MotionDataProviderImplementation : IMotionDataProvider
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                 CoreDispatcherPriority.High, () =>
                 {
-                    Acceleration.Trans[0] = args.Reading.AngularVelocityX;
-                    Acceleration.Trans[1] = args.Reading.AngularVelocityY;
-                    Acceleration.Trans[2] = args.Reading.AngularVelocityZ;
+                    Velocity.Rot[0] = args.Reading.AngularVelocityX;
+                    Velocity.Rot[1] = args.Reading.AngularVelocityY;
+                    Velocity.Rot[2] = args.Reading.AngularVelocityZ;
                     //MotionDataRefreshed?.Invoke(this); // todo: sync Gyrometer and Accelerometer events
                 });
     }
