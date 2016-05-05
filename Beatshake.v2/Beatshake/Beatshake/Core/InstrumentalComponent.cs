@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Beatshake.DependencyServices;
+using Beatshake.ViewModels;
 using Prism.Commands;
 using Prism.Mvvm;
 using Xamarin.Forms;
@@ -13,8 +15,11 @@ namespace Beatshake.Core
     public class InstrumentalComponent : BindableBase, IInstrumentalComponentIdentification
     {
         private readonly IInstrumentPlayer _player;
-
+        private double _xCoefficients;
+        private double _yCoefficients;
+        private double _zCoefficients;
         private object _audionInstance;
+        private Teachement _teachement;
 
         private Cooldown cooldown = new Cooldown();
 
@@ -26,6 +31,17 @@ namespace Beatshake.Core
                 SetProperty(ref _containingInstrument, value);
             }
         }
+
+        private IMotionDataProcessor MotionDataProcessor { get; set; }
+        private IMotionDataProvider MotionDataProvider { get; set; }
+
+        private DelegateCommand _teachCommand;
+        public DelegateCommand TeachCommand
+        {
+            get { return _teachCommand; }
+            set { SetProperty(ref _teachCommand, value); }
+        }
+
 
         public string Name
         {
@@ -39,9 +55,12 @@ namespace Beatshake.Core
         [DefaultValue(1)]
         public int Number { get; set; }
 
-        public InstrumentalComponent(IInstrumentalIdentification containingInstrument, string name)
+        public InstrumentalComponent(IInstrumentalIdentification containingInstrument, 
+            IMotionDataProcessor dataProcessor, IMotionDataProvider dataProvider, string name)
         {
             _player = Xamarin.Forms.DependencyService.Get<IInstrumentPlayer>(DependencyFetchTarget.NewInstance);
+            MotionDataProcessor = dataProcessor;
+            MotionDataProvider = dataProvider;
 
             Number = 1;
             Name = name;
@@ -51,6 +70,7 @@ namespace Beatshake.Core
             PropertyChanged += (sender, args) => PreLoadAudio();
 
             PlaySoundCommand = DelegateCommand.FromAsyncHandler(PlaySound);
+            TeachCommand = new DelegateCommand(Teach);
         }
 
         public async void PreLoadAudio()
@@ -91,6 +111,82 @@ namespace Beatshake.Core
         {
             get { return _playSoundCommand; }
             set { SetProperty(ref _playSoundCommand, value); }
+        }
+
+
+        public double XCoefficients
+        {
+            get { return _xCoefficients; }
+            set { SetProperty(ref _xCoefficients, value); }
+        }
+
+        public double YCoefficients
+        {
+            get { return _yCoefficients; }
+            set { SetProperty(ref _yCoefficients, value); }
+        }
+
+        public double ZCoefficients
+        {
+            get { return _zCoefficients; }
+            set { SetProperty(ref _zCoefficients, value); }
+        }
+
+
+        public Teachement Teachement
+        {
+            get { return _teachement; }
+            set
+            {
+                SetProperty(ref _teachement, value);
+                OnPropertyChanged(nameof(XCoefficients));
+                OnPropertyChanged(nameof(YCoefficients));
+                OnPropertyChanged(nameof(ZCoefficients));
+            }
+        }
+
+        protected void Teach()
+        {
+            // unregister current processing
+            MotionDataProcessor.MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
+
+            Xamarin.Forms.DependencyService.Get<IUserSoudNotifier>().Notify();
+
+            Teachement = TeachMovement();
+
+            // reenable motion processing 
+            MotionDataProcessor.MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
+        }
+
+        protected Teachement TeachMovement()
+        {
+            MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
+
+            // record movement
+            Stopwatch stopwatch = new Stopwatch();
+
+            List<double> xValues = new List<double>();
+            List<double> yValues = new List<double>();
+            List<double> zValues = new List<double>();
+            List<double> timesteps = new List<double>();
+
+            stopwatch.Start();
+            while (stopwatch.ElapsedMilliseconds < 2000)
+            {
+                timesteps.Add(stopwatch.ElapsedMilliseconds);
+                xValues.Add(MotionDataProvider.Acceleration.Trans[0]);
+                yValues.Add(MotionDataProvider.Acceleration.Trans[1]);
+                zValues.Add(MotionDataProvider.Acceleration.Trans[2]);
+                var task = Task.Delay((int)MotionDataProvider.RefreshRate);
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            var teachement = Teachement.Create(timesteps, xValues, yValues, zValues);
+
+            MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
+
+            return teachement;
         }
     }
 
@@ -152,6 +248,8 @@ namespace Beatshake.Core
             }
             return false;
         }
+
+
 
     }
 }

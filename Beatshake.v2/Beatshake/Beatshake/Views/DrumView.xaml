@@ -51,7 +51,7 @@
 
                 </Button.GestureRecognizers>
               </Button>
-              <Button Text="Teach me!"  HeightRequest="30" Command="{Binding TeachCommand}">
+              <Button Text="Teach me!"  HeightRequest="30">
                 <Button.GestureRecognizers>
                   <TapGestureRecognizer  Command="{Binding TeachCommand}">
                   </TapGestureRecognizer>
@@ -59,16 +59,30 @@
                 </Button.GestureRecognizers>                
               </Button>
               
-              <Label Text="{Binding Teachement.XCoefficients}"></Label>
-              <Label Text="{Binding Teachement.YCoefficients}"></Label>
-              <Label Text="{Binding Teachement.ZCoefficients}"></Label>
+              <Label  Text="{Binding XCoefficients}"></Label>
+              <Label  Text="{Binding YCoefficients}"></Label>
+              <Label  Text="{Binding ZCoefficients}"></Label>
             </StackLayout>
           </ViewCell>
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
-      <Switch Grid.Row="2" IsToggled="{Binding TestTeachement}"></Switch>
-      <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="2"></Slider>
+      <StackLayout Orientation="Vertical" Grid.Row="2">
+      <StackLayout Grid.Row="2" Orientation="Horizontal">
+      <Label Text="Use Teachement"></Label>  
+      <Switch  Grid.Row="2" IsToggled="{Binding TestTeachement}"></Switch>
+      </StackLayout>
+      <StackLayout Grid.Row="2">
+      <Label Text="Teachement tolerance"></Label>  
+      <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="5"></Slider>
+        </StackLayout>
+      <StackLayout Grid.Row="2">
+      <Label Text="Response Time"></Label>  
+      <Label Text="{Binding ResponseTime}"></Label>  
+      <Slider Grid.Row="3" Value="{Binding ResponseTime}"  Minimum="0" Maximum="100"></Slider>
+        </StackLayout>
+        
+  </StackLayout>
   </Grid>
   </RelativeLayout>
 </RelativeLayout>

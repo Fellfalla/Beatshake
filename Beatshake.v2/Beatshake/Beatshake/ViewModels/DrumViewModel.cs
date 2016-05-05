@@ -13,19 +13,23 @@ using Xamarin.Forms;
 
 namespace Beatshake.ViewModels
 {
+
+
     public class DrumViewModel : InstrumentViewModelBase
     {
 
         public DrumViewModel(INavigationService navigationService, IMotionDataProvider motionDataProvider) : base(navigationService, motionDataProvider)
         {
+            _timeElapsedStopwatch.Start();
+            
             Components = new ObservableCollection<InstrumentalComponent>();
             Title = "DrumKit 1";
             Kit = "Kit1";
             foreach (var allName in DrumComponentNames.GetAllNames())
             {
-                Components.Add(new InstrumentalComponent(this, allName));
+                Components.Add(new InstrumentalComponent(this, this, motionDataProvider, allName));
             }
-            MotionDataProvider.RefreshRate = BeatshakeSettings.SensorRefreshInterval;
+            ResponseTime = BeatshakeSettings.SensorRefreshInterval;
         }
 
         private string _heading = "Shake your Drums!";
@@ -39,32 +43,84 @@ namespace Beatshake.ViewModels
         private ObservableCollection<InstrumentalComponent> _components;
         private string _title;
         private string _kit;
-        private Teachement _teachement;
         private bool _testTeachement;
         private double _teachementTolerance;
+        private readonly List<double> XHistory = new List<double>(); 
+        private readonly List<double> YHistory = new List<double>(); 
+        private readonly List<double> ZHistory = new List<double>(); 
+        private readonly List<long> Timestamps = new List<long>(); 
+        private readonly Stopwatch _timeElapsedStopwatch = new Stopwatch();
+        private uint _responseTime;
 
-        
 
-        protected override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
+        public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
-            if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
+            Timestamps.Add(_timeElapsedStopwatch.ElapsedMilliseconds);
+            XHistory.Add(motionDataProvider.Acceleration.Trans[0]);
+            YHistory.Add(motionDataProvider.Acceleration.Trans[1]);
+            ZHistory.Add(motionDataProvider.Acceleration.Trans[2]);
+
+            if (TestTeachement)
+            {
+                var choosenOne = Components.Where(component => component.Teachement != null).Random();
+                if (choosenOne == null) // Noone has been teched
+                {
+                    await Components.Random().PlaySoundCommand.Execute();
+                    return;
+                }
+                var cap = (int) (2000/BeatshakeSettings.SensorRefreshInterval);
+
+                var tooMuch = XHistory.Count - cap;
+                if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
+                {
+                    XHistory.RemoveRange(0, tooMuch);
+                    YHistory.RemoveRange(0, tooMuch);
+                    ZHistory.RemoveRange(0, tooMuch);
+                    Timestamps.RemoveRange(0, tooMuch);
+                }
+
+
+                var normaliedTimestamps = Timestamps.Select(l =>(double) l - Timestamps.First()).ToList();
+                var xCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,XHistory );
+                var yCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,YHistory );
+                var zCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,ZHistory );
+                var start = normaliedTimestamps.First();
+                var end = normaliedTimestamps.Last();
+                var integral =  GetIntegralDifference(choosenOne.Teachement.XCoefficients, xCoeff, start, end);
+                integral +=     GetIntegralDifference(choosenOne.Teachement.YCoefficients, yCoeff, start, end);
+                integral +=     GetIntegralDifference(choosenOne.Teachement.ZCoefficients, zCoeff, start, end);
+                if (AreFunctionsAlmostEqual(integral))
+                {
+                    await choosenOne.PlaySoundCommand.Execute();
+                }
+            }
+
+            else if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
             {
                 await Components.Random().PlaySoundCommand.Execute();
 
-                //var tasks = new Task[Components.Count];
-
-                //for (int i = 0; i < Components.Count; i++)
-                //{
-                //    tasks[i] = Components[i].PlaySoundCommand.Execute();
-                //}
-                      
-                ////foreach (var component in Components)
-                ////{
-                ////    await component.PlaySoundCommand.Execute();
-                ////}
-                //await Task.WhenAll(tasks);
             }
             
+        }
+
+        private bool AreFunctionsAlmostEqual(double integral)
+        {
+            return integral < TeachementTolerance;
+        }
+
+        private double GetIntegralDifference(Tuple<double, double, double> func1, Tuple<double, double, double> func2, double start, double end)
+        {
+            double integral = 0; // this integral means the speed difference
+            int precision = 100;
+            double delta = (end - start) / precision;
+            for (double x = start; x < end; x += precision)
+            {
+                var diff = (func1.Item1 * x * x + func1.Item2 * x + func1.Item3) -
+                           (func2.Item1 * x * x + func2.Item2 * x + func2.Item3);
+                integral += Math.Abs(diff) * delta;
+            }
+
+            return integral;
         }
 
         public override string Kit
@@ -80,26 +136,13 @@ namespace Beatshake.ViewModels
             }
         }
 
-        public Teachement Teachement
+
+        public double TeachementTolerance
         {
-            get { return _teachement; }
-            set { SetProperty(ref _teachement, value); }
+            get { return _teachementTolerance; }
+            set { SetProperty(ref _teachementTolerance, value); }
         }
 
-        protected override void Teach()
-        {
-            
-
-            // unregister current processing
-            MotionDataProvider.MotionDataRefreshed -= ProcessMotionData;
-
-            Xamarin.Forms.DependencyService.Get<IUserSoudNotifier>().Notify();
-
-            Teachement = TeachMovement();
-
-            // reenable motion processing 
-            MotionDataProvider.MotionDataRefreshed += ProcessMotionData;
-        }
 
         public ObservableCollection<InstrumentalComponent> Components
         {
@@ -114,10 +157,14 @@ namespace Beatshake.ViewModels
         }
 
 
-        public double TeachementTolerance
+        public uint ResponseTime
         {
-            get { return _teachementTolerance; }
-            set { SetProperty(ref _teachementTolerance, value); }
+            get { return _responseTime; }
+            set
+            {
+                SetProperty(ref _responseTime, value);
+                if (MotionDataProvider != null) MotionDataProvider.RefreshRate = value;
+            }
         }
 
         public string Title

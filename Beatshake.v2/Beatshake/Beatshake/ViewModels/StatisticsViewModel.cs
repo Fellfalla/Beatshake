@@ -57,7 +57,7 @@ namespace Beatshake.ViewModels
         {
         }
 
-        protected override void ProcessMotionData(IMotionDataProvider motionDataProvider)
+        public override void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
             if (_stopwatch.IsRunning)
             {

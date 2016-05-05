@@ -10,7 +10,7 @@ using Beatshake.DependencyServices;
             XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
 
             XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
-            toastTextElements[0].AppendChild(toastXml.CreateTextNode("You've got 5 seconds"));
+            toastTextElements[0].AppendChild(toastXml.CreateTextNode("You've got 2 seconds"));
 
             IXmlNode toastNode = toastXml.SelectSingleNode("/toast");
             ((XmlElement)toastNode).SetAttribute("launch", "MainPage.xaml");

@@ -30,5 +30,9 @@ namespace Beatshake.Views
         //    return true;
         //    //return base.OnBackButtonPressed();
         //}
+        //private async void TeachingStart(object sender, EventArgs e)
+        //{
+        //    await ViewModel.TeachCommand.Execute();
+        //}
     }
 }

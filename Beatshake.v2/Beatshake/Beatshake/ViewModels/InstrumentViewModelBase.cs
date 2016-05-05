@@ -7,24 +7,25 @@ namespace Beatshake.ViewModels
 {
     public abstract class InstrumentViewModelBase : MeasureViewModelBase, IInstrumentalIdentification
     {
-        private DelegateCommand _teachCommand;
+
 
         public InstrumentViewModelBase(INavigationService navigationService, IMotionDataProvider motionDataProvider) : base(navigationService, motionDataProvider)
         {
-            TeachCommand = new DelegateCommand(Teach);
+            //TeachCommand = new DelegateCommand(Teach);
         }
 
         public abstract string Kit { get; set; }
 
-        public DelegateCommand TeachCommand
-        {
-            get { return _teachCommand; }
-            set { SetProperty(ref _teachCommand, value); }
-        }
+        //private DelegateCommand _teachCommand;
+        //public DelegateCommand TeachCommand
+        //{
+        //    get { return _teachCommand; }
+        //    set { SetProperty(ref _teachCommand, value); }
+        //}
 
         //public DelegateCommand<InstrumentalComponent> TeachCommand { get; set; }
 
         //protected abstract void Teach(InstrumentalComponent component);
-        protected abstract void Teach();
+        //protected abstract void Teach();
     }
 }

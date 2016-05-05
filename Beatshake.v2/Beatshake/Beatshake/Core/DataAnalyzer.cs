@@ -11,14 +11,14 @@ namespace Beatshake.Core
         /// <summary>
         /// The Tuple contains the three coefficients for a quadratic polynome f(x) = ax^2 + bx + c
         /// </summary>
-        public static Tuple<double, double, double> CalculateCoefficients(double[] X, double[] Y)
+        public static Tuple<double, double, double> CalculateCoefficients(IList<double> X, IList<double> Y)
         {
-            if (X.Length != Y.Length)
+            if (X.Count != Y.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(Y), "Both arrays have to be of same size");
             }
 
-            int measurePoints = X.Length;
+            int measurePoints = X.Count;
             double[] XY = new double[measurePoints];
             double[] XX = new double[measurePoints];
             double[] XXX = new double[measurePoints];
@@ -73,6 +73,32 @@ namespace Beatshake.Core
 
             return (-coefficients.Item2)/(2*coefficients.Item1);
 
+        }
+
+        public static IEnumerable<double> GetFunctionIntersections(Tuple<double, double, double> func1,
+            Tuple<double, double, double> func2)
+        {
+            // (a1 - a2)x^2 + (b1 - b2)x + (c1 - c2)
+            var a = func1.Item1 - func2.Item1;
+            var b = func1.Item2 - func2.Item2;
+            var c = func1.Item3 - func2.Item3;
+            var radicand = b*b - 4*a*c; //b^2 -4ac
+            var dominator = 2*a;
+            if (radicand < 0)
+            {
+                yield return double.NaN;
+            }
+            else if (Math.Abs(radicand) <= double.MinValue)
+            {
+                yield return -b/dominator;
+            }
+            else
+            {
+                var sqrtResult = Math.Sqrt(radicand);
+                yield return (-b + sqrtResult)/dominator;
+                yield return (-b - sqrtResult)/dominator;
+            }
+            yield break;
         }
 
         public static Tuple<double, double, double> NormalizeQuadraticFunction(Tuple<double, double, double> coefficients)
