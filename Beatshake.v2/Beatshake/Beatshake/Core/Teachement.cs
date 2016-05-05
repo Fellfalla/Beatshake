@@ -17,6 +17,9 @@ namespace Beatshake.Core
         public static Teachement Create(double[] timesteps, double[] xValues, double[] yValues, double[] zValues)
         {
             var teachement = new Teachement();
+
+            // Get point with highest absolute Acceleration
+
             teachement.XCoefficients = DataAnalyzer.CalculateCoefficients(timesteps, xValues);
             teachement.YCoefficients = DataAnalyzer.CalculateCoefficients(timesteps, yValues);
             teachement.ZCoefficients = DataAnalyzer.CalculateCoefficients(timesteps, zValues);
