@@ -38,6 +38,16 @@ namespace Beatshake.Core
         /// This specifies the random variation of the Pan while playing sound.
         /// </summary>
         public static double RandomPan = 1;
+
+        /// <summary>
+        /// This is the amount of subsamples for calculating the integral of a analytic function in a given interval.
+        /// </summary>
+        public static int IntegralPrecision = 30;
+    
+        /// <summary>
+        /// This is the amount of points which are used to create a function aproximation upon measure values.
+        /// </summary>
+        public static int SamplePoints = 6;
     }
 
     public static class BeatshakeGlobals

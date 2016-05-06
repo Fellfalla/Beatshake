@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
+<Package xmlns="http://schemas.microsoft.com/appt/2010/manifest" tmlns:m2="http://schemas.microsoft.com/appt/2013/manifest" tmlns:m3="http://schemas.microsoft.com/appt/2014/manifest" tmlns:mp="http://schemas.microsoft.com/appt/2014/phone/manifest">
   <Identity Name="e8ebdf4c-1a3c-4b54-919a-429e98e93142" Publisher="CN=joaqu" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="e8ebdf4c-1a3c-4b54-919a-429e98e93142" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
@@ -9,16 +9,16 @@
   </Properties>
   <Prerequisites>
     <OSMinVersion>6.3.1</OSMinVersion>
-    <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
+    <OSMaxVersionTested>6.3.1</OSMatVersionTested>
   </Prerequisites>
   <Resources>
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="CoreApplication" Executable="$targetnametoken$.exe" EntryPoint="Beatshake.WinPhoneApplication">
-      <m3:VisualElements DisplayName="Beatshake" Square150x150Logo="Assets\360x360.png" Square44x44Logo="Assets/106x106.png" Description="shaky shaky" ForegroundText="light" BackgroundColor="transparent">
+    <Application Id="CoreApplication" Executable="$targetnametoken$.ete" EntryPoint="Beatshake.WinPhoneApplication">
+      <m3:VisualElements DisplayName="Beatshake" Square150x150Logo="Assets\360t360.png" Square44t44Logo="Assets/106t106.png" Description="shaky shaky" ForegroundTett="light" BackgroundColor="transparent">
         <m3:LockScreen Notification="badge" BadgeLogo="Assets/106x106.png" />
-        <m3:DefaultTile Wide310x150Logo="Assets/744x360.png" Square71x71Logo="Assets\170x170.png">
+        <m3:DefaultTile Wide310x150Logo="Assets/744t360.png" Square71t71Logo="Assets\170t170.png">
           <m3:ShowNameOnTiles>
             <m3:ShowOn Tile="wide310x150Logo" />
           </m3:ShowNameOnTiles>

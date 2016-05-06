@@ -44,6 +44,7 @@
     <Compile Include="Core\IInstrumentalIdentification.cs" />
     <Compile Include="Core\InstancePool.cs" />
     <Compile Include="Core\InstrumentalComponent.cs" />
+    <Compile Include="Core\QuadraticFunction.cs" />
     <Compile Include="Core\Teachement.cs" />
     <Compile Include="Core\Utility.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />

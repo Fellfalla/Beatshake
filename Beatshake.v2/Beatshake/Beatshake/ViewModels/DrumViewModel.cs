@@ -43,7 +43,7 @@ namespace Beatshake.ViewModels
         private ObservableCollection<InstrumentalComponent> _components;
         private string _title;
         private string _kit;
-        private bool _testTeachement;
+        private bool _useTeachement;
         private double _teachementTolerance;
         private readonly List<double> XHistory = new List<double>(); 
         private readonly List<double> YHistory = new List<double>(); 
@@ -51,7 +51,9 @@ namespace Beatshake.ViewModels
         private readonly List<long> Timestamps = new List<long>(); 
         private readonly Stopwatch _timeElapsedStopwatch = new Stopwatch();
         private uint _responseTime;
+        private bool _useFunctionAnalysis;
 
+        private double _lastGradient;
 
         public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
@@ -59,8 +61,18 @@ namespace Beatshake.ViewModels
             XHistory.Add(motionDataProvider.Acceleration.Trans[0]);
             YHistory.Add(motionDataProvider.Acceleration.Trans[1]);
             ZHistory.Add(motionDataProvider.Acceleration.Trans[2]);
+            var cap = Teachement.Settings.SamplePoints;
 
-            if (TestTeachement)
+            var tooMuch = XHistory.Count - cap;
+            if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
+            {
+                XHistory.RemoveRange(0, tooMuch);
+                YHistory.RemoveRange(0, tooMuch);
+                ZHistory.RemoveRange(0, tooMuch);
+                Timestamps.RemoveRange(0, tooMuch);
+            }
+
+            if (UseTeachement)
             {
                 var choosenOne = Components.Where(component => component.Teachement != null).Random();
                 if (choosenOne == null) // None has been teached yet
@@ -69,31 +81,55 @@ namespace Beatshake.ViewModels
                     return;
                 }
                 //var cap = (int) (2000/BeatshakeSettings.SensorRefreshInterval);
-                var cap = Teachement.Settings.SamplePoints;
-
-                var tooMuch = XHistory.Count - cap;
-                if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
-                {
-                    XHistory.RemoveRange(0, tooMuch);
-                    YHistory.RemoveRange(0, tooMuch);
-                    ZHistory.RemoveRange(0, tooMuch);
-                    Timestamps.RemoveRange(0, tooMuch);
-                }
-
 
                 var normaliedTimestamps = Utility.NormalizeTimeStamps(Timestamps);
-                var xCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,XHistory );
-                var yCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,YHistory );
-                var zCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,ZHistory );
+                var xCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, XHistory );
+                var yCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, YHistory );
+                var zCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, ZHistory );
                 var start = normaliedTimestamps.First();
                 var end = normaliedTimestamps.Last();
-                var integral =  GetIntegralDifference(choosenOne.Teachement.XCoefficients, xCoeff, start, end);
-                integral +=     GetIntegralDifference(choosenOne.Teachement.YCoefficients, yCoeff, start, end);
-                integral +=     GetIntegralDifference(choosenOne.Teachement.ZCoefficients, zCoeff, start, end);
-                if (AreFunctionsAlmostEqual(integral))
+                var integral = DataAnalyzer.GetIntegralDifference(choosenOne.Teachement.XCoefficients, xCoeff, start, end);
+                integral += DataAnalyzer.GetIntegralDifference(choosenOne.Teachement.YCoefficients, yCoeff, start, end);
+                integral += DataAnalyzer.GetIntegralDifference(choosenOne.Teachement.ZCoefficients, zCoeff, start, end);
+                if (DataAnalyzer.AreFunctionsAlmostEqual(integral, TeachementTolerance, end - start))
                 {
                     await choosenOne.PlaySoundCommand.Execute();
                 }
+            }
+            if (UseFunctionAnalysis)
+            {
+                var xFunction = new QuadraticFunction();
+                var yFunction = new QuadraticFunction();
+                var zFunction = new QuadraticFunction();
+
+                // Get Coefficients
+                var normaliedTimestamps = Utility.NormalizeTimeStamps(Timestamps);
+                xFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, XHistory);
+                yFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, YHistory);
+                zFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, ZHistory);
+
+                // Set start and Endpoints
+                var start = normaliedTimestamps[0];
+                var end = normaliedTimestamps.Last();
+                xFunction.Start = start;
+                xFunction.End = end;
+                yFunction.Start = start;
+                yFunction.End = end;
+                zFunction.Start = start;
+                zFunction.End = end;
+
+                var gradX = 2 * xFunction.A * end + xFunction.B;
+                var gradY = 2 * yFunction.A * end + yFunction.B;
+                var gradZ = 2 * zFunction.A * end + zFunction.B;
+
+                var absGrad = Math.Abs(gradX) + Math.Abs(gradY) + Math.Abs(gradZ);
+
+                if (absGrad < _lastGradient && absGrad > TeachementTolerance / 200)
+                {
+                    await Components.Random().PlaySoundCommand.Execute();
+                }
+
+                _lastGradient = absGrad;
             }
 
             else if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
@@ -102,26 +138,6 @@ namespace Beatshake.ViewModels
 
             }
             
-        }
-
-        private bool AreFunctionsAlmostEqual(double integral)
-        {
-            return integral < TeachementTolerance;
-        }
-
-        private double GetIntegralDifference(Tuple<double, double, double> func1, Tuple<double, double, double> func2, double start, double end)
-        {
-            double integral = 0; // this integral means the speed difference
-            int precision = 100;
-            double delta = (end - start) / precision;
-            for (double x = start; x < end; x += precision)
-            {
-                var diff = (func1.Item1 * x * x + func1.Item2 * x + func1.Item3) -
-                           (func2.Item1 * x * x + func2.Item2 * x + func2.Item3);
-                integral += Math.Abs(diff) * delta;
-            }
-
-            return integral;
         }
 
         public override string Kit
@@ -151,10 +167,16 @@ namespace Beatshake.ViewModels
             set { SetProperty(ref _components, value); }
         }
 
-        public bool TestTeachement
+        public bool UseTeachement
         {
-            get { return _testTeachement; }
-            set { SetProperty(ref _testTeachement, value); }
+            get { return _useTeachement; }
+            set { SetProperty(ref _useTeachement, value); }
+        }
+
+        public bool UseFunctionAnalysis 
+        {
+            get { return _useFunctionAnalysis; }
+            set { SetProperty(ref _useFunctionAnalysis, value); }
         }
 
 

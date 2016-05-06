@@ -68,10 +68,14 @@
       </ListView.ItemTemplate>
     </ListView>
       <StackLayout Orientation="Vertical" Grid.Row="2">
-      <StackLayout Grid.Row="2" Orientation="Horizontal">
-      <Label Text="Use Teachement"></Label>  
-      <Switch  Grid.Row="2" IsToggled="{Binding TestTeachement}"></Switch>
-      </StackLayout>
+        <StackLayout Grid.Row="2" Orientation="Horizontal">
+        <Label Text="Use Teachement"></Label>  
+        <Switch  Grid.Row="2" IsToggled="{Binding TestTeachement}"></Switch>
+        </StackLayout>
+        <StackLayout Grid.Row="2" Orientation="Horizontal">
+        <Label Text="Use Function analysis"></Label>  
+        <Switch  Grid.Row="2" IsToggled="{Binding UseFunctionAnalysis}"></Switch>
+        </StackLayout>
       <StackLayout Grid.Row="2">
       <Label Text="Teachement tolerance"></Label>  
       <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="30"></Slider>

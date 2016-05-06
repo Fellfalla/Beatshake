@@ -12,8 +12,6 @@ namespace Beatshake.Core
 {
     public class Teachement
     {
-        public static TeachementSettings Settings = new TeachementSettings();
-
         public Tuple<double, double, double> XCoefficients;
         public Tuple<double, double, double> YCoefficients;
         public Tuple<double, double, double> ZCoefficients;
@@ -24,15 +22,14 @@ namespace Beatshake.Core
             var teachement = new Teachement();
 
             // Get point with highest absolute Acceleration
-            int index;
-            var xMax = DataAnalyzer.GetPeak(timesteps, new IList<double>[]{ xValues , yValues, zValues }, out index);
+            var index = DataAnalyzer.GetPeak(timesteps, new IList<double>[]{ xValues , yValues, zValues });
 
             if (index == -1)
             {
                 throw new InvalidOperationException("No peak value could be detected.");
             }
 
-            int teachStartPoint = Math.Max(index - Settings.SamplePoints, 0);
+            int teachStartPoint = Math.Max(index - BeatshakeSettings.SamplePoints, 0);
 
             teachement.XCoefficients = DataAnalyzer.CalculateCoefficients(timesteps.SubArray(teachStartPoint, index), xValues.SubArray(teachStartPoint, index));
             teachement.YCoefficients = DataAnalyzer.CalculateCoefficients(timesteps.SubArray(teachStartPoint, index), yValues.SubArray(teachStartPoint, index));
@@ -48,14 +45,14 @@ namespace Beatshake.Core
     }
 
 
-    public class TeachementSettings
-    {
-        public TeachementSettings()
-        {
-            this.AssignDefaultValueAttributes();
-        }
+    //public class TeachementSettings
+    //{
+    //    public TeachementSettings()
+    //    {
+    //        this.AssignDefaultValueAttributes();
+    //    }
 
-        [DefaultValue(5)]
-        public int SamplePoints { get; set; }
-    }
+    //    [DefaultValue(4)]
+    //    public int SamplePoints { get; set; }
+    //}
 }
