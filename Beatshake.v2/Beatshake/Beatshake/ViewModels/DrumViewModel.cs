@@ -55,7 +55,7 @@ namespace Beatshake.ViewModels
 
         public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
-            Timestamps.Add(_timeElapsedStopwatch.ElapsedMilliseconds);
+            Timestamps.Add((long) motionDataProvider.Acceleration.Timestamp);
             XHistory.Add(motionDataProvider.Acceleration.Trans[0]);
             YHistory.Add(motionDataProvider.Acceleration.Trans[1]);
             ZHistory.Add(motionDataProvider.Acceleration.Trans[2]);
@@ -63,12 +63,13 @@ namespace Beatshake.ViewModels
             if (TestTeachement)
             {
                 var choosenOne = Components.Where(component => component.Teachement != null).Random();
-                if (choosenOne == null) // Noone has been teched
+                if (choosenOne == null) // None has been teached yet
                 {
-                    await Components.Random().PlaySoundCommand.Execute();
+                    //await Components.Random().PlaySoundCommand.Execute();
                     return;
                 }
-                var cap = (int) (2000/BeatshakeSettings.SensorRefreshInterval);
+                //var cap = (int) (2000/BeatshakeSettings.SensorRefreshInterval);
+                var cap = Teachement.Settings.SamplePoints;
 
                 var tooMuch = XHistory.Count - cap;
                 if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
@@ -80,7 +81,7 @@ namespace Beatshake.ViewModels
                 }
 
 
-                var normaliedTimestamps = Timestamps.Select(l =>(double) l - Timestamps.First()).ToList();
+                var normaliedTimestamps = Utility.NormalizeTimeStamps(Timestamps);
                 var xCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,XHistory );
                 var yCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,YHistory );
                 var zCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps,ZHistory );

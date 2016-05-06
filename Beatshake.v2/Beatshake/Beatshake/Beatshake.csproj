@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="Converter\ToStringConverter.cs" />
     <Compile Include="CoreApplication.cs" />
+    <Compile Include="Core\BeatshakeStatus.cs" />
     <Compile Include="Core\DataAnalyzer.cs" />
     <Compile Include="Core\DataContainer.cs" />
     <Compile Include="Core\IInstrumentalComponentIdentification.cs" />
@@ -44,6 +45,8 @@
     <Compile Include="Core\InstancePool.cs" />
     <Compile Include="Core\InstrumentalComponent.cs" />
     <Compile Include="Core\Teachement.cs" />
+    <Compile Include="Core\Utility.cs" />
+    <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\RandomExtensions.cs" />
     <Compile Include="ViewModels\InstrumentViewModelBase.cs" />

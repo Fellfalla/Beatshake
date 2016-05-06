@@ -27,7 +27,11 @@ class MotionDataProviderImplementation : IMotionDataProvider
 
         if (_gyrometer == null)
         {
-            new UserTextNotifierImplementation().Notify("Your phone doesn't have a gyrometer.\n This might reduce your user experience drastically.");
+            if (!BeatshakeStatus.HasUserToldGyroscopeIsMissing)
+            {
+                new UserTextNotifierImplementation().Notify("Your phone doesn't have a gyrometer.\n This might reduce your user experience drastically.");
+                BeatshakeStatus.HasUserToldGyroscopeIsMissing = true;
+            }
         }
         else
         {
@@ -42,8 +46,9 @@ class MotionDataProviderImplementation : IMotionDataProvider
     {
         await
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                CoreDispatcherPriority.High, () =>
+                CoreDispatcherPriority.Normal, () =>
                 {
+                    Acceleration.Timestamp = (args.Reading.Timestamp.DateTime - DateTime.MinValue).TotalMilliseconds;
                     Acceleration.Trans[0] = args.Reading.AccelerationX;
                     Acceleration.Trans[1] = args.Reading.AccelerationY;
                     Acceleration.Trans[2] = args.Reading.AccelerationZ;
@@ -54,8 +59,9 @@ class MotionDataProviderImplementation : IMotionDataProvider
     {
         await
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                CoreDispatcherPriority.High, () =>
+                CoreDispatcherPriority.Normal, () =>
                 {
+                    Velocity.Timestamp = (args.Reading.Timestamp.DateTime - DateTime.MinValue).TotalMilliseconds;
                     Velocity.Rot[0] = args.Reading.AngularVelocityX;
                     Velocity.Rot[1] = args.Reading.AngularVelocityY;
                     Velocity.Rot[2] = args.Reading.AngularVelocityZ;

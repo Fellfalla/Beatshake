@@ -1,25 +1,39 @@
 using System;
+using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Beatshake.DependencyServices;
 
     class UserTextNotifierImplementation : IUserTextNotifier
     {
-        public async void Notify(string message)
+
+        public async Task Notify(string message)
         {
-            await
-                Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                    CoreDispatcherPriority.High,
+
+        //Source: http://stackoverflow.com/questions/17274865/messagedialog-needs-to-wait-for-user-input
+        var tsc = new TaskCompletionSource<bool>();
+            var dialogTask = tsc.Task;
+
+        await
+                Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal,
                     async () =>
                     {
                         var dialog = new MessageDialog(message);
-                        await dialog.ShowAsync();
+                        dialog.Commands.Add(new UICommand("OK"));
+                        
+                        var result = await dialog.ShowAsync();
+
+                        tsc.SetResult(true);
                     });
+
+            var res = await dialogTask;
+            return;
 
         }
 
-        public void Notify(Exception exception)
+        public async Task Notify(Exception exception)
         {
-            Notify(exception.ToString());
+            await Notify(exception.ToString());
         }
     }

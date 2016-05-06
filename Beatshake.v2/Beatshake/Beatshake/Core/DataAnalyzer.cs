@@ -57,7 +57,7 @@ namespace Beatshake.Core
         }
 
         /// <summary>
-        /// Returns the X-Value where the peak will be expected.
+        /// Returns the x-Value where the peak will be expected.
         /// Min values and Max values are both handled as potential peaks.
         /// </summary>
         /// <param name="coefficients"></param>
@@ -73,6 +73,39 @@ namespace Beatshake.Core
 
             return (-coefficients.Item2)/(2*coefficients.Item1);
 
+        }
+
+        /// <summary>
+        /// Looks for the highest value of the given data.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="values"></param>
+        /// <param name="index">Index of the peak value. Returns -1 if theres no peak.</param>
+        /// <returns></returns>
+        public static double GetPeak(IList<double> x, IList<IList<double>> values, out int index)
+        {
+            double max = double.NegativeInfinity;
+            double maxX = double.NaN;
+            double dataSets = values.Count;
+            index = -1;
+
+            // Get max Y-value and return that x value
+            for (int i = 0; i < x.Count; i++)
+            {
+                double abs = 0;
+                for (int j = 0; j < dataSets; j++)
+                {
+                    abs += Math.Abs(values[j][i]);
+                }
+
+                if (abs > max)
+                {
+                    max = abs;
+                    maxX = x[i];
+                    index = i;
+                }
+            }
+            return maxX;
         }
 
         public static IEnumerable<double> GetFunctionIntersections(Tuple<double, double, double> func1,

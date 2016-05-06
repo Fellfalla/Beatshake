@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Beatshake.DependencyServices;
 using Beatshake.ViewModels;
@@ -15,12 +16,9 @@ namespace Beatshake.Core
     public class InstrumentalComponent : BindableBase, IInstrumentalComponentIdentification
     {
         private readonly IInstrumentPlayer _player;
-        private double _xCoefficients;
-        private double _yCoefficients;
-        private double _zCoefficients;
         private object _audionInstance;
         private Teachement _teachement;
-
+        private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
         private Cooldown cooldown = new Cooldown();
 
         public IInstrumentalIdentification ContainingInstrument
@@ -113,81 +111,84 @@ namespace Beatshake.Core
             set { SetProperty(ref _playSoundCommand, value); }
         }
 
-
-        public double XCoefficients
-        {
-            get { return _xCoefficients; }
-            set { SetProperty(ref _xCoefficients, value); }
-        }
-
-        public double YCoefficients
-        {
-            get { return _yCoefficients; }
-            set { SetProperty(ref _yCoefficients, value); }
-        }
-
-        public double ZCoefficients
-        {
-            get { return _zCoefficients; }
-            set { SetProperty(ref _zCoefficients, value); }
-        }
-
-
         public Teachement Teachement
         {
             get { return _teachement; }
             set
             {
                 SetProperty(ref _teachement, value);
-                OnPropertyChanged(nameof(XCoefficients));
-                OnPropertyChanged(nameof(YCoefficients));
-                OnPropertyChanged(nameof(ZCoefficients));
             }
         }
 
-        protected void Teach()
+        protected async void Teach()
         {
             // unregister current processing
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
 
-            Xamarin.Forms.DependencyService.Get<IUserSoudNotifier>().Notify();
+            Teachement = await TeachMovement();
 
-            Teachement = TeachMovement();
 
             // reenable motion processing 
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
         }
 
-        protected Teachement TeachMovement()
+        protected async Task<Teachement> TeachMovement()
         {
             MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
 
             // record movement
-            Stopwatch stopwatch = new Stopwatch();
 
             List<double> xValues = new List<double>();
             List<double> yValues = new List<double>();
             List<double> zValues = new List<double>();
             List<double> timesteps = new List<double>();
+            var userConfirmation = Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
 
-            stopwatch.Start();
-            while (stopwatch.ElapsedMilliseconds < 2000)
+            var measureTask = Task.Factory.StartNew(() =>
             {
-                timesteps.Add(stopwatch.ElapsedMilliseconds);
-                xValues.Add(MotionDataProvider.Acceleration.Trans[0]);
-                yValues.Add(MotionDataProvider.Acceleration.Trans[1]);
-                zValues.Add(MotionDataProvider.Acceleration.Trans[2]);
-                var task = Task.Delay((int)MotionDataProvider.RefreshRate);
-                task.Wait();
-            }
-            stopwatch.Stop();
+                while (!userConfirmation.IsCompleted)
+                {
+                    timesteps.Add(MotionDataProvider.Acceleration.Timestamp);
+                    xValues.Add(MotionDataProvider.Acceleration.Trans[0]);
+                    yValues.Add(MotionDataProvider.Acceleration.Trans[1]);
+                    zValues.Add(MotionDataProvider.Acceleration.Trans[2]);
+                    var task = Task.Delay((int) MotionDataProvider.RefreshRate);
+                    task.Wait();
+                }
+            });
 
-            var teachement = Teachement.Create(timesteps, xValues, yValues, zValues);
+            
+
+            //userConfirmation.Wait(30000);
+            await userConfirmation.ConfigureAwait(true);
+            try
+            {
+                //Task.WaitAll(userConfirmation, measureTask);
+                
+                await measureTask;
+            }
+            catch (TaskCanceledException)
+            {
+            }
+
+            Teachement teachement = null;
+            try
+            {
+                var normalizedTimestamps = Utility.NormalizeTimeStamps(timesteps);
+                teachement = Teachement.Create(normalizedTimestamps, xValues, yValues, zValues);
+            }
+            catch (InvalidOperationException)
+            {
+                Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
+            }
 
             MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
 
             return teachement;
         }
+
+
+
     }
 
     public class Cooldown

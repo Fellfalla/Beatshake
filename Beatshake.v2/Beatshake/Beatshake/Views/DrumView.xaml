@@ -59,9 +59,9 @@
                 </Button.GestureRecognizers>                
               </Button>
               
-              <Label  Text="{Binding XCoefficients}"></Label>
-              <Label  Text="{Binding YCoefficients}"></Label>
-              <Label  Text="{Binding ZCoefficients}"></Label>
+              <Label Text="{Binding Teachement.XCoefficients}"></Label>
+              <Label Text="{Binding Teachement.YCoefficients}"></Label>
+              <Label Text="{Binding Teachement.ZCoefficients}"></Label>
             </StackLayout>
           </ViewCell>
         </DataTemplate>
@@ -74,7 +74,7 @@
       </StackLayout>
       <StackLayout Grid.Row="2">
       <Label Text="Teachement tolerance"></Label>  
-      <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="5"></Slider>
+      <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="30"></Slider>
         </StackLayout>
       <StackLayout Grid.Row="2">
       <Label Text="Response Time"></Label>  
