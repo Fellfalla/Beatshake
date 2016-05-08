@@ -13,6 +13,8 @@ class MotionDataProviderImplementation : IMotionDataProvider
 
     public MotionDataProviderImplementation()
     {
+        _minInterval = BeatshakeSettings.SensorRefreshInterval;
+
         if (_accelerometer != null)
         {
 #if WINDOWS_UWP

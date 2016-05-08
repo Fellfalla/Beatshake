@@ -20,7 +20,10 @@ namespace Beatshake.ViewModels
             set { SetProperty(ref _title, value); }
         }
         public DelegateCommand NavigateCommand { get; set; }
+
         public DelegateCommand ShowStatisticsCommand { get; set; }
+
+        public DelegateCommand NavigateToSettingsCommand { get; set; }
 
         /// <summary>
         /// 
@@ -30,15 +33,22 @@ namespace Beatshake.ViewModels
         {
             NavigateCommand = new DelegateCommand(Navigate);
             ShowStatisticsCommand = new DelegateCommand(ShowStatistics);
+            NavigateToSettingsCommand = new DelegateCommand(NavigateToSettings);
         }
 
         void Navigate()
         {
-            NavigationService.Navigate<DrumViewModel>();
+            NavigationService.NavigateAsync<DrumViewModel>();
         }
+
         void ShowStatistics()
         {
-            NavigationService.Navigate<StatisticsViewModel>();
+            NavigationService.NavigateAsync<StatisticsViewModel>();
+        }
+
+        void NavigateToSettings()
+        {
+            NavigationService.NavigateAsync<SettingsViewModel>();
         }
     }
 }

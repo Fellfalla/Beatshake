@@ -61,7 +61,7 @@ namespace Beatshake.ViewModels
             XHistory.Add(motionDataProvider.Acceleration.Trans[0]);
             YHistory.Add(motionDataProvider.Acceleration.Trans[1]);
             ZHistory.Add(motionDataProvider.Acceleration.Trans[2]);
-            var cap = Teachement.Settings.SamplePoints;
+            var cap = BeatshakeSettings.SamplePoints;
 
             var tooMuch = XHistory.Count - cap;
             if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element

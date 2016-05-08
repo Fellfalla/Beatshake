@@ -57,6 +57,15 @@ namespace Beatshake.Core
             return Tuple.Create(a,b,c);
         }
 
+        public static QuadraticFunction CalculateQuadraticFunction(IList<double> xData, IList<double> yData)
+        {
+            var function = new QuadraticFunction();
+            function.Coefficients = CalculateCoefficients(xData, yData);
+            function.Start = xData.FirstOrDefault();
+            function.End = xData.LastOrDefault();
+            return function;
+        }
+
         /// <summary>
         /// Returns the x-Value where the peak will be expected.
         /// Min values and Max values are both handled as potential peaks.
@@ -95,21 +104,21 @@ namespace Beatshake.Core
             var yFunctions = new List<QuadraticFunction>();
             var zFunctions = new List<QuadraticFunction>();
 
-            for (int i = 0; i < t.Count - Teachement.Settings.SamplePoints; i++)
+            for (int i = 0; i < t.Count - BeatshakeSettings.SamplePoints; i++)
             {
                 var xFunction = new QuadraticFunction();
                 var yFunction = new QuadraticFunction();
                 var zFunction = new QuadraticFunction();
 
-                var samplePoints = t.SubList(i, i + Teachement.Settings.SamplePoints);
+                var samplePoints = t.SubList(i, i + BeatshakeSettings.SamplePoints);
 
                 // Get Coefficients
                 xFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[0].SubList(i, i + Teachement.Settings.SamplePoints));
+                    values[0].SubList(i, i + BeatshakeSettings.SamplePoints));
                 yFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[1].SubList(i, i + Teachement.Settings.SamplePoints));
+                    values[1].SubList(i, i + BeatshakeSettings.SamplePoints));
                 zFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[2].SubList(i, i + Teachement.Settings.SamplePoints));
+                    values[2].SubList(i, i + BeatshakeSettings.SamplePoints));
 
                 // Set start and Endpoints
                 xFunction.Start = samplePoints[0];
@@ -140,7 +149,7 @@ namespace Beatshake.Core
                 if (absGrad > biggestGrad)
                 {
                     biggestGrad = absGrad;
-                    index = i + Teachement.Settings.SamplePoints; // we want the last sample point with the greatest gradient
+                    index = i + BeatshakeSettings.SamplePoints; // we want the last sample point with the greatest gradient
                 }
             }
 

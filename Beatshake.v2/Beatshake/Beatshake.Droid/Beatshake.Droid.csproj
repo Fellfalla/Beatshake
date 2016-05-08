@@ -75,11 +75,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Prism.Forms, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Prism.Forms.6.1.0-pre4\lib\MonoAndroid1.0\Prism.Forms.dll</HintPath>
+      <HintPath>..\..\packages\Prism.Forms.6.1.0-pre5\lib\MonoAndroid1.0\Prism.Forms.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Prism.Unity.Forms, Version=6.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Prism.Unity.Forms.6.2.0-pre4\lib\MonoAndroid1.0\Prism.Unity.Forms.dll</HintPath>
+      <HintPath>..\..\packages\Prism.Unity.Forms.6.2.0-pre5\lib\MonoAndroid1.0\Prism.Unity.Forms.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

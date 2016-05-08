@@ -1,11 +1,10 @@
 ﻿namespace Beatshake.Views
 {
-    public partial class StatisticsView
+    public partial class SettingsView
     {
-        public StatisticsView()
+        public SettingsView()
         {
             InitializeComponent();
         }
-
     }
 }
