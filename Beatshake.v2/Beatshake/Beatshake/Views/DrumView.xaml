@@ -2,11 +2,12 @@
 <views:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
              xmlns:converter="clr-namespace:Beatshake.Converter;assembly=Beatshake"
              xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
              x:Class="Beatshake.Views.DrumView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
-             >
+                       >
   <ContentPage.Resources>
     <ResourceDictionary>
       <converter:ToStringConverter x:Key="ToStringConverter"></converter:ToStringConverter>
@@ -57,22 +58,26 @@
                 </Button.GestureRecognizers>                
               </Button>
               
-              <Label  Text="{Binding XCoefficients}"></Label>
-              <Label  Text="{Binding YCoefficients}"></Label>
-              <Label  Text="{Binding ZCoefficients}"></Label>
+              <Label Text="{Binding Teachement.XCoefficients}"></Label>
+              <Label Text="{Binding Teachement.YCoefficients}"></Label>
+              <Label Text="{Binding Teachement.ZCoefficients}"></Label>
             </StackLayout>
           </ViewCell>
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
       <StackLayout Orientation="Vertical" Grid.Row="2">
-      <StackLayout Grid.Row="2" Orientation="Horizontal">
-      <Label Text="Use Teachement"></Label>  
-      <Switch  Grid.Row="2" IsToggled="{Binding TestTeachement}"></Switch>
-      </StackLayout>
+        <StackLayout Grid.Row="2" Orientation="Horizontal">
+        <Label Text="Use Teachement"></Label>  
+        <Switch  Grid.Row="2" IsToggled="{Binding TestTeachement}"></Switch>
+        </StackLayout>
+        <StackLayout Grid.Row="2" Orientation="Horizontal">
+        <Label Text="Use Function analysis"></Label>  
+        <Switch  Grid.Row="2" IsToggled="{Binding UseFunctionAnalysis}"></Switch>
+        </StackLayout>
       <StackLayout Grid.Row="2">
       <Label Text="Teachement tolerance"></Label>  
-      <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="5"></Slider>
+      <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="30"></Slider>
         </StackLayout>
       <StackLayout Grid.Row="2">
       <Label Text="Response Time"></Label>  

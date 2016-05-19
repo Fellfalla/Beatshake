@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Beatshake.DependencyServices;
+using Beatshake.ExtensionMethods;
 using Xamarin.Forms;
 
 namespace Beatshake.Core
@@ -19,17 +22,37 @@ namespace Beatshake.Core
             var teachement = new Teachement();
 
             // Get point with highest absolute Acceleration
+            var index = DataAnalyzer.GetPeak(timesteps, new IList<double>[]{ xValues , yValues, zValues });
 
-            teachement.XCoefficients = DataAnalyzer.CalculateCoefficients(timesteps, xValues);
-            teachement.YCoefficients = DataAnalyzer.CalculateCoefficients(timesteps, yValues);
-            teachement.ZCoefficients = DataAnalyzer.CalculateCoefficients(timesteps, zValues);
+            if (index == -1)
+            {
+                throw new InvalidOperationException("No peak value could be detected.");
+            }
+
+            int teachStartPoint = Math.Max(index - BeatshakeSettings.SamplePoints, 0);
+
+            teachement.XCoefficients = DataAnalyzer.CalculateCoefficients(timesteps.SubArray(teachStartPoint, index), xValues.SubArray(teachStartPoint, index));
+            teachement.YCoefficients = DataAnalyzer.CalculateCoefficients(timesteps.SubArray(teachStartPoint, index), yValues.SubArray(teachStartPoint, index));
+            teachement.ZCoefficients = DataAnalyzer.CalculateCoefficients(timesteps.SubArray(teachStartPoint, index), zValues.SubArray(teachStartPoint, index));
 
             return teachement;
         }
 
-        public Teachement Create(IEnumerable<double> timesteps, IEnumerable<double> xValues, IEnumerable<double> yValues, IEnumerable<double> zValues)
+        public static Teachement Create(IEnumerable<double> timesteps, IEnumerable<double> xValues, IEnumerable<double> yValues, IEnumerable<double> zValues)
         {
-            return Create(timesteps.ToArray(), xValues.ToArray(), yValues.ToArray(), zValues.ToArray());
+                return Create(timesteps.ToArray(), xValues.ToArray(), yValues.ToArray(), zValues.ToArray());
         }
     }
+
+
+    //public class TeachementSettings
+    //{
+    //    public TeachementSettings()
+    //    {
+    //        this.AssignDefaultValueAttributes();
+    //    }
+
+    //    [DefaultValue(4)]
+    //    public int SamplePoints { get; set; }
+    //}
 }

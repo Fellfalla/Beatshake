@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<views:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
+                       xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+                       x:Class="Beatshake.Views.SettingsView"
+                       mvvm:ViewModelLocator.AutowireViewModel="True">
+    <StackLayout Orientation="Vertical">
+        <Label Text="Settings" VerticalOptions="Start" FontSize="30" HorizontalOptions="Center" />
+        <StackLayout Orientation="Horizontal">
+            <Label Text="Samples for function analysis:" />
+            <Slider Value="{Binding FunctionSamples}" HorizontalOptions="FillAndExpand" Minimum="0" Maximum="50" />
+        </StackLayout>
+    </StackLayout>
+
+</views:BaseContentPage>

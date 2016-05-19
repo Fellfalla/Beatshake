@@ -15,7 +15,7 @@ namespace Beatshake.Views
             var navigator = page.BindingContext as INavigationService;
             if (navigator != null)
             {
-                navigator.GoBack();
+                navigator.GoBackAsync();
                 return true;
             }
             return false;
@@ -24,7 +24,8 @@ namespace Beatshake.Views
 
     public abstract class BaseContentPage : ContentPage
     {
-        protected sealed override bool OnBackButtonPressed()
+
+        protected override bool OnBackButtonPressed()
         {
             if (!this.NavigateBackWithViewModel())
             {
@@ -33,7 +34,6 @@ namespace Beatshake.Views
             return true;
         }
     }
-
 
     public abstract class BaseCarouselPage : CarouselPage
     {

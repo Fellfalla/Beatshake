@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Beatshake.Core;
-using Beatshake.DependencyServices;
+﻿using Beatshake.DependencyServices;
 using Beatshake.ViewModels;
 using Beatshake.Views;
 using Microsoft.Practices.Unity;
-using Prism;
+using Prism.Common;
+using Prism.Navigation;
 using Prism.Unity;
 using Prism.Unity.Navigation;
 using Xamarin.Forms;
@@ -19,7 +14,7 @@ namespace Beatshake
     {
         public CoreApplication()
         {
-            MainPage = CreateMainPage();
+            //MainPage = CreateMainPage();
             //Bootstrapper bs = new Bootstrapper();
             //bs.Run(this);
         }
@@ -41,13 +36,23 @@ namespace Beatshake
 
         protected Page CreateMainPage()
         {
-            return Container.Resolve<MainMenuView>();
+            var mainMenuView = Container.Resolve<MainMenuView>();
+            var navPage = new NavigationPage(mainMenuView);
+            return navPage;
         }
 
         protected override Prism.Navigation.INavigationService CreateNavigationService()
         {
-            return new UnityPageNavigationService(Container);
+            if (_navigationService == null)
+            {
+                var applicationProvider = new ApplicationProvider();
+                applicationProvider.MainPage = CreateMainPage();
+                _navigationService = new UnityPageNavigationService(Container, applicationProvider);
+            }
+            return _navigationService;
         }
+
+        private INavigationService _navigationService;
 
         protected override void OnInitialized()
         {
@@ -55,15 +60,16 @@ namespace Beatshake
 
         protected override void RegisterTypes()
         {
+            Container.RegisterInstance<IMotionDataProvider>(
+    Xamarin.Forms.DependencyService.Get<IMotionDataProvider>(DependencyFetchTarget.GlobalInstance));
+
+            //Container.RegisterInstance(CreateNavigationService());
+
             Container.RegisterTypeForNavigation<DrumView, DrumViewModel>();
             Container.RegisterTypeForNavigation<MainMenuView, MainMenuViewModel>();
             Container.RegisterTypeForNavigation<StatisticsView, StatisticsViewModel>();
-            Container.RegisterInstance<IMotionDataProvider>(
-                Xamarin.Forms.DependencyService.Get<IMotionDataProvider>(DependencyFetchTarget.GlobalInstance));
-            //foreach (var exportedType in GetType().GetTypeInfo().Assembly.DefinedTypes)
-            //{
-            //    Container.RegisterType(exportedType.AsType());
-            //}
+            Container.RegisterTypeForNavigation<SettingsView, SettingsViewModel>();
+
         }
     }
 }

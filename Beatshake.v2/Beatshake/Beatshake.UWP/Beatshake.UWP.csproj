@@ -99,6 +99,7 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PlotViewRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UniversalApplication.cs" />
   </ItemGroup>

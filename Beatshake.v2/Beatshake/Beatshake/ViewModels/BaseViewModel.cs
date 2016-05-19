@@ -15,30 +15,29 @@ namespace Beatshake.ViewModels
         public BaseViewModel(INavigationService navigationService)
         {
             NavigationService = navigationService;
-
-            NavigateBackCommand = DelegateCommand.FromAsyncHandler(async () => await NavigationService.GoBack());
+            NavigateBackCommand = DelegateCommand.FromAsyncHandler(async () => await NavigationService.GoBackAsync());
         }
 
 #region Facade-Pattern for Navigation
 
-        public Task GoBack(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
+        public Task GoBackAsync(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {
-            return NavigationService.GoBack(parameters, useModalNavigation, animated);
+            return NavigationService.GoBackAsync(parameters, useModalNavigation, animated);
         }
 
-        public Task Navigate<T>(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
+        public Task NavigateAsync<T>(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {
-            return NavigationService.Navigate<T>(parameters, useModalNavigation, animated);
+            return NavigationService.NavigateAsync<T>(parameters, useModalNavigation, animated);
         }
 
-        public Task Navigate(Uri uri, NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
+        public Task NavigateAsync(Uri uri, NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {
-            return NavigationService.Navigate(uri, parameters, useModalNavigation, animated);
+            return NavigationService.NavigateAsync(uri, parameters, useModalNavigation, animated);
         }
 
-        public Task Navigate(string name, NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
+        public Task NavigateAsync(string name, NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {
-            return NavigationService.Navigate(name, parameters, useModalNavigation, animated);
+            return NavigationService.NavigateAsync(name, parameters, useModalNavigation, animated);
         }
 
 #endregion

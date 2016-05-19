@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Beatshake.ViewModels;
-using Prism.Navigation;
+﻿using Beatshake.ViewModels;
 using Xamarin.Forms;
 
 namespace Beatshake.Views
@@ -13,6 +7,7 @@ namespace Beatshake.Views
     {
         public DrumView()
         {
+            NavigationPage.SetHasBackButton(this, true);
             InitializeComponent();
         }
         public DrumViewModel ViewModel { get { return (DrumViewModel) BindingContext; } }

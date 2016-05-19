@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<views:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
              x:Class="Beatshake.Views.MainMenuView"
              prism:ViewModelLocator.AutowireViewModel="True"
              >
   <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
     <Image Source="Beatshake.png"></Image>
     <Button Command="{Binding NavigateCommand}" Text="Start that shit!" />
-    <Button Command="{Binding ShowStatisticsCommand}" Text="Show me annoying data!" />
+    <Button Command="{Binding ShowStatisticsCommand}" Text="Statistics" />
+    <Button Command="{Binding NavigateToSettingsCommand}" Text="Settings" />
   </StackLayout>
-</views:BaseContentPage>
+</ContentPage>

@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FA1DE470
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beatshake.Tests", "Beatshake.Tests\Beatshake.Tests.csproj", "{CA8ACD6C-F411-4F7C-BC2A-C9B7E26AD9CF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Helper", "Helper", "{B078A77E-AA81-4BF8-84F2-2F98C88990FD}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Beatshake.Shared\Beatshake.Shared.projitems*{df0f0350-5eae-442b-9ec0-6374245f6659}*SharedItemsImports = 13

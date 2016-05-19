@@ -197,11 +197,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Prism.Forms, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Prism.Forms.6.1.0-pre4\lib\WindowsPhoneApp8.1\Prism.Forms.dll</HintPath>
+      <HintPath>..\..\packages\Prism.Forms.6.1.0-pre5\lib\WindowsPhoneApp8.1\Prism.Forms.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Prism.Unity.Forms, Version=6.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Prism.Unity.Forms.6.2.0-pre4\lib\WindowsPhoneApp8.1\Prism.Unity.Forms.dll</HintPath>
+      <HintPath>..\..\packages\Prism.Unity.Forms.6.2.0-pre5\lib\WindowsPhoneApp8.1\Prism.Unity.Forms.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
