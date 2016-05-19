@@ -2,12 +2,10 @@
 <views:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
              xmlns:converter="clr-namespace:Beatshake.Converter;assembly=Beatshake"
              xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
              x:Class="Beatshake.Views.DrumView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
-             
              >
   <ContentPage.Resources>
     <ResourceDictionary>
