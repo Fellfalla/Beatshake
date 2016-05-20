@@ -4,7 +4,7 @@
              xmlns:converter="clr-namespace:Beatshake.Converter;assembly=Beatshake"
              xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
              xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             xmlns:forms="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
+             xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
              x:Class="Beatshake.Views.StatisticsView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
                        >
@@ -13,17 +13,22 @@
       <converter:ToStringConverter x:Key="ToStringConverter"></converter:ToStringConverter>
     </ResourceDictionary>
   </CarouselPage.Resources>
-  <ContentPage>
-
+  
+  <ContentPage Title="Numberchaos">
     <StackLayout HorizontalOptions="End">
     <Label Text="{Binding XAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=X: , Mode=OneWay}" />
     <Label Text="{Binding YAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=Y: , Mode=OneWay }" />
     <Label Text="{Binding ZAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=Z: , Mode=OneWay }" />
     <Label Text="{Binding MeasureTimeJitter, Converter={StaticResource ToStringConverter}, ConverterParameter=Jitter: , Mode=OneWay }" />
     <Label Text="{Binding AverageMeasureTime, Converter={StaticResource ToStringConverter}, ConverterParameter=AverageTime: , Mode=OneWay }" />
-      <forms:PlotView BindingContext="{Binding PlotModel}"></forms:PlotView>
     </StackLayout>
     </ContentPage>
+  <ContentPage Title="Oxyplotly">
+    <oxy:PlotView Model="{Binding MeasureData}" VerticalOptions="Center" HorizontalOptions="Center" />
+  </ContentPage>
+  <ContentPage Title="Teachplot">
+    <oxy:PlotView Model="{Binding TeachedData}" VerticalOptions="Center" HorizontalOptions="Center" />
+  </ContentPage>
     <ContentPage>
       <Label Text="This is for Testing purposes" VerticalOptions="Center" HorizontalOptions="Center" />
     </ContentPage>

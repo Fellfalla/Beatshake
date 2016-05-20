@@ -24,6 +24,9 @@ namespace Beatshake.Views
 
     public abstract class BaseContentPage : ContentPage
     {
+        public BaseContentPage()
+        {
+        }
 
         protected override bool OnBackButtonPressed()
         {

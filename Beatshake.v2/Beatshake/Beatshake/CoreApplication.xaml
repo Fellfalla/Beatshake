@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<unity:PrismApplication xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:unity="clr-namespace:Prism.Unity;assembly=Prism.Unity.Forms"
+             x:Class="Beatshake.CoreApplication">
+  <unity:PrismApplication.Resources >
+    <ResourceDictionary >
+      
+    <Style TargetType="Button" x:Key="MenuButtonStyle">
+      <Setter Property="VerticalOptions" Value="Center"></Setter>
+      <Setter Property="HorizontalOptions" Value="CenterAndExpand"></Setter>
+    </Style>
+    </ResourceDictionary>
+
+  </unity:PrismApplication.Resources>
+
+</unity:PrismApplication>

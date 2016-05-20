@@ -9,6 +9,7 @@ using Beatshake.DependencyServices;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using OxyPlot.Xamarin.Forms;
 using Prism.Navigation;
 
 namespace Beatshake.ViewModels
@@ -23,7 +24,7 @@ namespace Beatshake.ViewModels
         private long _measurePoints = 0;
         private List<long> _timeMeasurements = new List<long>();
         private double _averageMeasureTime;
-        private PlotModel _plotModel;
+        private PlotModel _measureData;
 
         public double XAccel
         {
@@ -55,15 +56,20 @@ namespace Beatshake.ViewModels
             set { SetProperty(ref _averageMeasureTime, value); }
         }
 
-        public PlotModel PlotModel
+        public PlotModel MeasureData
         {
-            get { return _plotModel; }
-            set { SetProperty(ref _plotModel, value); }
+            get { return _measureData; }
+            set { SetProperty(ref _measureData, value); }
+        }
+        public PlotModel TeachedData
+        {
+            get { return _measureData; }
+            set { SetProperty(ref _measureData, value); }
         }
 
         public StatisticsViewModel(INavigationService navigationService, IMotionDataProvider motionDataProvider) : base(navigationService, motionDataProvider)
         {
-            var model = new PlotModel() {Title = "XData"};
+            var model = new PlotModel() {Title = "Continous Measure Data"};
             model.Axes.Add(new LinearAxis() {Position = AxisPosition.Bottom});
             model.Axes.Add(new LinearAxis() {Position = AxisPosition.Left});
             var lineSeries = new LineSeries { Title = "LineSeries", MarkerType = MarkerType.Circle };
@@ -74,7 +80,7 @@ namespace Beatshake.ViewModels
             lineSeries.Points.Add(new DataPoint(40, 15));
 
             model.Series.Add(lineSeries);
-            PlotModel = model;
+            MeasureData = model;
         }
 
         public override void ProcessMotionData(IMotionDataProvider motionDataProvider)

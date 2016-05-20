@@ -10,7 +10,7 @@ using Xamarin.Forms;
 
 namespace Beatshake
 {
-    public class CoreApplication : PrismApplication
+    public partial class CoreApplication : PrismApplication
     {
         public CoreApplication()
         {
@@ -27,6 +27,7 @@ namespace Beatshake
         protected override void OnSleep()
         {
             // Handle when your app sleeps
+
         }
 
         protected override void OnResume()

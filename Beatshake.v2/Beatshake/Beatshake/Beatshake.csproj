@@ -35,8 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CoreApplication.xaml.cs">
+      <DependentUpon>CoreApplication.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converter\ToStringConverter.cs" />
-    <Compile Include="CoreApplication.cs" />
     <Compile Include="Core\BeatshakeStatus.cs" />
     <Compile Include="Core\DataAnalyzer.cs" />
     <Compile Include="Core\DataContainer.cs" />
@@ -70,7 +72,7 @@
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\StatisticsViewModel.cs" />
     <Compile Include="Views\BaseContentPage.cs" />
-    <Compile Include="Views\BlurEffect.cs" />
+    <Compile Include="Views\Behaviors\EffectBehavior.cs" />
     <Compile Include="Views\DrumView.xaml.cs">
       <DependentUpon>DrumView.xaml</DependentUpon>
     </Compile>
@@ -85,6 +87,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -107,7 +110,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OxyPlot.Core.1.0.0-unstable1983\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1+Xamarin.iOS10\OxyPlot.dll</HintPath>
+      <HintPath>..\..\packages\OxyPlot.Core.1.0.0-unstable2100\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1+Xamarin.iOS10\OxyPlot.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="OxyPlot.Xamarin.Forms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -161,6 +164,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\SettingsView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CoreApplication.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
