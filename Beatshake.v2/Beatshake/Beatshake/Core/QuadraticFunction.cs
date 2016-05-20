@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Beatshake.Core
 {
-    public class QuadraticFunction
+    public class QuadraticFunction : PolynomialFunction
     {
+        public QuadraticFunction()
+        {
+            Degree = 2;
+        }
 
-        public Tuple<double, double, double> Coefficients
+        public new Tuple<double, double, double> Coefficients
 
         {
             get { return Tuple.Create(A,B,C); }
@@ -30,9 +30,23 @@ namespace Beatshake.Core
             }
         }
 
-        public double A { get; set; }
-        public double B { get; set; }
-        public double C { get; set; }
+        public double A
+        {
+            get { return base.Coefficients[0]; }
+            set { base.Coefficients[0] = value; }
+        }
+
+        public double B
+        {
+            get { return base.Coefficients[1]; }
+            set { base.Coefficients[1] = value; }
+        }
+
+        public double C
+        {
+            get { return base.Coefficients[2]; }
+            set { base.Coefficients[2] = value; }
+        }
 
         public double Start { get; set; }
 

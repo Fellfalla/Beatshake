@@ -1,5 +1,9 @@
 ﻿using System.ComponentModel;
+using Beatshake.ExtensionMethods;
 using Beatshake.UWP;
+using Microsoft.Practices.ObjectBuilder2;
+using OxyPlot;
+using OxyPlot.Series;
 using OxyPlot.Windows;
 using OxyPlot.Xamarin.Forms;
 using Xamarin.Forms;
@@ -58,7 +62,7 @@ namespace Beatshake.UWP
 
             var plotView = new OxyPlot.Windows.PlotView
             {
-                Model = model,
+                Model = model.Copy(),
                 Controller = controller,
                 Background = background
             };

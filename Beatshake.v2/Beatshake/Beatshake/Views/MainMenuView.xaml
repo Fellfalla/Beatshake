@@ -22,7 +22,7 @@
     <FileImageSource File="Beatshake.png">
     </FileImageSource>
   </ContentPage.BackgroundImage>
-  <Grid VerticalOptions="Center" HorizontalOptions="Center">
+  <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
     <Grid.RowDefinitions>
       <RowDefinition Height="3*">
       </RowDefinition>

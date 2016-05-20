@@ -90,8 +90,7 @@ namespace Beatshake.Core
         /// </summary>
         /// <param name="t"></param>
         /// <param name="values"></param>
-        /// <param name="index">Index of the peak value. Returns -1 if theres no peak.</param>
-        /// <returns></returns>
+        /// <returns>Index of the peak value. Returns -1 if theres no peak.</returns>
         public static int GetPeak(IList<double> t, IList<IList<double>> values)
         {
             //double max = double.NegativeInfinity;
