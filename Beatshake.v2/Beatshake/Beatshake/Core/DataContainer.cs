@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace Beatshake.Core
 {
@@ -19,6 +20,7 @@ namespace Beatshake.Core
         public Tuple<TDataType, TDataType, TDataType> RotAsTuple()
         {
             return Tuple.Create(Rot[0], Rot[1], Rot[2]);
+            
         }
     }
 

@@ -170,13 +170,27 @@ namespace Beatshake.ViewModels
         public bool UseTeachement
         {
             get { return _useTeachement; }
-            set { SetProperty(ref _useTeachement, value); }
+            set
+            {
+                if (value)
+                {
+                    UseFunctionAnalysis = false;
+                }
+                SetProperty(ref _useTeachement, value);
+            }
         }
 
         public bool UseFunctionAnalysis 
         {
             get { return _useFunctionAnalysis; }
-            set { SetProperty(ref _useFunctionAnalysis, value); }
+            set
+            {
+                if (value)
+                {
+                    UseTeachement = false;
+                }
+                SetProperty(ref _useFunctionAnalysis, value);
+            }
         }
 
 

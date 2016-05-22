@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Beatshake.DependencyServices;
 using Beatshake.ExtensionMethods;
-using Xamarin.Forms;
 
 namespace Beatshake.Core
 {

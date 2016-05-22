@@ -1,5 +1,6 @@
 ﻿using System;
 using Beatshake.Core;
+using Microsoft.Xna.Framework;
 
 namespace Beatshake.DependencyServices
 {
@@ -15,7 +16,7 @@ namespace Beatshake.DependencyServices
         /// The refresh rate in milliseconds.
         /// </summary>
         uint RefreshRate { get; set; }
-
+        
         event Custom.TypedEventHandler<IMotionDataProvider> MotionDataRefreshed;
     }
 }
