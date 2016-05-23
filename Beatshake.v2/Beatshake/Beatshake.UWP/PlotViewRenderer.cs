@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using Beatshake.ExtensionMethods;
 using Beatshake.UWP;
 using Microsoft.Practices.ObjectBuilder2;
@@ -60,9 +62,18 @@ namespace Beatshake.UWP
             var controller = this.Element.Controller;
             var background = this.Element.BackgroundColor.ToOxyColor().ToBrush();
 
+            var newModel = new PlotModel();
+            newModel.Title = model.Title;
+            foreach (var series in newModel.Series.OfType<DataPointSeries>())
+            {
+                var newSeries = (DataPointSeries) Activator.CreateInstance(series.GetType());
+                newSeries.Points.AddRange(series.Points);
+                newModel.Series.Add(newSeries);
+            }
+       
             var plotView = new OxyPlot.Windows.PlotView
             {
-                Model = model.Copy(),
+                Model = newModel,
                 Controller = controller,
                 Background = background
             };

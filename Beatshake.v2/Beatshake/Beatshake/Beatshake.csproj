@@ -51,6 +51,7 @@
     <Compile Include="Core\QuadraticFunction.cs" />
     <Compile Include="Core\Teachement.cs" />
     <Compile Include="Core\Utility.cs" />
+    <Compile Include="DependencyServices\IPlotViewProdiver.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\RandomExtensions.cs" />
@@ -132,7 +133,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Reflection.TypeExtensions">
-      <HintPath>C:\Users\Markus Weber\.nuget\packages\System.Reflection.TypeExtensions\4.0.0\ref\dotnet\System.Reflection.TypeExtensions.dll</HintPath>
+      <HintPath>..\..\..\..\..\.nuget\packages\System.Reflection.TypeExtensions\4.0.0\ref\dotnet\System.Reflection.TypeExtensions.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Forms.2.3.0.38-pre2\lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
