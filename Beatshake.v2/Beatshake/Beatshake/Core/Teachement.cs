@@ -38,16 +38,4 @@ namespace Beatshake.Core
                 return Create(timesteps.ToArray(), xValues.ToArray(), yValues.ToArray(), zValues.ToArray());
         }
     }
-
-
-    //public class TeachementSettings
-    //{
-    //    public TeachementSettings()
-    //    {
-    //        this.AssignDefaultValueAttributes();
-    //    }
-
-    //    [DefaultValue(4)]
-    //    public int SamplePoints { get; set; }
-    //}
 }

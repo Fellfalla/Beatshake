@@ -10,6 +10,11 @@ namespace Beatshake.ExtensionMethods
     {
         public static T[] SubArray<T>(this T[] data, int startIndex, int endIndex)
         {
+            if (startIndex > endIndex)
+            {
+                throw new ArgumentException("End index must be greater than start index", nameof(endIndex));
+            }
+
             var length = endIndex - startIndex + 1;
             T[] result = new T[length];
             Array.Copy(data, startIndex, result, 0, length);
