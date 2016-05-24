@@ -101,6 +101,7 @@ namespace Beatshake.Core
             var xFunctions = new List<QuadraticFunction>();
             var yFunctions = new List<QuadraticFunction>();
             var zFunctions = new List<QuadraticFunction>();
+            //var functionGroup = new FunctionGroup(xFunctions, yFunctions, zFunctions);
 
             for (int i = 0; i <= t.Count - BeatshakeSettings.SamplePoints; i++)
             {
@@ -134,7 +135,7 @@ namespace Beatshake.Core
 
             // look for functions with highest derivation and get a prognose for the peak
             var biggestGrad = double.MinValue;
-            // f'(x) = 2ax + b
+            
             // the gradient is at interval beginning or ending the greatest
             for (int i = 0; i < xFunctions.Count; i++)
             {
@@ -162,23 +163,7 @@ namespace Beatshake.Core
             var a = func1.Item1 - func2.Item1;
             var b = func1.Item2 - func2.Item2;
             var c = func1.Item3 - func2.Item3;
-            var radicand = b*b - 4*a*c; //b^2 -4ac
-            var dominator = 2*a;
-            if (radicand < 0)
-            {
-                yield return double.NaN;
-            }
-            else if (Math.Abs(radicand) <= double.MinValue)
-            {
-                yield return -b/dominator;
-            }
-            else
-            {
-                var sqrtResult = Math.Sqrt(radicand);
-                yield return (-b + sqrtResult)/dominator;
-                yield return (-b - sqrtResult)/dominator;
-            }
-            yield break;
+            return Utility.MidnightFormula(a, b, c);
         }
 
         public static Tuple<double, double, double> NormalizeQuadraticFunction(Tuple<double, double, double> coefficients)

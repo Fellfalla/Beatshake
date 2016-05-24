@@ -22,7 +22,7 @@ namespace Beatshake.Tests
             }
         }
 
-        public static IEnumerable<double> GetZerosWithPeak(int count, int peakValue, int peakPosition)
+        public static IEnumerable<double> GetZerosWithPeak(int count, double peakValue, int peakPosition)
         {
             for (int i = 0; i < count; i++)
             {

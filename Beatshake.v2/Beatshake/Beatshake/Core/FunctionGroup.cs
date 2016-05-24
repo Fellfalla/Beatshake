@@ -8,6 +8,16 @@ namespace Beatshake.Core
 {
     public class FunctionGroup
     {
+        public FunctionGroup()
+        {
+            
+        }
+
+        public FunctionGroup(params PolynomialFunction[] functions)
+        {
+            _functions = functions.ToList();
+        }
+
         private readonly List<PolynomialFunction> _functions = new List<PolynomialFunction>(); 
 
         public void AddFunction(PolynomialFunction function)
@@ -22,6 +32,7 @@ namespace Beatshake.Core
         /// <returns>true if the function is known and was removed, otherwise false</returns>
         public bool RemoveFunction(PolynomialFunction function)
         {
+
             var index = _functions.IndexOf(function);
             if (index == -1) 
             {

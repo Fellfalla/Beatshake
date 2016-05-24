@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Beatshake.ExtensionMethods;
 
 namespace Beatshake.Core
@@ -11,7 +12,7 @@ namespace Beatshake.Core
         /// -1 If there are no Coefficients set.
         /// When new degree is set to fewer element count than old one is -> highest coefficients will be ignored and get lost
         /// </summary>
-        public int Degree
+        public int Degree // todo: Write tests
         {
             get
             {
@@ -98,6 +99,50 @@ namespace Beatshake.Core
             return grad;
         }
 
+        public PolynomialFunction GetDerivation()
+        {
+            var derivation = new PolynomialFunction();
+            double[] derivedCoefficients = new double[Coefficients.Length-1];
+
+            // multiply all coefficients with the value of the correlating x-exponent
+            for (int i = 1; i < Coefficients.Length; i++)
+            {
+                derivedCoefficients[i - 1] = Coefficients[i]*i;
+            }
+
+            derivation.Coefficients = derivedCoefficients;
+            return derivation;
+        }
+
+        public IEnumerable<double> GetPeaks()
+        {
+            var derivation = GetDerivation();
+            if (derivation.Degree <= 0)
+            {
+                yield break;
+            }
+            else if (derivation.Degree == 1)
+            {
+                // f(x) = ax + b =!= 0 falls ax = -b -> x = -b/a
+                yield return -derivation.Coefficients[0]/ derivation.Coefficients[1];
+            }
+            else if (derivation.Degree == 2)
+            {
+                var a = derivation.Coefficients[2];
+                var b = derivation.Coefficients[1];
+                var c = derivation.Coefficients[0];
+                // Midnignt formular
+
+                foreach (var nst in Utility.MidnightFormula(a, b, c))
+                {
+                    yield return nst;
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
 
     }
 }

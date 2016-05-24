@@ -12,7 +12,7 @@ namespace Beatshake.Tests
         [Theory]
         [InlineData(6, 1, 4)]
         [InlineData(6, -1, 4)]
-        public void GetPeakTest(int pointCount, int peakValue, int peakPosition)
+        public void GetMultifunctionalPeakTest(int pointCount, int peakValue, int peakPosition)
         {
             // Init testing context
             BeatshakeSettings.SamplePoints = pointCount;
@@ -25,6 +25,7 @@ namespace Beatshake.Tests
             var peak = DataAnalyzer.GetPeak(timeSteps, data);
             Assert.Equal(peakPosition, peak);
         }
+
 
 
         [Fact]
@@ -43,6 +44,30 @@ namespace Beatshake.Tests
 
         }
 
+    }
+
+    public class UtilityTest
+    {
+        [Fact]
+        public void MidnightFormulaTest()
+        {
+            double[] result;
+
+            // x^2
+            result = Utility.MidnightFormula(1, 0, 0).ToArray();
+            Assert.Equal(1, result.Count());
+            Assert.Equal(0, result[0]);
+
+            // x^2 + 1
+            result = Utility.MidnightFormula(1, 0, 1).ToArray();
+            Assert.Equal(0, result.Count());
+
+            // x^2 - 1
+            result = Utility.MidnightFormula(1, 0, -1).ToArray();
+            Assert.Equal(2, result.Count());
+            Assert.True(result.Contains(1));
+            Assert.True(result.Contains(-1));
+        }
     }
 
     public class QuadraticFunctionTest
