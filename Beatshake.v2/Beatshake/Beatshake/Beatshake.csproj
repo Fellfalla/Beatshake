@@ -43,6 +43,7 @@
     <Compile Include="Core\BeatshakeStatus.cs" />
     <Compile Include="Core\DataAnalyzer.cs" />
     <Compile Include="Core\DataContainer.cs" />
+    <Compile Include="Core\FunctionGroup.cs" />
     <Compile Include="Core\IInstrumentalComponentIdentification.cs" />
     <Compile Include="Core\IInstrumentalIdentification.cs" />
     <Compile Include="Core\InstancePool.cs" />
