@@ -39,53 +39,62 @@ namespace Beatshake.Tests
             double tol = 0.1;
             double inTolLower = value1 - tol;
             double inTolGreater = value1 + tol;
-            double outTolLower = value1 - tol - double.Epsilon;
-            double outTolGreater = value1 + tol + double.Epsilon;
-      
+            double outTolLower = value1 - tol.NextLower();
+            double outTolGreater = value1 + tol.NextGreater();
+            double roundingErrorTol = 0.000000001;
+
             // test to itself
             Assert.True(value1.IsAlmostEqual(value1, tol));
-            Assert.True(value1.IsAlmostEqual(value1, double.Epsilon));
+            Assert.True(value1.IsAlmostEqual(value1, double.Epsilon)); 
 
             // test minimal inside tolerance border
-            Assert.True(value1.IsAlmostEqual(inTolLower, tol + double.Epsilon));
-            Assert.True(value1.IsAlmostEqual(inTolGreater, tol + double.Epsilon));
+            Assert.True(value1.IsAlmostEqual(inTolLower, tol + roundingErrorTol));
+            Assert.True(value1.IsAlmostEqual(inTolGreater, tol + roundingErrorTol));
 
             // test on tolerance border
-            Assert.True(value1.IsAlmostEqual(inTolLower, tol));
-            Assert.True(value1.IsAlmostEqual(inTolGreater, tol));
+            // Assert.True(value1.IsAlmostEqual(inTolLower, tol + roundingErrorTol));
+            // Assert.True(value1.IsAlmostEqual(inTolGreater, tol + roundingErrorTol));
 
             // test out of tolerance border
-            Assert.False(value1.IsAlmostEqual(outTolLower, tol));
-            Assert.False(value1.IsAlmostEqual(outTolGreater, tol));
+            Assert.False(value1.IsAlmostEqual(outTolLower, tol - roundingErrorTol));
+            Assert.False(value1.IsAlmostEqual(outTolGreater, tol - roundingErrorTol));
 
         }
 
-        [Fact]
-        public void NextGreaterDoubleTest()
-        {
-            // test 0
-            double zero = 0;
-            Assert.True(zero.NextGreater() > zero);
-            Assert.False(zero.NextGreater() <= zero);
 
-            Random random = new Random();
-            double value = random.NextDouble();
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(-double.Epsilon)]
+        [InlineData(double.Epsilon)]
+        public void NextGreaterDoubleTest(double value)
+        {
             Assert.True(value.NextGreater() > value);
             Assert.False(value.NextGreater() <= value);
         }
 
-        [Fact]
-        public void NextLowerDoubleTest()
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(-double.Epsilon)]
+        [InlineData(double.Epsilon)]
+        public void NextLowerDoubleTest(double value)
         {
-            // test 0
-            double zero = 0;
-            Assert.True(zero.NextLower() > zero);
-            Assert.False(zero.NextLower() <= zero);
+            Assert.True(value.NextLower() < value);
+            Assert.False(value.NextLower() >= value);
+        }
 
-            Random random = new Random();
-            double value = random.NextDouble();
-            Assert.True(value.NextLower() > value);
-            Assert.False(value.NextLower() <= value);
+        [Fact]
+        public void PowerDoubleTest()
+        {
+            double value = 2;
+            Assert.Equal(1,value.FastPower(0));
+            Assert.Equal(2,value.FastPower(1));
+            Assert.Equal(4,value.FastPower(2));
+            Assert.Equal(8,value.FastPower(3));
+            Assert.Equal(16,value.FastPower(4));
         }
     }
 

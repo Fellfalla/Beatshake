@@ -80,6 +80,7 @@
     <Compile Include="DataAnalyzerTest.cs" />
     <Compile Include="Helper\AutoFixture.cs" />
     <Compile Include="Helper\DataGenerator.cs" />
+    <Compile Include="PolynomialFunctionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeachementTest.cs" />
     <Compile Include="ExtensionMethodsTest.cs" />

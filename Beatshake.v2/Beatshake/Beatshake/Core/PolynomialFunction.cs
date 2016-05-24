@@ -1,4 +1,5 @@
 using System;
+using Beatshake.ExtensionMethods;
 
 namespace Beatshake.Core
 {
@@ -67,10 +68,36 @@ namespace Beatshake.Core
             Coefficients = null;
         }
 
+        /// <summary>
+        /// Repressenting the coefficients of a polynomial function.
+        /// The lower the index, the lower the exponent of the correlating variable.
+        /// This means that the Variable with the highest exponen is multiplicated with the very last <see cref="Coefficients"/> entry.
+        /// </summary>
         public double[] Coefficients
         {
             get { return _coefficients; }
             set { _coefficients = value; }
         }
+
+        /// <summary>
+        /// Source: https://de.wikipedia.org/wiki/Polynom -> Eigenschafte
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public double GetGradient(double x)
+        {
+            double grad = 0;
+            // f'(x) = 2ax + b
+            // the gradient is at interval beginning or ending the greatest
+            for (int i = 0; i < Coefficients.Length - 1 ; i++)
+            {
+                var degree = i + 1;
+                grad += (degree) * Coefficients[degree] * x.FastPower((uint) i);
+
+            }
+            return grad;
+        }
+
+
     }
 }

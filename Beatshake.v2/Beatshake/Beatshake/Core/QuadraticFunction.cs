@@ -9,6 +9,9 @@ namespace Beatshake.Core
             Degree = 2;
         }
 
+        /// <summary>
+        /// First item stands in front of x^2 second before x and last is const.
+        /// </summary>
         public new Tuple<double, double, double> Coefficients
 
         {
@@ -18,8 +21,8 @@ namespace Beatshake.Core
                 if (value != null)
                 {
                     A = value.Item1;
-                    B = value.Item1;
-                    C = value.Item1;
+                    B = value.Item2;
+                    C = value.Item3;
                 }
                 else
                 {
@@ -32,8 +35,8 @@ namespace Beatshake.Core
 
         public double A
         {
-            get { return base.Coefficients[0]; }
-            set { base.Coefficients[0] = value; }
+            get { return base.Coefficients[2]; }
+            set { base.Coefficients[2] = value; }
         }
 
         public double B
@@ -44,8 +47,8 @@ namespace Beatshake.Core
 
         public double C
         {
-            get { return base.Coefficients[2]; }
-            set { base.Coefficients[2] = value; }
+            get { return base.Coefficients[0]; }
+            set { base.Coefficients[0] = value; }
         }
 
         public double Start { get; set; }

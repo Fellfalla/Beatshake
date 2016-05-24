@@ -95,7 +95,6 @@ namespace Beatshake.Core
         {
             //double max = double.NegativeInfinity;
             //double maxX = double.NaN;
-            double dataSets = values.Count;
             int index = -1;
 
             // Get func-Aproximations for ALL Points
@@ -103,21 +102,22 @@ namespace Beatshake.Core
             var yFunctions = new List<QuadraticFunction>();
             var zFunctions = new List<QuadraticFunction>();
 
-            for (int i = 0; i < t.Count - BeatshakeSettings.SamplePoints; i++)
+            for (int i = 0; i <= t.Count - BeatshakeSettings.SamplePoints; i++)
             {
+                int lastSamplePoint = i + BeatshakeSettings.SamplePoints - 1;
                 var xFunction = new QuadraticFunction();
                 var yFunction = new QuadraticFunction();
                 var zFunction = new QuadraticFunction();
 
-                var samplePoints = t.SubList(i, i + BeatshakeSettings.SamplePoints);
+                var samplePoints = t.SubList(i, lastSamplePoint);
 
                 // Get Coefficients
                 xFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[0].SubList(i, i + BeatshakeSettings.SamplePoints));
+                    values[0].SubList(i, lastSamplePoint));
                 yFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[1].SubList(i, i + BeatshakeSettings.SamplePoints));
+                    values[1].SubList(i, lastSamplePoint));
                 zFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[2].SubList(i, i + BeatshakeSettings.SamplePoints));
+                    values[2].SubList(i, lastSamplePoint));
 
                 // Set start and Endpoints
                 xFunction.Start = samplePoints[0];
@@ -140,9 +140,9 @@ namespace Beatshake.Core
             {
                 var end = xFunctions[i].End;
 
-                var gradX = 2*xFunctions[i].A * end + xFunctions[i].B;
-                var gradY = 2*yFunctions[i].A * end + yFunctions[i].B;
-                var gradZ = 2*zFunctions[i].A * end + zFunctions[i].B;
+                var gradX = xFunctions[i].GetGradient(end);
+                var gradY = yFunctions[i].GetGradient(end);
+                var gradZ = zFunctions[i].GetGradient(end);
 
                 var absGrad = Math.Abs(gradX) + Math.Abs(gradY) + Math.Abs(gradZ);
                 if (absGrad > biggestGrad)

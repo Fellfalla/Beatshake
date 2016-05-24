@@ -32,7 +32,17 @@ namespace Beatshake.ExtensionMethods
             else if (value < 0)
                 return BitConverter.Int64BitsToDouble(bits - 1);
             else
-                return -double.Epsilon;
+                return double.Epsilon;
+        }
+
+        public static double FastPower(this double value, uint exp)
+        {
+            double power = 1;
+            for (int j = 0; j < exp; j++)
+            {
+                power *= value;
+            }
+            return power;
         }
     }
 }

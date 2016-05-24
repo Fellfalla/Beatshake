@@ -42,4 +42,26 @@ namespace Beatshake.Tests
         }
 
     }
+
+    public class QuadraticFunctionTest
+    {
+        [Fact]
+        public void CoefficientTest()
+        {
+            var func = new QuadraticFunction();
+            double c0 = 0;
+            double c1 = 1;
+            double c2 = 2;
+            func.Coefficients = new Tuple<double, double, double>(c2,c1,c0);
+
+            Assert.Equal(c0, func.C);
+            Assert.Equal(c1, func.B);
+            Assert.Equal(c2, func.A);
+
+            Assert.Equal(c0, ((PolynomialFunction)func).Coefficients[0]);
+            Assert.Equal(c1, ((PolynomialFunction)func).Coefficients[1]);
+            Assert.Equal(c2, ((PolynomialFunction)func).Coefficients[2]);
+
+        }
+    }
 }
