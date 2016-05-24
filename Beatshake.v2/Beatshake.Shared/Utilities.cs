@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Beatshake.DependencyServices;
-using Beatshake.ViewModels;
+﻿using Beatshake.DependencyServices;
 using Microsoft.Practices.Unity;
 using OxyPlot;
 

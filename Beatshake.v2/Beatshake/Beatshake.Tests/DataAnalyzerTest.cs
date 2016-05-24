@@ -14,13 +14,15 @@ namespace Beatshake.Tests
         [InlineData(6, -1, 4)]
         public void GetPeakTest(int pointCount, int peakValue, int peakPosition)
         {
+            // Init testing context
             BeatshakeSettings.SamplePoints = pointCount;
-            var timeSteps = DataGenerator.GetRaisingData(pointCount);
+            var timeSteps = DataGenerator.GetData(pointCount).ToList();
             IEnumerable<double> xVal, yval, zval;
             xVal = yval = zval = DataGenerator.GetZerosWithPeak(pointCount, peakValue, peakPosition);
             var data = new List<IList<double>>() {xVal.ToList(), yval.ToList(), zval.ToList()}.ToList();
-            var peak = DataAnalyzer.GetPeak(timeSteps.ToList(), data);
 
+            // Run Test
+            var peak = DataAnalyzer.GetPeak(timeSteps, data);
             Assert.Equal(peakPosition, peak);
         }
 

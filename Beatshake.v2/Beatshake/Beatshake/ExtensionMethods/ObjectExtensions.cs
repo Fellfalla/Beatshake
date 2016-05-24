@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using OxyPlot;
 
 namespace Beatshake.ExtensionMethods
 {
@@ -39,11 +34,11 @@ namespace Beatshake.ExtensionMethods
                 return (type.GetTypeInfo().IsValueType & type.GetTypeInfo().IsPrimitive);
             }
 
-            public static Object Copy(this Object originalObject)
+            public static object Copy(this object originalObject)
             {
-                return InternalCopy(originalObject, new Dictionary<Object, Object>(new ReferenceEqualityComparer()));
+                return InternalCopy(originalObject, new Dictionary<object, object>(new ReferenceEqualityComparer()));
             }
-            private static Object InternalCopy(Object originalObject, IDictionary<Object, Object> visited)
+            private static object InternalCopy(object originalObject, IDictionary<object, object> visited)
             {
                 if (originalObject == null) return null;
                 var typeToReflect = originalObject.GetType();
@@ -97,11 +92,11 @@ namespace Beatshake.ExtensionMethods
             }
             public static T Copy<T>(this T original)
             {
-                return (T)Copy((Object)original);
+                return (T)Copy((object)original);
             }
         }
 
-        public class ReferenceEqualityComparer : EqualityComparer<Object>
+        public class ReferenceEqualityComparer : EqualityComparer<object>
         {
             public override bool Equals(object x, object y)
             {

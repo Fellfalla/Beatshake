@@ -152,22 +152,6 @@ namespace Beatshake.Core
                 }
             }
 
-            // Get max Y-value and return that x value
-            //for (int i = 0; i < t.Count; i++)
-            //{
-            //    double abs = 0;
-            //    for (int j = 0; j < dataSets; j++)
-            //    {
-            //        abs += Math.Abs(values[j][i]);
-            //    }
-
-            //    if (abs > max)
-            //    {
-            //        max = abs;
-            //        maxX = t[i];
-            //        index = i;
-            //    }
-            //}
             return index;
         }
 
