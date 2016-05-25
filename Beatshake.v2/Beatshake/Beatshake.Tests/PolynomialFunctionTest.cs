@@ -62,6 +62,22 @@ namespace Beatshake.Tests
         }
 
         [Fact]
+        public void ConstructorTest()
+        {
+            // those data come from the PDF example where the formulars come from
+            double[] X = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 };
+            double[] Y = { 0.38, 1.15, 2.71, 3.92, 5.93, 8.56, 11.24 };
+            var checkResult = Tuple.Create(0.19642857, 0.23642857, -0.03285714);
+
+            PolynomialFunction function = new PolynomialFunction(X,Y);
+
+            Assert.Equal(checkResult.Item1, function.GetCoefficient(2), 8);
+            Assert.Equal(checkResult.Item2, function.GetCoefficient(1), 8);
+            Assert.Equal(checkResult.Item3, function.GetCoefficient(0), 8);
+
+        }
+
+        [Fact]
         public void GetDerivationTest()
         {
             var function = new PolynomialFunction();

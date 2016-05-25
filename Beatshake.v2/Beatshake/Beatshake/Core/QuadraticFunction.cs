@@ -51,9 +51,6 @@ namespace Beatshake.Core
             set { base.Coefficients[0] = value; }
         }
 
-        public double Start { get; set; }
-
-        public double End { get; set; }
 
     }
 }

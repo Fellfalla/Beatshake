@@ -2,16 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Beatshake.Core;
-using Beatshake.ExtensionMethods;
 using Xunit;
 
 namespace Beatshake.Tests
 {
     public class DataAnalyzerTest
     {
+
+        /// <summary>
+        /// This tests if the evaluation of multiple polynomial functions return the expected peaks
+        /// </summary>
+        /// <param name="pointCount"></param>
+        /// <param name="peakValue"></param>
+        /// <param name="peakPosition"></param>
         [Theory]
-        [InlineData(6, 1, 4)]
-        [InlineData(6, -1, 4)]
+        [InlineData(3, 1, 1)]
+        [InlineData(3, -1, 1)]
         public void GetMultifunctionalPeakTest(int pointCount, int peakValue, int peakPosition)
         {
             // Init testing context
@@ -38,9 +44,10 @@ namespace Beatshake.Tests
 
             var coefficients = DataAnalyzer.CalculateCoefficients(X, Y);
 
-            Assert.True(coefficients.Item1.IsAlmostEqual(checkResult.Item1, 0.0000001), string.Format("first: {0}\nsecond:{1}", coefficients.Item1, checkResult.Item1));
-            Assert.True(coefficients.Item2.IsAlmostEqual(checkResult.Item2, 0.0000001), string.Format("first: {0}\nsecond:{1}", coefficients.Item2, checkResult.Item2));
-            Assert.True(coefficients.Item3.IsAlmostEqual(checkResult.Item3, 0.0000001), string.Format("first: {0}\nsecond:{1}", coefficients.Item3, checkResult.Item3));
+            Assert.Equal(checkResult.Item1, coefficients.Item1, 8);
+            Assert.Equal(checkResult.Item2, coefficients.Item2, 8);
+            Assert.Equal(checkResult.Item3, coefficients.Item3, 8);
+
 
         }
 

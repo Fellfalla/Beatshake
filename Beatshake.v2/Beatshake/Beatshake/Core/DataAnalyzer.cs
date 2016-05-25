@@ -9,50 +9,57 @@ namespace Beatshake.Core
 {
     public static class DataAnalyzer
     {
+        public static Tuple<double, double, double> CalculateCoefficients(IEnumerable<double> samplePoints,
+            IEnumerable<double> sampleValues)
+        {
+            return CalculateCoefficients(samplePoints.ToArray(), sampleValues.ToArray());
+        }
+
+
         /// <summary>
         /// The Tuple contains the three coefficients for a quadratic polynome f(x) = ax^2 + bx + c
         /// </summary>
-        public static Tuple<double, double, double> CalculateCoefficients(IList<double> X, IList<double> Y)
+        public static Tuple<double, double, double> CalculateCoefficients(double[] x, double[] y)
         {
-            if (X.Count != Y.Count)
+            if (x.Length != y.Length)
             {
-                throw new ArgumentOutOfRangeException(nameof(Y), "Both arrays have to be of same size");
+                throw new ArgumentOutOfRangeException(nameof(y), "Both arrays have to be of same size");
             }
 
-            int measurePoints = X.Count;
-            double[] XY = new double[measurePoints];
-            double[] XX = new double[measurePoints];
-            double[] XXX = new double[measurePoints];
-            double[] XXXX = new double[measurePoints];
-            double[] YXX = new double[measurePoints];
+            int measurePoints = x.Length;
+            double[] xy = new double[measurePoints];
+            double[] xx = new double[measurePoints];
+            double[] xxx = new double[measurePoints];
+            double[] xxxx = new double[measurePoints];
+            double[] yxx = new double[measurePoints];
 
             // initialize Arrays
             for (int i = 0; i < measurePoints; i++)
             {
-                XY[i] = X[i] * Y[i];
-                XX[i] = X[i] * X[i];
-                XXX[i] = X[i] * X[i] * X[i];
-                XXXX[i] = X[i] * X[i] * X[i] * X[i];
-                YXX[i] = X[i] * X[i] * Y[i];
+                xy[i] = x[i] * y[i];
+                xx[i] = x[i] * x[i];
+                xxx[i] = x[i] * x[i] * x[i];
+                xxxx[i] = x[i] * x[i] * x[i] * x[i];
+                yxx[i] = x[i] * x[i] * y[i];
             }
 
-            double AvX = X.Average();
-            double AvY = Y.Average();
-            double AvXY = XY.Average();
-            double AvXX = XX.Average();
-            double AvXXX = XXX.Average();
-            double AvXXXX = XXXX.Average();
-            double AvYXX = YXX.Average();
+            double avX = x.Average();
+            double avY = y.Average();
+            double avXy = xy.Average();
+            double avXx = xx.Average();
+            double avXxx = xxx.Average();
+            double avXxxx = xxxx.Average();
+            double avYxx = yxx.Average();
 
-            double aNum = (AvYXX - AvY * AvXX) * (AvXX - AvX * AvX) - ( AvXY - AvY * AvX ) * (AvXXX - AvX * AvXX) ;
-            double aDom = (AvXXXX - AvXX * AvXX) * (AvXX - AvX * AvX) - Math.Pow(AvXXX - AvX*AvXX, 2);
+            double aNum = (avYxx - avY * avXx) * (avXx - avX * avX) - ( avXy - avY * avX ) * (avXxx - avX * avXx) ;
+            double aDom = (avXxxx - avXx * avXx) * (avXx - avX * avX) - Math.Pow(avXxx - avX*avXx, 2);
             double a =  aNum / aDom;
 
-            double bNum = AvXY - AvY*AvX - a*(AvXXX - AvX*AvXX);
-            double bDom = AvXX - AvX*AvX;
+            double bNum = avXy - avY*avX - a*(avXxx - avX*avXx);
+            double bDom = avXx - avX*avX;
             double b = bNum / bDom;
 
-            double c = AvY - a*AvXX - b * AvX;
+            double c = avY - a*avXx - b * avX;
 
             return Tuple.Create(a,b,c);
         }
@@ -79,27 +86,18 @@ namespace Beatshake.Core
             int index = -1;
 
             // Get func-Aproximations for ALL Points
-            var xFunctions = new List<QuadraticFunction>();
-            var yFunctions = new List<QuadraticFunction>();
-            var zFunctions = new List<QuadraticFunction>();
+            var xFunctions = new List<PolynomialFunction>();
+            var yFunctions = new List<PolynomialFunction>();
+            var zFunctions = new List<PolynomialFunction>();
             //var functionGroup = new FunctionGroup(xFunctions, yFunctions, zFunctions);
 
             for (int i = 0; i <= t.Count - BeatshakeSettings.SamplePoints; i++)
             {
                 int lastSamplePoint = i + BeatshakeSettings.SamplePoints - 1;
-                var xFunction = new QuadraticFunction();
-                var yFunction = new QuadraticFunction();
-                var zFunction = new QuadraticFunction();
-
                 var samplePoints = t.SubList(i, lastSamplePoint);
-
-                // Get Coefficients
-                xFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[0].SubList(i, lastSamplePoint));
-                yFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[1].SubList(i, lastSamplePoint));
-                zFunction.Coefficients = CalculateCoefficients(samplePoints,
-                    values[2].SubList(i, lastSamplePoint));
+                var xFunction = new PolynomialFunction(samplePoints, values[0].SubList(i, lastSamplePoint));
+                var yFunction = new PolynomialFunction(samplePoints, values[1].SubList(i, lastSamplePoint));
+                var zFunction = new PolynomialFunction(samplePoints, values[2].SubList(i, lastSamplePoint));
 
                 // Set start and Endpoints
                 xFunction.Start = samplePoints[0];
@@ -135,16 +133,6 @@ namespace Beatshake.Core
             }
 
             return index;
-        }
-
-        public static IEnumerable<double> GetFunctionIntersections(Tuple<double, double, double> func1,
-            Tuple<double, double, double> func2)
-        {
-            // (a1 - a2)x^2 + (b1 - b2)t + (c1 - c2)
-            var a = func1.Item1 - func2.Item1;
-            var b = func1.Item2 - func2.Item2;
-            var c = func1.Item3 - func2.Item3;
-            return Utility.MidnightFormula(a, b, c);
         }
 
         public static bool IsMax(Tuple<double, double, double> coefficients)

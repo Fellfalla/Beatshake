@@ -10,6 +10,25 @@ namespace Beatshake.Core
 {
     public class PolynomialFunction : ICloneable
     {
+        public PolynomialFunction()
+        {
+            
+        }
+
+        public PolynomialFunction(double[] samplePoints, double[] sampleValues)
+        {
+            var tuple = DataAnalyzer.CalculateCoefficients(samplePoints, sampleValues);
+
+            Coefficients = new double[] {tuple.Item3, tuple.Item2, tuple.Item1};
+
+            Start = samplePoints.First();
+            End = samplePoints.Last();
+        }
+
+        public PolynomialFunction(IEnumerable<double> samplePoints, IList<double> sampleValues) : this(samplePoints.ToArray(), sampleValues.ToArray())
+        {
+        }
+
         private double[] _coefficients;
 
         /// <summary>
@@ -72,6 +91,16 @@ namespace Beatshake.Core
         {
             Coefficients = null;
         }
+
+        /// <summary>
+        /// Start of the definition region of this function
+        /// </summary>
+        public double Start { get; set; }
+
+        /// <summary>
+        /// End of the definiction region of this function
+        /// </summary>
+        public double End { get; set; }
 
         /// <summary>
         /// Repressenting the coefficients of a polynomial function.
@@ -210,6 +239,10 @@ namespace Beatshake.Core
 
         public double GetCoefficient(int degree)
         {
+            if (Coefficients == null)
+            {
+                return 0;
+            }
             if (degree < Coefficients.Length)
             {
                 return Coefficients[degree];
@@ -281,6 +314,25 @@ namespace Beatshake.Core
             return integral;
         }
 
+        public IEnumerable<double> GetIntersectionsWith(PolynomialFunction other)
+        {
+            // todo: test
+            if (this.Degree != 2 ||other.Degree != 2)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                // (a1 - a2)x^2 + (b1 - b2)t + (c1 - c2)
+                var a = this.GetCoefficient(2) - other.GetCoefficient(2);
+                var b = this.GetCoefficient(1) - other.GetCoefficient(1);
+                var c = this.GetCoefficient(0) - other.GetCoefficient(0);
+                return Utility.MidnightFormula(a, b, c);
+            }
+
+        }
+
+
         /// <summary>Gibt eine Zeichenfolge zurück, die das aktuelle Objekt darstellt.</summary>
         /// <returns>Eine Zeichenfolge, die das aktuelle Objekt darstellt.</returns>
         public override string ToString()
@@ -288,9 +340,10 @@ namespace Beatshake.Core
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < CoefficientCount; i++)
             {
-                builder.Append(string.Format("{0:+#;-#;0}x^{1}", GetCoefficient(i), i));
+                builder.Append(string.Format(" {0:+#;-#}x^{1}", GetCoefficient(i), i));
             }
-            return builder.ToString();
+            
+            return builder.ToString().Trim();
         }
     }
 
