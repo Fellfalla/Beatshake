@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using Beatshake.ExtensionMethods;
+using OxyPlot.Axes;
 
 namespace Beatshake.Core
 {
-    public class PolynomialFunction
+    public class PolynomialFunction : ICloneable
     {
         private double[] _coefficients;
 
@@ -144,5 +148,158 @@ namespace Beatshake.Core
             }
         }
 
+        public int CoefficientCount
+        {
+            get
+            {
+                return Coefficients?.Length ?? 0;
+            }
+        }
+
+        public void Scale(double scale)
+        {
+            for (int i = 0; i < CoefficientCount; i++) // this could be parallelized
+            {
+                Coefficients[i] *= scale;
+            }
+        }
+
+        /// <summary>
+        /// Normalizes the function in a way, that the highest peak has a value of 1
+        /// </summary>
+        /// <returns></returns>
+        public PolynomialFunction Normalize()
+        {
+            double maxValue = GetPeaks().Max();
+            double scale = 1 / maxValue;
+            PolynomialFunction normalizedFunction = (PolynomialFunction) Clone();
+            normalizedFunction.Scale(scale);
+
+            return normalizedFunction;
+
+        }
+
+        /// <summary>
+        /// Clones the executing class
+        /// </summary>
+        /// <returns></returns>
+        public virtual object Clone()
+        {
+            var clone = new PolynomialFunction();
+
+            clone.Coefficients = Coefficients;
+
+            return clone;
+        }
+
+        /// <summary>
+        /// Returns the functional-Value f(x) at a specific point x
+        /// </summary>
+        /// <param name="x">The point where this function should be evaluated</param>
+        /// <returns></returns>
+        public double ValueAt(double x)
+        {
+            double result = 0;
+            for (uint i = 0; i < CoefficientCount; i++)
+            {
+                result += Coefficients[i]*x.FastPower(i);
+            }
+
+            return result;
+        }
+
+        public double GetCoefficient(int degree)
+        {
+            if (degree < Coefficients.Length)
+            {
+                return Coefficients[degree];
+            }
+            else // the x^degree is eliminated by a coefficient with value 0
+            {
+                return 0;
+            }
+        }
+
+        public double GetIntegralDifference(PolynomialFunction other, double start, double end)
+        {
+            double integral = 0; // this integral means the speed difference
+
+            // sort for func with highest degree
+            PolynomialFunction func1;
+            PolynomialFunction func2;
+            if (this.Degree >= other.Degree)
+            {
+                func1 = this;
+                func2 = other;
+            }
+            else
+            {
+                func1 = other;
+                func2 = this;
+            }
+
+            if (func1.Degree == -1)
+            {
+                return 0;
+            }
+            if (func1.Degree == 0) // const
+            {
+                integral = end - start*Math.Abs(func1.GetCoefficient(0) - func2.GetCoefficient(0));
+            }
+            else if (func1.Degree == 1) // lin
+            {
+                // Substract functions from each other
+                var a = func1.GetCoefficient(1) - func2.GetCoefficient(1);
+                var b = func1.GetCoefficient(0) - func2.GetCoefficient(0);
+
+                // https://www.wolframalpha.com/input/?i=integral+abs%28ax%2Bb%29
+                var upper = 0.5*(end*(a*end + 2*b)*Math.Sign(a*end + b));
+                var lower = 0.5*(start*(a* start + 2*b)*Math.Sign(a* start + b));
+                integral = upper - lower;
+            }
+            else if (func1.Degree == 2)
+            {
+                // https://www.wolframalpha.com/input/?i=integral+abs%28ax^2%2Bbx%2Bc%29
+                var a = func1.GetCoefficient(2) - func2.GetCoefficient(2);
+                var b = func1.GetCoefficient(1) - func2.GetCoefficient(1);
+                var c = func1.GetCoefficient(0) - func2.GetCoefficient(0);
+
+                var upper = (end*(6*c + end*(3*b + 2*a*end))*Math.Sign(c + end*(b + a*end))) / 6;
+                var lower = (start*(6*c + start * (3*b + 2*a* start))*Math.Sign(c + start * (b + a* start))) / 6;
+                return upper - lower;
+            }
+            else // solve numerical
+            {
+                double delta = (end - start) / BeatshakeSettings.IntegralPrecision;
+                for (double x = start; x < end; x += delta)
+                {
+                    var diff = other.ValueAt(x) - ValueAt(x);
+                    integral += Math.Abs(diff) * delta;
+                }
+            }
+
+            return integral;
+        }
+
+        /// <summary>Gibt eine Zeichenfolge zurück, die das aktuelle Objekt darstellt.</summary>
+        /// <returns>Eine Zeichenfolge, die das aktuelle Objekt darstellt.</returns>
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < CoefficientCount; i++)
+            {
+                builder.Append(string.Format("{0:+#;-#;0}x^{1}", GetCoefficient(i), i));
+            }
+            return builder.ToString();
+        }
+    }
+
+    public interface ICloneable
+    {
+        /// <summary>
+        /// Clones the executing class
+        /// </summary>
+        /// <returns></returns>
+        object Clone();
     }
 }

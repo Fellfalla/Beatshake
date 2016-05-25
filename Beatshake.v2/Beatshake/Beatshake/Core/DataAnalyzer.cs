@@ -67,25 +67,6 @@ namespace Beatshake.Core
         }
 
         /// <summary>
-        /// Returns the x-Value where the peak will be expected.
-        /// Min values and Max values are both handled as potential peaks.
-        /// </summary>
-        /// <param name="coefficients"></param>
-        /// <returns></returns>
-        public static double GetPeak(Tuple<double, double, double> coefficients)
-        {
-            // f(x)     =   ax^2 + bx + c
-            // f'(x)    =   2ax + b
-            // f''(x)   =   2a
-
-            // Peak is at f'(x) = 0
-            // x = -b / 2a
-
-            return (-coefficients.Item2)/(2*coefficients.Item1);
-
-        }
-
-        /// <summary>
         /// Looks for the highest value of the given data.
         /// </summary>
         /// <param name="t"></param>
@@ -164,14 +145,6 @@ namespace Beatshake.Core
             var b = func1.Item2 - func2.Item2;
             var c = func1.Item3 - func2.Item3;
             return Utility.MidnightFormula(a, b, c);
-        }
-
-        public static Tuple<double, double, double> NormalizeQuadraticFunction(Tuple<double, double, double> coefficients)
-        {
-            double maxValue = GetPeak(coefficients);
-            double scale = 1/maxValue;
-            return Tuple.Create(coefficients.Item1*scale, coefficients.Item2 * scale, coefficients.Item3 * scale);
-
         }
 
         public static bool IsMax(Tuple<double, double, double> coefficients)

@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Beatshake.Core;
 using Beatshake.ExtensionMethods;
 using Xunit;
 // ReSharper disable InconsistentNaming
+// ReSharper disable JoinDeclarationAndInitializer
 
 namespace Beatshake.Tests
 {
@@ -81,7 +83,110 @@ namespace Beatshake.Tests
             var functionDDD = functionDD.GetDerivation();
             Assert.Equal(functionDD.Degree-1, functionDDD.Degree);
             Assert.True(new double[] {6}.SequenceEqual(functionDDD.Coefficients));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(35.156)]
+        [InlineData(-1)]
+        [InlineData(-15412.154)]
+        public void GetValueAtTest(double x)
+        {
+            var function = new PolynomialFunction();
+
+            // test const
+            const double @const = 34.32;
+            function.Coefficients = new double[] { @const };
+            Assert.Equal(@const, function.ValueAt(x));
+
+            // test linear
+            function.Coefficients = new double[] {0, 1};
+            Assert.Equal(x, function.ValueAt(x));
+
+            // test quadratic
+            function.Coefficients = new double[] {0,0,1};
+            Assert.Equal(x*x, function.ValueAt(x));
+        }
+
+        [Theory]
+        [InlineData(0,0)]
+        [InlineData(0,1)]
+        [InlineData(-1,1)]
+        [InlineData(-1,0)]
+        [InlineData(-55.156,513)]
+        public void GetIntegralDifferenceTest(double start, double end)
+        {
+            double integral;
+            double expected;
+            double deviation;
+            double tol = 0.005; // +-0.5% toleranced deviation
+            BeatshakeSettings.IntegralPrecision = Math.Max((int) (end - start), 500);
+            double c = 1;
+            var zeroFunction = new PolynomialFunction();
+            zeroFunction.Coefficients = new double[] {0};
+
+            var function = new PolynomialFunction();
+
+            // Test Constant
+            function.Coefficients = new double[] { c };
+            integral = function.GetIntegralDifference(zeroFunction, start, end);
+            if (start.IsAlmostEqual(end, double.Epsilon))
+            {
+                Assert.Equal(0, integral, 5);
+            }
+            else
+            {
+                expected = Math.Abs(Math.Abs(end - start) * c);
+                deviation = expected / integral - 1;
+                Assert.InRange(deviation, -tol, tol); // 1% deviation
+            }
+          
+
+            // Test Linear https://www.wolframalpha.com/input/?i=integral+abs%28x%29
+            function.Coefficients = new double[] { 0, c };
+            integral = function.GetIntegralDifference(zeroFunction, start, end);
+            if (start.IsAlmostEqual(end, double.Epsilon))
+            {
+                Assert.Equal(0, integral, 5);
+            }
+            else {
+                expected = 0.5 * (Math.Sign(end) * end * end - Math.Sign(start) * start * start);
+                deviation = expected / integral - 1;
+                Assert.InRange(deviation, -tol, tol); // 1% deviation
+            }
+
+            // Test quadratic
+            function.Coefficients = new double[] { 0, 0, c };
+            integral = function.GetIntegralDifference(zeroFunction, start, end);
+            if (start.IsAlmostEqual(end, double.Epsilon))
+            {
+                Assert.Equal(0, integral, 5);
+            }
+            else {
+                expected = (end.FastPower(3) - start.FastPower(3)) / 3;
+                deviation = expected / integral - 1;
+                Assert.InRange(deviation, -tol, tol); // 1% deviation
+
+            }
+
+            // todo: test function with higher degree than 2 (function up to degree of 2 are solved analytical)
 
         }
+
+        [Fact]
+        public void GetCoefficientTest()
+        {
+            double first = 1;
+            double second = 2;
+            double third = 3;
+            var function = new PolynomialFunction();
+            function.Coefficients = new double[] {first, second, third};
+
+            Assert.Equal(first, function.GetCoefficient(0));
+            Assert.Equal(second, function.GetCoefficient(1));
+            Assert.Equal(third, function.GetCoefficient(2));
+        }
+
     }
 }
