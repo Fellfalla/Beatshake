@@ -7,6 +7,10 @@ using Beatshake.ExtensionMethods;
 
 namespace Beatshake.Core
 {
+    /// <summary>
+    /// There are existing packaged:
+    /// maybe checkout following: http://www.alglib.net/
+    /// </summary>
     public static class DataAnalyzer
     {
         public static Tuple<double, double, double> CalculateCoefficients(IEnumerable<double> samplePoints,
@@ -75,11 +79,12 @@ namespace Beatshake.Core
 
         /// <summary>
         /// Looks for the highest value of the given data.
+        /// Therefore the dataset is smoothed and analyzed.
         /// </summary>
         /// <param name="t"></param>
         /// <param name="values"></param>
         /// <returns>Index of the peak value. Returns -1 if theres no peak.</returns>
-        public static int GetPeak(IList<double> t, IList<IList<double>> values)
+        public static double GetEstimatedPeak(IList<double> t, IList<IList<double>> values)
         {
             //double max = double.NegativeInfinity;
             //double maxX = double.NaN;
@@ -134,6 +139,46 @@ namespace Beatshake.Core
 
             return index;
         }
+
+        /// <summary>
+        /// Returns the index where the greatest absolute values are calculated
+        /// </summary>
+        /// <param name="values">All input value arrays have to be of same size.</param>
+        /// <returns>-1 if no peak was detected</returns>
+        public static int GetPeak(params double[][] values)
+        {
+            int dataSetCount = values.Count();
+            int resultIndex = -1;
+
+            // Test data for correctness
+            if (dataSetCount == 0)
+            {
+                return resultIndex;
+            }
+
+            double maxVal = double.MinValue;
+            double curVal;
+            int dataSetLength = values.First().Count();
+
+            // go through all indeces
+            for (int i = 0; i < dataSetLength; i++)
+            {
+                curVal = 0;
+                // take same index from the different data sets
+                for (int j = 0; j < dataSetCount; j++) 
+                {
+                    curVal += Math.Abs(values[j][i]);
+                }
+                if (curVal > maxVal)
+                {
+                    maxVal = curVal;
+                    resultIndex = i;
+                }
+            }
+
+            return resultIndex;
+        }
+
 
         public static bool IsMax(Tuple<double, double, double> coefficients)
         {

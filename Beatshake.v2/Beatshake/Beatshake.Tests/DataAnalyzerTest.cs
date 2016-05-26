@@ -18,17 +18,21 @@ namespace Beatshake.Tests
         [Theory]
         [InlineData(3, 1, 1)]
         [InlineData(3, -1, 1)]
-        public void GetMultifunctionalPeakTest(int pointCount, int peakValue, int peakPosition)
+        [InlineData(3, 253.32, 1)]
+        [InlineData(3, -235, 1)]
+        [InlineData(3, 1, 0)]
+        [InlineData(3, -1, 0)]
+        [InlineData(3, 1, 2)]
+        [InlineData(3, -1, 2)]
+        public void GetPeakTest(int pointCount, int peakValue, int peakPosition)
         {
             // Init testing context
             BeatshakeSettings.SamplePoints = pointCount;
-            var timeSteps = DataGenerator.GetData(pointCount).ToList();
             IEnumerable<double> xVal, yval, zval;
             xVal = yval = zval = DataGenerator.GetZerosWithPeak(pointCount, peakValue, peakPosition);
-            var data = new List<IList<double>>() {xVal.ToList(), yval.ToList(), zval.ToList()}.ToList();
 
             // Run Test
-            var peak = DataAnalyzer.GetPeak(timeSteps, data);
+            var peak = DataAnalyzer.GetPeak(xVal.ToArray(), yval.ToArray(), zval.ToArray());
             Assert.Equal(peakPosition, peak);
         }
 

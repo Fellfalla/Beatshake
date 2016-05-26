@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
 using Beatshake.ExtensionMethods;
@@ -18,18 +16,25 @@ namespace Beatshake.ViewModels
     public class DrumViewModel : InstrumentViewModelBase
     {
 
-        public DrumViewModel(INavigationService navigationService, IMotionDataProvider motionDataProvider) : base(navigationService, motionDataProvider)
+        public DrumViewModel(INavigationService navigationService, 
+            IMotionDataProvider motionDataProvider, 
+            InstrumentalComponentFactory componentFactory) : base(navigationService, motionDataProvider)
         {
             _timeElapsedStopwatch.Start();
             
             Components = new ObservableCollection<InstrumentalComponent>();
             Title = "DrumKit 1";
             Kit = "Kit1";
+
+            componentFactory.Init(this, this, motionDataProvider);
+
             foreach (var allName in DrumComponentNames.GetAllNames())
             {
-                Components.Add(new InstrumentalComponent(this, this, motionDataProvider, allName));
+                Components.Add(componentFactory.CreateInstrumentalComponent(allName));
             }
+
             ResponseTime = BeatshakeSettings.SensorRefreshInterval;
+            UseRandom = true;
         }
 
         private string _heading = "Shake your Drums!";
@@ -52,8 +57,8 @@ namespace Beatshake.ViewModels
         private readonly Stopwatch _timeElapsedStopwatch = new Stopwatch();
         private uint _responseTime;
         private bool _useFunctionAnalysis;
-
         private double _lastGradient;
+        private bool _useRandom;
 
         public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
@@ -71,7 +76,7 @@ namespace Beatshake.ViewModels
                 ZHistory.RemoveRange(0, tooMuch);
                 Timestamps.RemoveRange(0, tooMuch);
             }
-
+            // todo: use Strategy pattern
             if (UseTeachement)
             {
                 var choosenOne = Components.Where(component => component.Teachement != null).Random();
@@ -83,20 +88,22 @@ namespace Beatshake.ViewModels
                 //var cap = (int) (2000/BeatshakeSettings.SensorRefreshInterval);
 
                 var normaliedTimestamps = Utility.NormalizeTimeStamps(Timestamps);
-                var xCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, XHistory );
-                var yCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, YHistory );
-                var zCoeff = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, ZHistory );
+                var xCoeff = new PolynomialFunction(normaliedTimestamps, XHistory );
+                var yCoeff = new PolynomialFunction(normaliedTimestamps, YHistory );
+                var zCoeff = new PolynomialFunction(normaliedTimestamps, ZHistory );
+
                 var start = normaliedTimestamps.First();
                 var end = normaliedTimestamps.Last();
-                var integral = DataAnalyzer.GetIntegralDifference(choosenOne.Teachement.XCoefficients, xCoeff, start, end);
-                integral += DataAnalyzer.GetIntegralDifference(choosenOne.Teachement.YCoefficients, yCoeff, start, end);
-                integral += DataAnalyzer.GetIntegralDifference(choosenOne.Teachement.ZCoefficients, zCoeff, start, end);
+                var integral = choosenOne.Teachement.XCurve.GetIntegralDifference(xCoeff, start, end);
+                integral += choosenOne.Teachement.YCurve.GetIntegralDifference(yCoeff, start, end);
+                integral += choosenOne.Teachement.ZCurve.GetIntegralDifference(zCoeff, start, end);
+
                 if (DataAnalyzer.AreFunctionsAlmostEqual(integral, TeachementTolerance, end - start))
                 {
                     await choosenOne.PlaySoundCommand.Execute();
                 }
             }
-            if (UseFunctionAnalysis)
+            else if (UseFunctionAnalysis)
             {
                 var xFunction = new QuadraticFunction();
                 var yFunction = new QuadraticFunction();
@@ -131,12 +138,14 @@ namespace Beatshake.ViewModels
 
                 _lastGradient = absGrad;
             }
-
-            else if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
+            else if (UseRandom)
             {
-                await Components.Random().PlaySoundCommand.Execute();
-
+                if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
+                {
+                    await Components.Random().PlaySoundCommand.Execute();
+                }
             }
+           
             
         }
 
@@ -174,9 +183,22 @@ namespace Beatshake.ViewModels
             {
                 if (value)
                 {
-                    UseFunctionAnalysis = false;
+                    ConcurrentOptionSet();
                 }
                 SetProperty(ref _useTeachement, value);
+            }
+        }
+
+        public bool UseRandom
+        {
+            get { return _useRandom; }
+            set
+            {
+                if (value)
+                {
+                    ConcurrentOptionSet();
+                }
+                SetProperty(ref _useRandom, value);
             }
         }
 
@@ -187,12 +209,18 @@ namespace Beatshake.ViewModels
             {
                 if (value)
                 {
-                    UseTeachement = false;
+                    ConcurrentOptionSet();
                 }
                 SetProperty(ref _useFunctionAnalysis, value);
             }
         }
 
+        private void ConcurrentOptionSet()
+        {
+            UseTeachement = false;
+            UseFunctionAnalysis = false;
+            UseRandom = false;
+        }
 
         public uint ResponseTime
         {

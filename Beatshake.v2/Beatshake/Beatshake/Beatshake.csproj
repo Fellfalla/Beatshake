@@ -46,6 +46,7 @@
     <Compile Include="Core\FunctionGroup.cs" />
     <Compile Include="Core\IInstrumentalComponentIdentification.cs" />
     <Compile Include="Core\IInstrumentalIdentification.cs" />
+    <Compile Include="Core\IncompleteInitializationException.cs" />
     <Compile Include="Core\InstancePool.cs" />
     <Compile Include="Core\InstrumentalComponent.cs" />
     <Compile Include="Core\PolynomialFunction.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="DependencyServices\IPlotViewProdiver.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
+    <Compile Include="ExtensionMethods\InterfaceExtensions.cs" />
     <Compile Include="ExtensionMethods\RandomExtensions.cs" />
     <Compile Include="ViewModels\InstrumentViewModelBase.cs" />
     <Compile Include="Core\BeatshakeSettings.cs" />
@@ -101,6 +103,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\alglibnet2.0.0.0\lib\alglibnet2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
       <Private>True</Private>
@@ -114,7 +120,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OxyPlot.Core.1.0.0-unstable2100\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1+Xamarin.iOS10\OxyPlot.dll</HintPath>
+      <HintPath>..\..\packages\OxyPlot.Core.1.0.0-unstable1983\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1+Xamarin.iOS10\OxyPlot.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="OxyPlot.Xamarin.Forms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -134,7 +140,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Reflection.TypeExtensions">
-      <HintPath>..\..\..\..\..\..\.nuget\packages\System.Reflection.TypeExtensions\4.0.0\ref\dotnet\System.Reflection.TypeExtensions.dll</HintPath>
+      <HintPath>..\..\..\..\Users\joop0\.nuget\packages\System.Reflection.TypeExtensions\4.0.0\ref\dotnet\System.Reflection.TypeExtensions.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Forms.2.3.0.38-pre2\lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>

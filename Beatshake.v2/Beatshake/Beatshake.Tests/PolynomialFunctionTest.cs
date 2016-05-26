@@ -33,6 +33,17 @@ namespace Beatshake.Tests
             function.Coefficients = new double[] {c0, c1, c2};
             double xValue = 42;
             Assert.Equal(xValue * 2 * c2 + c1, function.GetGradient(xValue));
+
+            // degree 3
+            double a = 6;
+            double b = 5;
+            double c = 4;
+            double d = 3;
+            function.Coefficients = new double[] {d, c, b, a};
+            xValue = 13.13;
+            // f'(x) = 3ax^2 + 2bx + c
+            Assert.Equal(xValue * xValue * 3 * a + b * 2 * xValue + c, function.GetGradient(xValue), 10);
+
         }
 
         /// <summary>

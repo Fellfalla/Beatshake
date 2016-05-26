@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using Beatshake.ExtensionMethods;
-using OxyPlot.Axes;
 
 namespace Beatshake.Core
 {
+    public enum DataFittingStrategy
+    {
+        LeastSquares,
+        LagrangePolynom,
+    }
+
     public class PolynomialFunction : ICloneable
     {
         public PolynomialFunction()
@@ -15,8 +19,13 @@ namespace Beatshake.Core
             
         }
 
-        public PolynomialFunction(double[] samplePoints, double[] sampleValues)
+        public PolynomialFunction(double[] samplePoints, double[] sampleValues, int n = 2, DataFittingStrategy method = DataFittingStrategy.LeastSquares)
         {
+            if (n != 2 || method != DataFittingStrategy.LeastSquares)
+            {
+                throw new NotImplementedException();
+            }
+
             var tuple = DataAnalyzer.CalculateCoefficients(samplePoints, sampleValues);
 
             Coefficients = new double[] {tuple.Item3, tuple.Item2, tuple.Item1};
@@ -120,16 +129,20 @@ namespace Beatshake.Core
         /// <returns></returns>
         public double GetGradient(double x)
         {
-            double grad = 0;
-            // f'(x) = 2ax + b
-            // the gradient is at interval beginning or ending the greatest
-            for (int i = 0; i < Coefficients.Length - 1 ; i++)
-            {
-                var degree = i + 1;
-                grad += (degree) * Coefficients[degree] * x.FastPower((uint) i);
+            // this commented code works and
+            // is not deleted for eventually better perfomance in future
+            //double grad = 0;
+            //// f'(x) = 2ax + b
+            //// the gradient is at interval beginning or ending the greatest
+            //for (int i = 0; i < Coefficients.Length - 1 ; i++)
+            //{
+            //    var degree = i + 1;
+            //    grad += (degree) * Coefficients[degree] * x.FastPower((uint) i);
 
-            }
-            return grad;
+            //}
+            var deriv = GetDerivation();
+
+            return deriv.ValueAt(x);
         }
 
         public PolynomialFunction GetDerivation()

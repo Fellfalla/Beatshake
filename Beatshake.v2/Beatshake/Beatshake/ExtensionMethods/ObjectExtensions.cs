@@ -108,5 +108,4 @@ namespace Beatshake.ExtensionMethods
                 return obj.GetHashCode();
             }
         }
-
 }

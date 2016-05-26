@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Beatshake.DependencyServices;
 using Beatshake.ViewModels;
+using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Mvvm;
 using Xamarin.Forms;
@@ -13,6 +15,41 @@ using DependencyService = Prism.Services.DependencyService;
 
 namespace Beatshake.Core
 {
+    public class InstrumentalComponentFactory
+    {
+        private IInstrumentalIdentification _containingInstrument;
+        private IMotionDataProcessor _dataProcessor;
+        private IMotionDataProvider _dataProvider;
+        private IUnityContainer _container;
+        private bool _isInitialized;
+
+        public InstrumentalComponentFactory(IUnityContainer container)
+        {
+         
+            _container = container;
+        }
+
+        public void Init(IInstrumentalIdentification containingInstrument,
+            IMotionDataProcessor dataProcessor, IMotionDataProvider dataProvider)
+        {
+            _containingInstrument = containingInstrument;
+            _dataProcessor = dataProcessor;
+            _dataProvider = dataProvider;
+            _isInitialized = true;
+        }
+
+        public InstrumentalComponent CreateInstrumentalComponent(string name)
+        {
+            if (!_isInitialized)
+            {
+                throw new IncompleteInitializationException("Call " + nameof(Init));
+            }
+
+            var newPlayerInstance = _container.Resolve<IInstrumentPlayer>();
+            return new InstrumentalComponent(_containingInstrument,_dataProcessor, _dataProvider, newPlayerInstance, name);
+        }
+    }
+
     public class InstrumentalComponent : BindableBase, IInstrumentalComponentIdentification
     {
         private readonly IInstrumentPlayer _player;
@@ -54,9 +91,10 @@ namespace Beatshake.Core
         public int Number { get; set; }
 
         public InstrumentalComponent(IInstrumentalIdentification containingInstrument, 
-            IMotionDataProcessor dataProcessor, IMotionDataProvider dataProvider, string name)
+            IMotionDataProcessor dataProcessor, IMotionDataProvider dataProvider, IInstrumentPlayer player, string name)
         {
-            _player = Xamarin.Forms.DependencyService.Get<IInstrumentPlayer>(DependencyFetchTarget.NewInstance);
+            //_player = Xamarin.Forms.DependencyService.Get<IInstrumentPlayer>(DependencyFetchTarget.NewInstance);
+            _player = player;
             MotionDataProcessor = dataProcessor;
             MotionDataProvider = dataProvider;
 
@@ -65,15 +103,26 @@ namespace Beatshake.Core
             ContainingInstrument = containingInstrument;
 
             PreLoadAudio();
-            PropertyChanged += (sender, args) => PreLoadAudio();
+            PropertyChanged += OnPropertyChanged;
 
             PlaySoundCommand = DelegateCommand.FromAsyncHandler(PlaySound);
             TeachCommand = new DelegateCommand(Teach);
         }
 
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == nameof(Name) ||
+                args.PropertyName == nameof(Number)
+                )
+            {
+                PreLoadAudio();
+            }
+        }
+
+
         public async void PreLoadAudio()
         {
-                _audionInstance = await _player.PreLoadAudio(this).ConfigureAwait(false);
+            _audionInstance = await _player.PreLoadAudio(this); //.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -127,7 +176,6 @@ namespace Beatshake.Core
 
             Teachement = await TeachMovement();
 
-
             // reenable motion processing 
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
         }
@@ -137,7 +185,7 @@ namespace Beatshake.Core
             MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
 
             // record movement
-
+            Teachement teachement = null;
             List<double> xValues = new List<double>();
             List<double> yValues = new List<double>();
             List<double> zValues = new List<double>();
@@ -171,15 +219,18 @@ namespace Beatshake.Core
             {
             }
 
-            Teachement teachement = null;
             try
             {
                 var normalizedTimestamps = Utility.NormalizeTimeStamps(timesteps);
                 teachement = Teachement.Create(normalizedTimestamps, xValues, yValues, zValues);
             }
+            catch (InvalidDataException) // thrown if the peak is to near at beginning data
+            {
+                await Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Teachement failed. Please try again. (longer)");
+            }
             catch (InvalidOperationException)
             {
-                Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
+                await Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
             }
 
             MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
