@@ -65,6 +65,10 @@ namespace Beatshake
     Xamarin.Forms.DependencyService.Get<IMotionDataProvider>(DependencyFetchTarget.GlobalInstance));
 
             //Container.RegisterInstance(CreateNavigationService());
+            Container.RegisterType<DrumViewModel>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<MainMenuViewModel>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<StatisticsViewModel>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<SettingsViewModel>(new ContainerControlledLifetimeManager());
 
             Container.RegisterTypeForNavigation<DrumView, DrumViewModel>();
             Container.RegisterTypeForNavigation<MainMenuView, MainMenuViewModel>();

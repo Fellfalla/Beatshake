@@ -1,92 +1,95 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <views:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
-             xmlns:converter="clr-namespace:Beatshake.Converter;assembly=Beatshake"
-             xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
-             x:Class="Beatshake.Views.DrumView"
-             mvvm:ViewModelLocator.AutowireViewModel="True"
-                       >
-  <ContentPage.Resources>
-    <ResourceDictionary>
-      <converter:ToStringConverter x:Key="ToStringConverter"></converter:ToStringConverter>
-    </ResourceDictionary>
-  </ContentPage.Resources>
-<RelativeLayout>
-  <Image Source="BeatshakeLogo.png" Opacity="0.5"
-             RelativeLayout.WidthConstraint=
-                  "{ConstraintExpression Type=RelativeToParent, Property=Width}"
-             RelativeLayout.HeightConstraint=
-                  "{ConstraintExpression Type=RelativeToParent, Property=Height}"/>
-  <RelativeLayout
-      RelativeLayout.WidthConstraint=
-              "{ConstraintExpression Type=RelativeToParent, Property=Width}"
-            RelativeLayout.HeightConstraint=
-              "{ConstraintExpression Type=RelativeToParent, Property=Height}">
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+                       xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
+                       xmlns:converter="clr-namespace:Beatshake.Converter;assembly=Beatshake"
+                       xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
+                       x:Class="Beatshake.Views.DrumView"
+                       mvvm:ViewModelLocator.AutowireViewModel="True">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:ToStringConverter x:Key="ToStringConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <RelativeLayout>
+        <Image Source="BeatshakeLogo.png" Opacity="0.5"
+               RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width}"
+               RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height}" />
+        <RelativeLayout
+            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width}"
+            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height}">
 
-    <Grid VerticalOptions="Center" HorizontalOptions="Center">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"></RowDefinition>
-      <RowDefinition Height="*"></RowDefinition>
-      <RowDefinition Height="*"></RowDefinition>
-      <RowDefinition Height="*"></RowDefinition>
-    </Grid.RowDefinitions>
+            <Grid VerticalOptions="Center" HorizontalOptions="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-    <Label Grid.Row="0" Text="{Binding Title}"  HorizontalOptions="CenterAndExpand" />
+                <Label Grid.Row="0" Text="{Binding Title}" HorizontalOptions="CenterAndExpand" />
 
-    <ListView Grid.Row="1" ItemsSource="{Binding Components}" VerticalOptions="Center" HorizontalOptions="Center">
-      <ListView.ItemTemplate>
-        <DataTemplate>
-          <ViewCell>
-            <StackLayout Orientation="Horizontal">
-              <Label HorizontalOptions="Start" Text="{Binding Name}"></Label>
-              <Button HeightRequest="30"
-                      HorizontalOptions="End"
-                      Text="Push me!">
-                <Button.GestureRecognizers>
-                  <TapGestureRecognizer  Command="{Binding PlaySoundCommand}">
-                  </TapGestureRecognizer>
+                <ListView Grid.Row="1" ItemsSource="{Binding Components}" VerticalOptions="Center"
+                          HorizontalOptions="Center">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Orientation="Horizontal">
+                                    <Label HorizontalOptions="Start" Text="{Binding Name}" />
+                                    <Button HeightRequest="30"
+                                            HorizontalOptions="End"
+                                            Text="Push me!">
+                                        <Button.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding PlaySoundCommand}" />
 
-                </Button.GestureRecognizers>
-              </Button>
-              <Button Text="Teach me!"  HeightRequest="30">
-                <Button.GestureRecognizers>
-                  <TapGestureRecognizer  Command="{Binding TeachCommand}">
-                  </TapGestureRecognizer>
+                                        </Button.GestureRecognizers>
+                                    </Button>
+                                    <Button Text="Teach me!" HeightRequest="30">
+                                        <Button.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding TeachCommand}" />
 
-                </Button.GestureRecognizers>                
-              </Button>
-              
-              <Label Text="{Binding Teachement.XCoefficients}"></Label>
-              <Label Text="{Binding Teachement.YCoefficients}"></Label>
-              <Label Text="{Binding Teachement.ZCoefficients}"></Label>
-            </StackLayout>
-          </ViewCell>
-        </DataTemplate>
-      </ListView.ItemTemplate>
-    </ListView>
-      <StackLayout Orientation="Vertical" Grid.Row="2">
-        <StackLayout Grid.Row="2" Orientation="Horizontal">
-        <Label Text="Use Teachement"></Label>  
-        <Switch  Grid.Row="2" IsToggled="{Binding TestTeachement}"></Switch>
-        </StackLayout>
-        <StackLayout Grid.Row="2" Orientation="Horizontal">
-        <Label Text="Use Function analysis"></Label>  
-        <Switch  Grid.Row="2" IsToggled="{Binding UseFunctionAnalysis}"></Switch>
-        </StackLayout>
-      <StackLayout Grid.Row="2">
-      <Label Text="Teachement tolerance"></Label>  
-      <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="30"></Slider>
-        </StackLayout>
-      <StackLayout Grid.Row="2">
-      <Label Text="Response Time"></Label>  
-      <Label Text="{Binding ResponseTime}"></Label>  
-      <Slider Grid.Row="3" Value="{Binding ResponseTime}"  Minimum="0" Maximum="100"></Slider>
-        </StackLayout>
-        
-  </StackLayout>
-  </Grid>
-  </RelativeLayout>
-</RelativeLayout>
+                                        </Button.GestureRecognizers>
+                                    </Button>
+
+                                    <Label Text="{Binding Teachement.XCurve}" />
+                                    <Label Text="{Binding Teachement.YCurve}" />
+                                    <Label Text="{Binding Teachement.ZCurve}" />
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <StackLayout Orientation="Vertical" Grid.Row="2">
+                  
+                    <StackLayout Grid.Row="2" Orientation="Horizontal">
+                        <Label Text="Use Randomizer" />
+                        <Switch Grid.Row="2" IsToggled="{Binding UseRandom}" />
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="2" Orientation="Horizontal">
+                        <Label Text="Use Teachement" />
+                        <Switch Grid.Row="2" IsToggled="{Binding UseTeachement}" />
+                    </StackLayout>
+                  
+                    <StackLayout Grid.Row="2" Orientation="Horizontal">
+                        <Label Text="Use Function analysis" />
+                        <Switch Grid.Row="2" IsToggled="{Binding UseFunctionAnalysis}" />
+                    </StackLayout>
+                  
+                    <StackLayout Grid.Row="2">
+                        <Label Text="Teachement tolerance" />
+                        <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="30" />
+                    </StackLayout>
+                    <StackLayout Grid.Row="2">
+                        <Label Text="Response Time" />
+                        <Label Text="{Binding ResponseTime}" />
+                        <Slider Grid.Row="3" Value="{Binding ResponseTime}" Minimum="0" Maximum="100" />
+                    </StackLayout>
+
+                </StackLayout>
+            </Grid>
+        </RelativeLayout>
+    </RelativeLayout>
 </views:BaseContentPage>
