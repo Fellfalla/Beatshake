@@ -34,7 +34,7 @@ namespace Beatshake.Core
             End = samplePoints.Last();
         }
 
-        public PolynomialFunction(IEnumerable<double> samplePoints, IList<double> sampleValues) : this(samplePoints.ToArray(), sampleValues.ToArray())
+        public PolynomialFunction(IEnumerable<double> samplePoints, IEnumerable<double> sampleValues) : this(samplePoints.ToArray(), sampleValues.ToArray())
         {
         }
 
@@ -114,12 +114,17 @@ namespace Beatshake.Core
         /// <summary>
         /// Repressenting the coefficients of a polynomial function.
         /// The lower the index, the lower the exponent of the correlating variable.
-        /// This means that the Variable with the highest exponen is multiplicated with the very last <see cref="Coefficients"/> entry.
+        /// This means that the Variable with the highest exponent is multiplicated with the very last <see cref="Coefficients"/> entry.
+        /// !!! Changes in this array wont be detected !!!
         /// </summary>
         public double[] Coefficients
         {
             get { return _coefficients; }
-            set { _coefficients = value; }
+            set
+            {
+                _coefficients = value;
+                _normalizedFunction = null; // Reset normalized version
+            }
         }
 
         /// <summary>
@@ -212,14 +217,19 @@ namespace Beatshake.Core
         /// <returns></returns>
         public PolynomialFunction Normalize()
         {
-            double maxValue = GetPeaks().Max();
-            double scale = 1 / maxValue;
-            PolynomialFunction normalizedFunction = (PolynomialFunction) Clone();
-            normalizedFunction.Scale(scale);
+            if (_normalizedFunction == null)
+            {
+                double maxValue = GetPeaks().Max();
+                double scale = 1 / maxValue;
+                _normalizedFunction = (PolynomialFunction)Clone();
+                _normalizedFunction.Scale(scale);
+            }
 
-            return normalizedFunction;
+            return (PolynomialFunction) _normalizedFunction.Clone();
 
         }
+
+        private PolynomialFunction _normalizedFunction;
 
         /// <summary>
         /// Clones the executing class

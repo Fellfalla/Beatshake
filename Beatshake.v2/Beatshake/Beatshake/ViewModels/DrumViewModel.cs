@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
 using Beatshake.ExtensionMethods;
@@ -67,7 +68,7 @@ namespace Beatshake.ViewModels
             YHistory.Add(motionDataProvider.Acceleration.Trans[1]);
             ZHistory.Add(motionDataProvider.Acceleration.Trans[2]);
             var cap = BeatshakeSettings.SamplePoints;
-
+            var tasks = new List<Task>();
             var tooMuch = XHistory.Count - cap;
             if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
             {
@@ -79,29 +80,22 @@ namespace Beatshake.ViewModels
             // todo: use Strategy pattern
             if (UseTeachement)
             {
-                var choosenOne = Components.Where(component => component.Teachement != null).Random();
-                if (choosenOne == null) // None has been teached yet
+                var normalizedTimestamps = Utility.NormalizeTimeStamps(Timestamps);
+                var xCoeff = new PolynomialFunction(normalizedTimestamps, XHistory);
+                var yCoeff = new PolynomialFunction(normalizedTimestamps, YHistory);
+                var zCoeff = new PolynomialFunction(normalizedTimestamps, ZHistory);
+
+                var teachedOnes = Components.Where(component => component.Teachement != null);
+                Parallel.ForEach(teachedOnes, async instrumentalComponent =>
                 {
-                    //await Components.Random().PlaySoundCommand.Execute();
-                    return;
-                }
-                //var cap = (int) (2000/BeatshakeSettings.SensorRefreshInterval);
-
-                var normaliedTimestamps = Utility.NormalizeTimeStamps(Timestamps);
-                var xCoeff = new PolynomialFunction(normaliedTimestamps, XHistory );
-                var yCoeff = new PolynomialFunction(normaliedTimestamps, YHistory );
-                var zCoeff = new PolynomialFunction(normaliedTimestamps, ZHistory );
-
-                var start = normaliedTimestamps.First();
-                var end = normaliedTimestamps.Last();
-                var integral = choosenOne.Teachement.XCurve.GetIntegralDifference(xCoeff, start, end);
-                integral += choosenOne.Teachement.YCurve.GetIntegralDifference(yCoeff, start, end);
-                integral += choosenOne.Teachement.ZCurve.GetIntegralDifference(zCoeff, start, end);
-
-                if (DataAnalyzer.AreFunctionsAlmostEqual(integral, TeachementTolerance, end - start))
-                {
-                    await choosenOne.PlaySoundCommand.Execute();
-                }
+                    var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance,
+                        normalizedTimestamps.Last(), 0, true, xCoeff, yCoeff, zCoeff); // todo: Add Setting for normalizing
+                    if (result)
+                    {
+                        await instrumentalComponent.PlaySoundCommand.Execute();
+                        //tasks.Add(task);
+                    }
+                });
             }
             else if (UseFunctionAnalysis)
             {

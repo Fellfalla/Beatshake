@@ -61,5 +61,62 @@ namespace Beatshake.Core
         {
                 return Create(timesteps.ToArray(), xValues.ToArray(), yValues.ToArray(), zValues.ToArray());
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="normalized">If true, the functions are scaled to maxValues of 1 in the highest peak through <see cref="PolynomialFunction.Normalize"/></param>
+        /// <param name="functions"></param>
+        /// <returns></returns>
+        public double GetError(double start, double end, bool normalized = true, params PolynomialFunction[] functions)
+        {
+            PolynomialFunction tFunc1;
+            PolynomialFunction tFunc2;
+            PolynomialFunction tFunc3;
+            PolynomialFunction otherFunc1;
+            PolynomialFunction otherFunc2;
+            PolynomialFunction otherFunc3;
+
+            if (normalized)
+            {
+                tFunc1      = XCurve.Normalize();
+                tFunc2      = YCurve.Normalize();
+                tFunc3      = ZCurve.Normalize();
+                otherFunc1  = functions[0].Normalize();
+                otherFunc2  = functions[1].Normalize();
+                otherFunc3  = functions[2].Normalize();
+            }
+            else
+            {
+                tFunc1 = XCurve;
+                tFunc2 = YCurve;
+                tFunc3 = ZCurve;
+                otherFunc1 = functions[0];
+                otherFunc2 = functions[1];
+                otherFunc3 = functions[2];
+            }
+
+            double error = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                error = tFunc1.GetIntegralDifference(   otherFunc1  , start, end);
+                error += tFunc2.GetIntegralDifference(  otherFunc2  , start, end);
+                error += tFunc3.GetIntegralDifference(  otherFunc3  , start, end);
+            }
+
+            return error;
+        }
+
+        public bool FitsDataSet(double tolerance, double end, double start = 0, bool normalized = true, params PolynomialFunction[] functions)
+        {
+            var difference = GetError(end, start, normalized, functions);
+            if (DataAnalyzer.AreFunctionsAlmostEqual(difference, tolerance, end - start))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

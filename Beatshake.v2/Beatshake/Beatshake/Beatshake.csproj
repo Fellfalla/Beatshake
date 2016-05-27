@@ -41,6 +41,7 @@
     </Compile>
     <Compile Include="Converter\ToStringConverter.cs" />
     <Compile Include="Core\BeatshakeStatus.cs" />
+    <Compile Include="Core\Cooldown.cs" />
     <Compile Include="Core\DataAnalyzer.cs" />
     <Compile Include="Core\DataContainer.cs" />
     <Compile Include="Core\FunctionGroup.cs" />
