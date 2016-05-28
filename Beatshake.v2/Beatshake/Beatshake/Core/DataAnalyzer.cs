@@ -13,17 +13,24 @@ namespace Beatshake.Core
     /// </summary>
     public static class DataAnalyzer
     {
-        public static Tuple<double, double, double> CalculateCoefficients(IEnumerable<double> samplePoints,
+        public static double[] CalculateCoefficients(IEnumerable<double> samplePoints,
             IEnumerable<double> sampleValues)
         {
             return CalculateCoefficients(samplePoints.ToArray(), sampleValues.ToArray());
         }
 
+        public static double[] LinearInterpolation(double x1, double x2, double y1, double y2)
+        {
+            var a = (y2 - y1)/(x2 - x1);
+            var b = y1 - (x1*a);
+
+            return new[] {b, a};
+        }
 
         /// <summary>
         /// The Tuple contains the three coefficients for a quadratic polynome f(x) = ax^2 + bx + c
         /// </summary>
-        public static Tuple<double, double, double> CalculateCoefficients(double[] x, double[] y)
+        public static double[] CalculateCoefficients(double[] x, double[] y)
         {
             if (x.Length != y.Length)
             {
@@ -65,7 +72,7 @@ namespace Beatshake.Core
 
             double c = avY - a*avXx - b * avX;
 
-            return Tuple.Create(a,b,c);
+            return new []{c,b,a};
         }
 
         public static QuadraticFunction CalculateQuadraticFunction(IList<double> xData, IList<double> yData)

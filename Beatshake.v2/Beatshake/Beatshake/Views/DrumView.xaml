@@ -80,7 +80,7 @@
                   
                     <StackLayout Grid.Row="2">
                         <Label Text="Teachement tolerance" />
-                        <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="30" />
+                        <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="150" />
                     </StackLayout>
                     <StackLayout Grid.Row="2">
                         <Label Text="Response Time" />

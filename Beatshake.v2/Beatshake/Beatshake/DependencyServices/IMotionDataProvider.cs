@@ -12,6 +12,13 @@ namespace Beatshake.DependencyServices
 
         DataContainer<double> Acceleration { get; }
 
+        bool HasAccellerometer { get; }
+
+        bool HasGyrometer { get; }
+
+        bool HasOrientationSensor { get; }
+
+
         /// <summary>
         /// The refresh rate in milliseconds.
         /// </summary>

@@ -72,6 +72,22 @@ namespace Beatshake.Tests
             Assert.True(peaks.First().IsAlmostEqual(peakPosition, 0.000001));
         }
 
+        [Theory]
+        [InlineData(new double[] { })]
+        [InlineData(new double[] { 1 })]
+        [InlineData(new double[] { 1,-1 })]
+        [InlineData(new double[] { 1,-1 ,1})]
+        [InlineData(new double[] { 1,-1 ,1,1})]
+        [InlineData(new double[] { 1,-1 ,1,1,1})]
+        public void GetPeaksTest(double[] coefficients)
+        {
+            var function = new PolynomialFunction();
+            function.Coefficients = coefficients;
+            var peaks = function.GetPeaks();
+            var peakCount = Math.Max(coefficients.Length - 2, 0);
+            Assert.Equal(peakCount, peaks.Count());
+        }
+
         [Fact]
         public void ConstructorTest()
         {
@@ -110,6 +126,9 @@ namespace Beatshake.Tests
             var functionDDD = functionDD.GetDerivation();
             Assert.Equal(functionDD.Degree-1, functionDDD.Degree);
             Assert.True(new double[] {6}.SequenceEqual(functionDDD.Coefficients));
+
+            // Get some empty Derivations
+            functionDDD.GetDerivation().GetDerivation().GetDerivation();
         }
 
         [Theory]
@@ -213,6 +232,112 @@ namespace Beatshake.Tests
             Assert.Equal(first, function.GetCoefficient(0));
             Assert.Equal(second, function.GetCoefficient(1));
             Assert.Equal(third, function.GetCoefficient(2));
+        }
+
+        [Fact]
+        public void NormalizeTest()
+        {
+            var function = new PolynomialFunction();
+            PolynomialFunction normalizedFunction;
+
+            // 0 degree
+            function.Coefficients = new double[] {5};
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
+            Assert.Equal(1, normalizedFunction.Coefficients[0]);
+            Assert.Equal(1, normalizedFunction.ValueAt(4645.51));
+            // 0 degree negative
+            function.Coefficients = new double[] { -5 };
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
+            Assert.Equal(-1, normalizedFunction.Coefficients[0]);
+            Assert.Equal(-1, normalizedFunction.ValueAt(4645.51));
+
+            // 1 degree
+            function.Coefficients = new double[] { 5, 5 };
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.Equal(0.5, normalizedFunction.Coefficients[0]);
+            Assert.Equal(0.5, normalizedFunction.Coefficients[1]);
+            // 1 degree negative
+            function.Coefficients = new double[] { 5, -5 };
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.Equal(0.5, normalizedFunction.Coefficients[0]);
+            Assert.Equal(-0.5, normalizedFunction.Coefficients[1]);
+
+            // 2 degree
+            function.Coefficients = new double[] { 5, 5, 5 };
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
+            Assert.Equal(1d/3, normalizedFunction.Coefficients[0], 10);
+            Assert.Equal(1d/3, normalizedFunction.Coefficients[1], 10);
+            Assert.Equal(1d/3, normalizedFunction.Coefficients[2], 10);
+            // 2 degree negative
+            function.Coefficients = new double[] { 5, 5, -5 };
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
+            Assert.Equal(1d/3, normalizedFunction.Coefficients[0], 10);
+            Assert.Equal(1d/3, normalizedFunction.Coefficients[1], 10);
+            Assert.Equal(-1d/3, normalizedFunction.Coefficients[2], 10);
+
+            // all 0
+            function.Coefficients = new double[] {0,0,0};
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
+            Assert.Equal(0, normalizedFunction.Coefficients[0], 10);
+            Assert.Equal(0, normalizedFunction.Coefficients[1], 10);
+            Assert.Equal(0, normalizedFunction.Coefficients[2], 10);
+
+            // very small coefficients
+            function.Coefficients = new double[] { 0.000001, 0, 0.000001 };
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
+            Assert.Equal(0.5, normalizedFunction.Coefficients[0], 10);
+            Assert.Equal(0, normalizedFunction.Coefficients[1], 10);
+            Assert.Equal(0.5, normalizedFunction.Coefficients[2], 10);
+
+            // very different coefficients
+            function.Coefficients = new double[] { 0.00000001, 0.000000001, 1000000000000 };
+            normalizedFunction = function.GetNormalizedFunction();
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
+            Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
+            Assert.Equal(0, normalizedFunction.Coefficients[0], 7);
+            Assert.Equal(0, normalizedFunction.Coefficients[1], 7);
+            Assert.Equal(1, normalizedFunction.Coefficients[2], 7);
+
+        }
+
+        [Fact]
+        public void PeakNormalizedTest()
+        {
+            var function = new PolynomialFunction();
+            PolynomialFunction normalizedFunction;
+
+            // 0 degree
+            function.Coefficients = new double[] {5};
+            normalizedFunction = function.GetPeakNormalizedFunction();
+            Assert.Equal(1, normalizedFunction.Coefficients[0]);
+            Assert.Equal(1, normalizedFunction.ValueAt(4645.51));
+
+            // 1 degree
+            //function.Coefficients = new double[] { 5, 5 };
+            //normalizedFunction = function.GetPeakNormalizedFunction();
+            //Assert.Equal(0.5, normalizedFunction.Coefficients[0]);
+            //Assert.Equal(0.5, normalizedFunction.Coefficients[1]);
+
+            // 2 degree
+            function.Coefficients = new double[] { 5, -5, 5 };
+            normalizedFunction = function.GetPeakNormalizedFunction();
+            Assert.Equal(1, normalizedFunction.ValueAt(0), 10);
+
         }
 
     }

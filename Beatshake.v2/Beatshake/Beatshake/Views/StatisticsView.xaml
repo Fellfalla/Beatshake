@@ -11,21 +11,43 @@
   <CarouselPage.Resources>
     <ResourceDictionary>
       <converter:ToStringConverter x:Key="ToStringConverter"></converter:ToStringConverter>
+      <Style TargetType="Frame">
+        <Setter Property="OutlineColor" Value="Black"></Setter>
+        <Setter Property="VerticalOptions" Value="Center"></Setter>
+        <Setter Property="HorizontalOptions" Value="Center"></Setter>
+      </Style>
     </ResourceDictionary>
   </CarouselPage.Resources>
   
   <ContentPage Title="Numberchaos">
-    <StackLayout HorizontalOptions="End">
-    <Label Text="{Binding XAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=X: , Mode=OneWay}" />
-    <Label Text="{Binding YAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=Y: , Mode=OneWay }" />
-    <Label Text="{Binding ZAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=Z: , Mode=OneWay }" />
-    <Label Text="{Binding MeasureTimeJitter, Converter={StaticResource ToStringConverter}, ConverterParameter=Jitter: , Mode=OneWay }" />
-    <Label Text="{Binding AverageMeasureTime, Converter={StaticResource ToStringConverter}, ConverterParameter=AverageTime: , Mode=OneWay }" />
-    </StackLayout>
+    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition></RowDefinition>
+        <RowDefinition></RowDefinition>
+      </Grid.RowDefinitions>
+      <Frame Grid.Row="0" >
+        <StackLayout >
+          <Label Text="{Binding XAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=X: , Mode=OneWay}" />
+          <Label Text="{Binding YAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=Y: , Mode=OneWay }" />
+          <Label Text="{Binding ZAccel, Converter={StaticResource ToStringConverter}, ConverterParameter=Z: , Mode=OneWay }" />
+          <Label Text="{Binding MeasureTimeJitter, Converter={StaticResource ToStringConverter}, ConverterParameter=Jitter: , Mode=OneWay }" />
+          <Label Text="{Binding AverageMeasureTime, Converter={StaticResource ToStringConverter}, ConverterParameter=AverageTime: , Mode=OneWay }" />
+        </StackLayout>
+      </Frame >
+      <Frame Grid.Row="1">
+        <StackLayout >
+        <Label Text="{Binding MotionDataProvider.HasOrientationSensor, StringFormat='Orientation sensor: {0}'}"></Label>
+        <Label Text="{Binding MotionDataProvider.HasGyrometer, StringFormat='Gyrometer: {0}'}"></Label>
+        <Label Text="{Binding MotionDataProvider.HasAccellerometer, StringFormat='Accellerometer: {0}'}"></Label>
+      </StackLayout>
+      </Frame>
+    </Grid>
     </ContentPage>
+  
   <ContentPage Title="Oxyplotly">
     <oxy:PlotView Model="{Binding MeasureData}" VerticalOptions="Center" HorizontalOptions="Center" />
   </ContentPage>
+  
   <ContentPage Title="Teachplot">
     <oxy:PlotView Model="{Binding TeachedData}" VerticalOptions="Center" HorizontalOptions="Center" />
   </ContentPage>

@@ -17,10 +17,15 @@ namespace Beatshake.Droid.DependencyServices
 
         public DataContainer<double> Acceleration { get; } = new DataContainer<double>();
 
+
         static readonly object _syncLock = new object();
         SensorManager _sensorManager;
         TextView _sensorTextView;
         private Sensor _accelerometer;
+
+        public bool HasAccellerometer { get { return _accelerometer != null; } }
+        public bool HasGyrometer { get; }
+        public bool HasOrientationSensor { get; }
 
         public MotionDataProviderImplementation()
         {

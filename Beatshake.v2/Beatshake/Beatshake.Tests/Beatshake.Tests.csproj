@@ -56,6 +56,9 @@
       <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.46.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AutoFixture.3.46.0\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
@@ -73,6 +76,10 @@
       <HintPath>..\..\packages\Prism.Forms.6.1.0-pre5\lib\MonoAndroid1.0\Prism.Forms.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Xamarin.Forms.2.3.0.38-pre2\lib\wpa81\Xamarin.Forms.Core.dll</HintPath>
+    </Reference>
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
       <Private>True</Private>
@@ -109,6 +116,13 @@
     <Compile Include="TeachementTest.cs" />
     <Compile Include="ExtensionMethodsTest.cs" />
     <Compile Include="ViewModels\DrumViewModelTest.cs" />
+    <Compile Include="Helper\DummyMotionDataProvier.cs" />
+    <Compile Include="Helper\DummyNavigator.cs" />
+    <Compile Include="Helper\DummyPlayer.cs" />
+    <Compile Include="Views\DrumViewTest.cs" />
+    <Compile Include="Views\MainMenuViewTest.cs" />
+    <Compile Include="Views\SettingsViewTest.cs" />
+    <Compile Include="Views\StatisticsViewTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

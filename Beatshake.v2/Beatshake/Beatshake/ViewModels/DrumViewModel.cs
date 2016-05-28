@@ -85,17 +85,28 @@ namespace Beatshake.ViewModels
                 var yCoeff = new PolynomialFunction(normalizedTimestamps, YHistory);
                 var zCoeff = new PolynomialFunction(normalizedTimestamps, ZHistory);
 
-                var teachedOnes = Components.Where(component => component.Teachement != null);
-                Parallel.ForEach(teachedOnes, async instrumentalComponent =>
+                var teachedOnes = Components.Where(component => component.Teachement != null).ToArray();
+                foreach (var instrumentalComponent in teachedOnes)
                 {
                     var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance,
-                        normalizedTimestamps.Last(), 0, true, xCoeff, yCoeff, zCoeff); // todo: Add Setting for normalizing
+                       normalizedTimestamps.Last(), 0, true, xCoeff, yCoeff, zCoeff); // todo: Add Setting for normalizing
                     if (result)
                     {
-                        await instrumentalComponent.PlaySoundCommand.Execute();
-                        //tasks.Add(task);
+                        var task = instrumentalComponent.PlaySoundCommand.Execute();
+                        tasks.Add(task);
                     }
-                });
+                }
+                Task.WaitAll(tasks.ToArray());
+                //Parallel.ForEach(teachedOnes, async instrumentalComponent =>
+                //{
+                //    var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance,
+                //        normalizedTimestamps.Last(), 0, true, xCoeff, yCoeff, zCoeff); // todo: Add Setting for normalizing
+                //    if (result)
+                //    {
+                //        await instrumentalComponent.PlaySoundCommand.Execute();
+                //        //tasks.Add(task);
+                //    }
+                //});
             }
             else if (UseFunctionAnalysis)
             {

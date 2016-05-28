@@ -9,6 +9,9 @@ class MotionDataProviderImplementation : IMotionDataProvider
 {
     readonly Accelerometer _accelerometer = Accelerometer.GetDefault();
     readonly Gyrometer _gyrometer = Gyrometer.GetDefault();
+    readonly OrientationSensor _orientationSensor = OrientationSensor.GetDefault();
+
+
     private readonly uint _minInterval;
 
     public MotionDataProviderImplementation()
@@ -22,23 +25,20 @@ class MotionDataProviderImplementation : IMotionDataProvider
 #endif
 
 
-            _accelerometer.ReadingChanged += OnNewSensorData;
             _minInterval = Math.Max(_minInterval, _accelerometer.MinimumReportInterval);
+            _accelerometer.ReadingChanged += OnNewSensorData;
         }
 
-
-        if (_gyrometer == null)
+        if (_orientationSensor != null)
         {
-            if (!BeatshakeStatus.HasUserToldGyroscopeIsMissing)
-            {
-                new UserTextNotifierImplementation().Notify("Your phone doesn't have a gyrometer.\n This might reduce your user experience drastically.");
-                BeatshakeStatus.HasUserToldGyroscopeIsMissing = true;
-            }
+            _minInterval = Math.Max(_minInterval, _orientationSensor.MinimumReportInterval);
+            _orientationSensor.ReadingChanged += OnNewSensorData;
         }
-        else
+
+        if (_gyrometer != null)
         {
-            _gyrometer.ReadingChanged += OnNewSensorData;
             _minInterval = Math.Max(_minInterval, _gyrometer.MinimumReportInterval);
+            _gyrometer.ReadingChanged += OnNewSensorData;
         }
 
         RefreshRate = BeatshakeSettings.SensorRefreshInterval;
@@ -57,6 +57,7 @@ class MotionDataProviderImplementation : IMotionDataProvider
                     MotionDataRefreshed?.Invoke(this);
                 });
     }
+
     private async void OnNewSensorData(Gyrometer sender, GyrometerReadingChangedEventArgs args)
     {
         await
@@ -70,12 +71,31 @@ class MotionDataProviderImplementation : IMotionDataProvider
                     //MotionDataRefreshed?.Invoke(this); // todo: sync Gyrometer and Accelerometer events
                 });
     }
+    private async void OnNewSensorData(OrientationSensor sender, OrientationSensorReadingChangedEventArgs args)
+    {
+        await
+            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                CoreDispatcherPriority.Normal, () =>
+                {
+                    Pose.Timestamp = (args.Reading.Timestamp.DateTime - DateTime.MinValue).TotalMilliseconds;
+                    Pose.Rot[0] = args.Reading.Quaternion.X;
+                    Pose.Rot[1] = args.Reading.Quaternion.Y;
+                    Pose.Rot[2] = args.Reading.Quaternion.Z;
+                    //MotionDataRefreshed?.Invoke(this); // todo: sync Gyrometer and Accelerometer events
+                });
+    }
 
     public DataContainer<double> Pose { get; } = new DataContainer<double>();
 
     public DataContainer<double> Velocity { get; } = new DataContainer<double>();
 
     public DataContainer<double> Acceleration { get; } = new DataContainer<double>();
+
+    public bool HasAccellerometer { get { return _accelerometer != null; } }
+
+    public bool HasGyrometer { get { return _gyrometer != null; } }
+
+    public bool HasOrientationSensor { get { return _orientationSensor != null; } }
 
     public uint RefreshRate
     {

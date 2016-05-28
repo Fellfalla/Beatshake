@@ -42,15 +42,32 @@ namespace Beatshake.Tests
         public void CalculateCoefficientsTest()
         {
             // those data come from the PDF example where the formulars come from
-            double[] X = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 };
-            double[] Y = { 0.38, 1.15, 2.71, 3.92, 5.93, 8.56, 11.24 };
+            double[] x = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 };
+            double[] y = { 0.38, 1.15, 2.71, 3.92, 5.93, 8.56, 11.24 };
             var checkResult = Tuple.Create(0.19642857, 0.23642857, -0.03285714);
+            var coefficients = DataAnalyzer.CalculateCoefficients(x, y);
 
-            var coefficients = DataAnalyzer.CalculateCoefficients(X, Y);
+            Assert.Equal(checkResult.Item1, coefficients[2], 8);
+            Assert.Equal(checkResult.Item2, coefficients[1], 8);
+            Assert.Equal(checkResult.Item3, coefficients[0], 8);
 
-            Assert.Equal(checkResult.Item1, coefficients.Item1, 8);
-            Assert.Equal(checkResult.Item2, coefficients.Item2, 8);
-            Assert.Equal(checkResult.Item3, coefficients.Item3, 8);
+            // low data count shall not throw error
+            x = y = DataGenerator.GetData(2).ToArray();
+            DataAnalyzer.CalculateCoefficients(x, y);
+            x = y = DataGenerator.GetData(1).ToArray();
+            DataAnalyzer.CalculateCoefficients(x, y);
+        }
+
+        [Theory]
+        [InlineData(0,1,1,5,1,4)]
+        [InlineData(0,1,0,0,0,0)]
+        [InlineData(0,1,5,1,5,-4)]
+        public void LinearInterpolationTest(double x1, double x2, double y1, double y2, double expect1, double expect2)
+        {
+
+            var coeffs = DataAnalyzer.LinearInterpolation(x1, x2, y1, y2);
+            Assert.Equal(expect1, coeffs[0]);
+            Assert.Equal(expect2, coeffs[1]);
 
 
         }
@@ -87,18 +104,18 @@ namespace Beatshake.Tests
         public void CoefficientTest()
         {
             var func = new QuadraticFunction();
-            double c0 = 0;
-            double c1 = 1;
-            double c2 = 2;
-            func.Coefficients = new Tuple<double, double, double>(c2,c1,c0);
+            double c = 0;
+            double b = 1;
+            double a = 2;
+            func.Coefficients = new double[] {c,b,a};
 
-            Assert.Equal(c0, func.C);
-            Assert.Equal(c1, func.B);
-            Assert.Equal(c2, func.A);
+            Assert.Equal(c, func.C);
+            Assert.Equal(b, func.B);
+            Assert.Equal(a, func.A);
 
-            Assert.Equal(c0, ((PolynomialFunction)func).Coefficients[0]);
-            Assert.Equal(c1, ((PolynomialFunction)func).Coefficients[1]);
-            Assert.Equal(c2, ((PolynomialFunction)func).Coefficients[2]);
+            Assert.Equal(c, ((PolynomialFunction)func).Coefficients[0]);
+            Assert.Equal(b, ((PolynomialFunction)func).Coefficients[1]);
+            Assert.Equal(a, ((PolynomialFunction)func).Coefficients[2]);
 
         }
     }

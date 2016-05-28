@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,6 +12,7 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Xamarin.Forms;
 using Prism.Navigation;
+using Xamarin.Forms;
 
 namespace Beatshake.ViewModels
 {
@@ -61,11 +63,14 @@ namespace Beatshake.ViewModels
             get { return _measureData; }
             set { SetProperty(ref _measureData, value); }
         }
+
         public PlotModel TeachedData
         {
             get { return _measureData; }
             set { SetProperty(ref _measureData, value); }
         }
+
+
 
         public StatisticsViewModel(INavigationService navigationService, IMotionDataProvider motionDataProvider) : base(navigationService, motionDataProvider)
         {

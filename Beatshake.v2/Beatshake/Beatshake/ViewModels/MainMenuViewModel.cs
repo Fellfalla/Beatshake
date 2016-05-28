@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Beatshake.Core;
+using Beatshake.DependencyServices;
 using Beatshake.Views;
 using Prism.Commands;
 using Prism.Navigation;
@@ -34,6 +35,7 @@ namespace Beatshake.ViewModels
             NavigateCommand = new DelegateCommand(Navigate);
             ShowStatisticsCommand = new DelegateCommand(ShowStatistics);
             NavigateToSettingsCommand = new DelegateCommand(NavigateToSettings);
+
         }
 
         void Navigate()

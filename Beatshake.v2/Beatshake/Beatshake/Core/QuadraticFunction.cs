@@ -9,30 +9,6 @@ namespace Beatshake.Core
             Degree = 2;
         }
 
-        /// <summary>
-        /// First item stands in front of x^2 second before x and last is const.
-        /// </summary>
-        public new Tuple<double, double, double> Coefficients
-
-        {
-            get { return Tuple.Create(A,B,C); }
-            set
-            {
-                if (value != null)
-                {
-                    A = value.Item1;
-                    B = value.Item2;
-                    C = value.Item3;
-                }
-                else
-                {
-                    A = double.NaN;
-                    B = double.NaN;
-                    C = double.NaN;
-                }
-            }
-        }
-
         public double A
         {
             get { return base.Coefficients[2]; }

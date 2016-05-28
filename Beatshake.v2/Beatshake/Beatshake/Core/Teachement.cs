@@ -25,7 +25,7 @@ namespace Beatshake.Core
         /// <param name="yValues"></param>
         /// <param name="zValues"></param>
         /// <returns></returns>
-        public static Teachement Create(double[] timesteps, double[] xValues, double[] yValues, double[] zValues)
+        public static Teachement Create(double[] timesteps, double[] xValues, double[] yValues, double[] zValues, bool throwOnThinData = false)
         {
             var teachement = new Teachement();
 
@@ -39,7 +39,14 @@ namespace Beatshake.Core
             }
             if (startIndex < 0)
             {
-                throw new InsufficientDataException();
+                if (throwOnThinData)
+                {
+                    throw new InsufficientDataException();
+                }
+                else
+                {
+                    startIndex = 0;
+                }
             }
 
             teachement.XCurve = new PolynomialFunction(timesteps.SubArray(startIndex, endIndex), xValues.SubArray(startIndex, endIndex));
@@ -67,7 +74,7 @@ namespace Beatshake.Core
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="normalized">If true, the functions are scaled to maxValues of 1 in the highest peak through <see cref="PolynomialFunction.Normalize"/></param>
+        /// <param name="normalized">If true, the functions are scaled to maxValues of 1 in the highest peak through <see cref="PolynomialFunction.GetNormalizedFunction"/></param>
         /// <param name="functions"></param>
         /// <returns></returns>
         public double GetError(double start, double end, bool normalized = true, params PolynomialFunction[] functions)
@@ -81,12 +88,12 @@ namespace Beatshake.Core
 
             if (normalized)
             {
-                tFunc1      = XCurve.Normalize();
-                tFunc2      = YCurve.Normalize();
-                tFunc3      = ZCurve.Normalize();
-                otherFunc1  = functions[0].Normalize();
-                otherFunc2  = functions[1].Normalize();
-                otherFunc3  = functions[2].Normalize();
+                tFunc1      = XCurve.GetNormalizedFunction();
+                tFunc2      = YCurve.GetNormalizedFunction();
+                tFunc3      = ZCurve.GetNormalizedFunction();
+                otherFunc1  = functions[0].GetNormalizedFunction();
+                otherFunc2  = functions[1].GetNormalizedFunction();
+                otherFunc3  = functions[2].GetNormalizedFunction();
             }
             else
             {

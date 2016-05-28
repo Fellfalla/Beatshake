@@ -19,16 +19,32 @@ namespace Beatshake.Core
             
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="samplePoints"></param>
+        /// <param name="sampleValues"></param>
+        /// <param name="n"></param>
+        /// <param name="method"></param>
         public PolynomialFunction(double[] samplePoints, double[] sampleValues, int n = 2, DataFittingStrategy method = DataFittingStrategy.LeastSquares)
         {
             if (n != 2 || method != DataFittingStrategy.LeastSquares)
             {
                 throw new NotImplementedException();
             }
-
-            var tuple = DataAnalyzer.CalculateCoefficients(samplePoints, sampleValues);
-
-            Coefficients = new double[] {tuple.Item3, tuple.Item2, tuple.Item1};
+            if (n >= samplePoints.Length && samplePoints.Length == 2)
+            {
+                var coeffs = DataAnalyzer.LinearInterpolation(samplePoints[0], samplePoints[1], sampleValues[0], sampleValues[1]);
+                Coefficients = new[] {coeffs[0], coeffs[1], 0};
+            }
+            else if(n >= samplePoints.Length)
+            {
+                throw new InsufficientDataException();
+            }
+            else
+            {
+                Coefficients = DataAnalyzer.CalculateCoefficients(samplePoints, sampleValues);
+            }
 
             Start = samplePoints.First();
             End = samplePoints.Last();
@@ -153,6 +169,12 @@ namespace Beatshake.Core
         public PolynomialFunction GetDerivation()
         {
             var derivation = new PolynomialFunction();
+
+            if (Coefficients == null || Coefficients.Length < 1)
+            {
+                return derivation;
+            }
+
             double[] derivedCoefficients = new double[Coefficients.Length-1];
 
             // multiply all coefficients with the value of the correlating x-exponent
@@ -215,21 +237,44 @@ namespace Beatshake.Core
         /// Normalizes the function in a way, that the highest peak has a value of 1
         /// </summary>
         /// <returns></returns>
-        public PolynomialFunction Normalize()
+        public PolynomialFunction GetNormalizedFunction()
         {
             if (_normalizedFunction == null)
             {
-                double maxValue = GetPeaks().Max();
-                double scale = 1 / maxValue;
-                _normalizedFunction = (PolynomialFunction)Clone();
-                _normalizedFunction.Scale(scale);
+                var absCoefficients = Coefficients.Select(Math.Abs);
+
+                double sum = absCoefficients.Sum();
+                if (sum < double.Epsilon && sum > - double.Epsilon) // the function is nearly 0
+                {
+                    _normalizedFunction = (PolynomialFunction) Clone();
+                }
+                else
+                {
+                    double scale = 1 / sum;
+                    _normalizedFunction = (PolynomialFunction)Clone();
+                    _normalizedFunction.Scale(scale);
+                }
             }
 
             return (PolynomialFunction) _normalizedFunction.Clone();
+        }
 
+        public PolynomialFunction GetPeakNormalizedFunction()
+        {
+            if (_peakNormalizedFunction == null)
+            {
+                double maxValue = GetPeaks().Max();
+                double scale = 1 / maxValue;
+                _peakNormalizedFunction = (PolynomialFunction)Clone();
+                _peakNormalizedFunction.Scale(scale);
+            }
+
+            return (PolynomialFunction)_peakNormalizedFunction.Clone();
         }
 
         private PolynomialFunction _normalizedFunction;
+
+        private PolynomialFunction _peakNormalizedFunction;
 
         /// <summary>
         /// Clones the executing class
