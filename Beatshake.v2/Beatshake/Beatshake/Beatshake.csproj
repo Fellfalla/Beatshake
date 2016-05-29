@@ -50,6 +50,7 @@
     <Compile Include="Core\IncompleteInitializationException.cs" />
     <Compile Include="Core\InstancePool.cs" />
     <Compile Include="Core\InstrumentalComponent.cs" />
+    <Compile Include="Core\InstrumentalComponentFactory.cs" />
     <Compile Include="Core\PolynomialFunction.cs" />
     <Compile Include="Core\QuadraticFunction.cs" />
     <Compile Include="Core\Teachement.cs" />

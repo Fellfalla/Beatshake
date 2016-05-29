@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Beatshake.DependencyServices;
 using Beatshake.ViewModels;
-using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Mvvm;
 using Xamarin.Forms;
@@ -14,41 +13,6 @@ using DependencyService = Prism.Services.DependencyService;
 
 namespace Beatshake.Core
 {
-    public class InstrumentalComponentFactory
-    {
-        private IInstrumentalIdentification _containingInstrument;
-        private IMotionDataProcessor _dataProcessor;
-        private IMotionDataProvider _dataProvider;
-        private IUnityContainer _container;
-        private bool _isInitialized;
-
-        public InstrumentalComponentFactory(IUnityContainer container)
-        {
-         
-            _container = container;
-        }
-
-        public void Init(IInstrumentalIdentification containingInstrument,
-            IMotionDataProcessor dataProcessor, IMotionDataProvider dataProvider)
-        {
-            _containingInstrument = containingInstrument;
-            _dataProcessor = dataProcessor;
-            _dataProvider = dataProvider;
-            _isInitialized = true;
-        }
-
-        public InstrumentalComponent CreateInstrumentalComponent(string name)
-        {
-            if (!_isInitialized)
-            {
-                throw new IncompleteInitializationException("Call " + nameof(Init));
-            }
-
-            var newPlayerInstance = _container.Resolve<IInstrumentPlayer>();
-            return new InstrumentalComponent(_containingInstrument,_dataProcessor, _dataProvider, newPlayerInstance, name);
-        }
-    }
-
     public class InstrumentalComponent : BindableBase, IInstrumentalComponentIdentification
     {
         private readonly IInstrumentPlayer _player;
@@ -84,6 +48,12 @@ namespace Beatshake.Core
             {
                 SetProperty(ref _name, value);
             }
+        }
+
+        public bool IsActivated
+        {
+            get { return _isActivated; }
+            set { SetProperty(ref _isActivated, value); }
         }
 
         [DefaultValue(1)]
@@ -152,6 +122,7 @@ namespace Beatshake.Core
         private DelegateCommand _playSoundCommand;
         private string _name;
         private IInstrumentalIdentification _containingInstrument;
+        private bool _isActivated = true;
 
         public DelegateCommand PlaySoundCommand
         {
@@ -162,10 +133,7 @@ namespace Beatshake.Core
         public Teachement Teachement
         {
             get { return _teachement; }
-            set
-            {
-                SetProperty(ref _teachement, value);
-            }
+            set { SetProperty(ref _teachement, value); }
         }
 
         protected async Task Teach()

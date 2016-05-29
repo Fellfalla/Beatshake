@@ -45,7 +45,7 @@
                             <ViewCell>
                                 <StackLayout Orientation="Horizontal" VerticalOptions="Fill">
                                     <Label HorizontalOptions="Start" Text="{Binding Name}" VerticalOptions="Center" FontAttributes="Bold"/>
-
+                                    <Switch IsToggled="{Binding IsActivated}"></Switch>
                                     <Button Text="Teach me!" VerticalOptions="Center">
                                         <Button.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding TeachCommand}" />
