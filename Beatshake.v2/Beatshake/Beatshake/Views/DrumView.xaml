@@ -43,16 +43,32 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <StackLayout Orientation="Horizontal" VerticalOptions="Fill">
-                                    <Label HorizontalOptions="Start" Text="{Binding Name}" VerticalOptions="Center" FontAttributes="Bold"/>
-                                    <Switch IsToggled="{Binding IsActivated}"></Switch>
-                                    <Button Text="Teach me!" VerticalOptions="Center">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="31" />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Column="0" HorizontalOptions="Start" Text="{Binding Name}"
+                                           VerticalOptions="Center" FontAttributes="Bold" />
+                                    <StackLayout Grid.Column="1">
+                                        <Label Text="{Binding Teachement, Mode=OneWay}" />
+                                        <Label Text="{Binding Teachement.YCurve, Mode=OneWay}" />
+                                        <Label Text="{Binding ., Mode=OneWay}" />
+                                    </StackLayout>
+                                    <Switch Grid.Column="2" IsToggled="{Binding IsActivated}" />
+                                    <Button Grid.Column="3" Text="Teach me!" VerticalOptions="Center">
                                         <Button.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding TeachCommand}" />
                                         </Button.GestureRecognizers>
                                     </Button>
 
-                                    <Button HorizontalOptions="End"
+                                    <Button Grid.Column="4" HorizontalOptions="End"
                                             VerticalOptions="Center"
                                             Text="Play!">
                                         <Button.GestureRecognizers>
@@ -60,10 +76,7 @@
                                         </Button.GestureRecognizers>
                                     </Button>
 
-                                    <Label Text="{Binding Teachement, Mode=OneWay}" />
-                                    <Label Text="{Binding Teachement.YCurve, Mode=OneWay}" />
-                                    <Label Text="{Binding ., Mode=OneWay}" />
-                                </StackLayout>
+                                </Grid>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -92,26 +105,32 @@
                     </StackLayout>
                 </Frame>
 
-                <Frame Style="{StaticResource MenuFrame}">
-                    <StackLayout Orientation="Vertical">
+                <Frame Style="{StaticResource MenuFrame}" HorizontalOptions="FillAndExpand">
+                    <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
+
                         <Label HorizontalOptions="Center" VerticalOptions="Start">Preferences</Label>
-                        <StackLayout>
-                            <Label Text="Teachement tolerance" />
-                            <Slider Value="{Binding TeachementTolerance}" Minimum="0" Maximum="150" />
+
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                            <Label Text="Teachement tolerance" VerticalOptions="Center"/>
+                            <Slider Value="{Binding TeachementTolerance}" Minimum="0" Maximum="150"
+                                    HorizontalOptions="FillAndExpand" VerticalOptions="Center"/>
                         </StackLayout>
 
-                        <StackLayout>
-                            <Label Text="Normalize" />
-                            <Switch IsToggled="{Binding Normalize}"/>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Normalize" VerticalOptions="Center"/>
+                            <Switch IsToggled="{Binding Normalize}" VerticalOptions="Center"/>
                         </StackLayout>
 
-                        <StackLayout>
-                            <Label Text="Response Time" />
-                            <Label Text="{Binding ResponseTime}" />
-                            <Slider Value="{Binding ResponseTime}" Minimum="{Binding MotionDataProvider.MinInterval, Mode=OneWay}" Maximum="100" />
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                            <Label Text="Response Time" VerticalOptions="Center"/>
+                            <Label Text="{Binding ResponseTime}" VerticalOptions="Center"/>
+                            <Slider Value="{Binding ResponseTime}"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="FillAndExpand"
+                                    Minimum="{Binding MotionDataProvider.MinInterval, Mode=OneWay}" Maximum="100" />
                         </StackLayout>
 
-                      <Label Text="{Binding CycleTime, StringFormat='Cycle time:{0}'}"></Label>
+                        <Label Text="{Binding CycleTime, StringFormat='Cycle time: {0}'}" />
                     </StackLayout>
                 </Frame>
 
