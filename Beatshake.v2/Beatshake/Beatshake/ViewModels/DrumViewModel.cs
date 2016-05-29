@@ -87,7 +87,7 @@ namespace Beatshake.ViewModels
                 _timestamps.RemoveRange(0, tooMuch);
             }
 
-            var activatedComponents = Components.Where(component => component.Teachement != null).ToArray();
+            var activatedComponents = Components.Where(component => component.IsActivated).ToArray();
             if (activatedComponents.Length == 0)
             {
                 return;
