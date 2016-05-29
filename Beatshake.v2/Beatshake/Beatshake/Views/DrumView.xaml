@@ -103,7 +103,7 @@
                         <StackLayout>
                             <Label Text="Response Time" />
                             <Label Text="{Binding ResponseTime}" />
-                            <Slider Value="{Binding ResponseTime}" Minimum="0" Maximum="100" />
+                            <Slider Value="{Binding ResponseTime}" Minimum="{Binding MotionDataProvider.MinInterval, Mode=OneWay}" Maximum="100" />
                         </StackLayout>
 
                       <Label Text="{Binding CycleTime, StringFormat='Cycle time:{0}'}"></Label>

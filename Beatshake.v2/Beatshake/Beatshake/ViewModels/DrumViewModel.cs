@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
@@ -77,7 +78,6 @@ namespace Beatshake.ViewModels
             YHistory.Add(motionDataProvider.Acceleration.Trans[1]);
             ZHistory.Add(motionDataProvider.Acceleration.Trans[2]);
             var cap = BeatshakeSettings.SamplePoints;
-            var tasks = new List<Task>();
             var tooMuch = XHistory.Count - cap;
             if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
             {
@@ -95,6 +95,7 @@ namespace Beatshake.ViewModels
                 var zCoeff = new PolynomialFunction(normalizedTimestamps, ZHistory);
 
                 var teachedOnes = Components.Where(component => component.Teachement != null);
+                var tasks = new List<Task>();
                 foreach (var instrumentalComponent in teachedOnes)
                 {
                     var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance / 50,
@@ -102,10 +103,12 @@ namespace Beatshake.ViewModels
                     if (result)
                     {
                         var task = instrumentalComponent.PlaySoundCommand.Execute();
+                        //var awaiter = task.ConfigureAwait(false);
+                        //awaitables.Add(awaiter);
                         tasks.Add(task);
                     }
                 }
-                Task.WaitAll(tasks.ToArray());
+                await Task.WhenAll(tasks);
                 //Parallel.ForEach(teachedOnes, async instrumentalComponent =>
                 //{
                 //    var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance,

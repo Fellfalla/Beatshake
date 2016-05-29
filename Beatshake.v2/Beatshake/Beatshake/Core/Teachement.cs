@@ -112,9 +112,9 @@ namespace Beatshake.Core
             double error = 0;
             for (int i = 0; i < 3; i++)
             {
-                error = tFunc1.GetIntegralDifference(   otherFunc1  , start, end);
-                error += tFunc2.GetIntegralDifference(  otherFunc2  , start, end);
-                error += tFunc3.GetIntegralDifference(  otherFunc3  , start, end);
+                error =     tFunc1.GetAbsIntegralDifference(   otherFunc1  , start, end)   ;
+                error +=    tFunc2.GetAbsIntegralDifference(  otherFunc2  , start, end)    ;
+                error +=    tFunc3.GetAbsIntegralDifference(  otherFunc3  , start, end)    ;
             }
 
             return error;

@@ -24,6 +24,8 @@ namespace Beatshake.DependencyServices
         /// </summary>
         uint RefreshRate { get; set; }
         
+        uint MinInterval { get; }
+
         event Custom.TypedEventHandler<IMotionDataProvider> MotionDataRefreshed;
     }
 }

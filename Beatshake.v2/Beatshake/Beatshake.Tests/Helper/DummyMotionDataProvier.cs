@@ -13,6 +13,7 @@ namespace Beatshake.Tests.ViewModels
         public bool HasOrientationSensor { get; }
 
         public uint RefreshRate { get; set; }
+        public uint MinInterval { get; }
         public event Custom.TypedEventHandler<IMotionDataProvider> MotionDataRefreshed;
     }
 }

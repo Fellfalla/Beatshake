@@ -19,6 +19,11 @@ namespace Beatshake.Core
             
         }
 
+        public PolynomialFunction(params double[] coefficients)
+        {
+            Coefficients = coefficients;
+        }
+
         /// <summary>
         /// <exception cref="InsufficientDataException">This exception is thrown when the requested degree
         /// is greater or equal to the count of the given <paramref name="samplePoints"/></exception>
@@ -322,7 +327,7 @@ namespace Beatshake.Core
             }
         }
 
-        public double GetIntegralDifference(PolynomialFunction other, double start, double end)
+        public double GetAbsIntegralDifference(PolynomialFunction other, double start, double end)
         {
             double integral = 0; // this integral means the speed difference
 
@@ -346,7 +351,7 @@ namespace Beatshake.Core
             }
             if (func1.Degree == 0) // const
             {
-                integral = end - start*Math.Abs(func1.GetCoefficient(0) - func2.GetCoefficient(0));
+                integral = (end - start)*Math.Abs(func1.GetCoefficient(0) - func2.GetCoefficient(0));
             }
             else if (func1.Degree == 1) // lin
             {

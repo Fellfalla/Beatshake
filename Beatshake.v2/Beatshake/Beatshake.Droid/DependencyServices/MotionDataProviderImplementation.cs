@@ -55,6 +55,14 @@ namespace Beatshake.Droid.DependencyServices
             }
         }
 
+        public uint MinInterval
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public event Custom.TypedEventHandler<IMotionDataProvider> MotionDataRefreshed;
 
         public void Dispose()

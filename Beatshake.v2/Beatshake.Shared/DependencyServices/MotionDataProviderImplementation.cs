@@ -11,6 +11,10 @@ class MotionDataProviderImplementation : IMotionDataProvider
     readonly Gyrometer _gyrometer = Gyrometer.GetDefault();
     readonly OrientationSensor _orientationSensor = OrientationSensor.GetDefault();
 
+    public uint MinInterval
+    {
+        get { return _minInterval; }
+    }
 
     private readonly uint _minInterval;
 
@@ -108,10 +112,10 @@ class MotionDataProviderImplementation : IMotionDataProvider
         {
             var interval = Math.Max(value, _minInterval);
 
-            if (_accelerometer != null)
-                _accelerometer.ReportInterval = interval;
-
+            if (_accelerometer != null) _accelerometer.ReportInterval = interval;
             if (_gyrometer != null) _gyrometer.ReportInterval = interval;
+            if (_orientationSensor != null) _orientationSensor.ReportInterval = interval;
+
         }
     }
 

@@ -156,65 +156,90 @@ namespace Beatshake.Tests
         }
 
         [Theory]
-        [InlineData(0,0)]
-        [InlineData(0,1)]
-        [InlineData(-1,1)]
-        [InlineData(-1,0)]
-        [InlineData(-55.156,513)]
-        public void GetIntegralDifferenceTest(double start, double end)
+        [InlineData(0,0,1)]
+        [InlineData(0,1,1)]
+        [InlineData(0,1,-1)]
+        [InlineData(-1,1,1)]
+        [InlineData(-1,1,5)]
+        [InlineData(-1,0,-1)]
+        [InlineData(-55.156,513,1)]
+        [InlineData(-55.156,513,-1)]
+        [InlineData(-55.156,513,-41.4)]
+        [InlineData(-55.156,513,41.4)]
+        public void GetAbsIntegralDifferenceTest(double start, double end, double coeff)
         {
             double integral;
             double expected;
             double deviation;
             double tol = 0.005; // +-0.5% toleranced deviation
             BeatshakeSettings.IntegralPrecision = Math.Max((int) (end - start), 500);
-            double c = 1;
+
             var zeroFunction = new PolynomialFunction();
             zeroFunction.Coefficients = new double[] {0};
 
             var function = new PolynomialFunction();
 
+            // Test for absolute
+            function.Coefficients = new double[] {1, 0, 0};
+            Assert.True(function.GetAbsIntegralDifference(zeroFunction,-1,1) > 0);
+            function.Coefficients = new double[] { -1, 0, 0 };
+            Assert.True(function.GetAbsIntegralDifference(zeroFunction, -1, 1) > 0);
+            function.Coefficients = new double[] {0, 1, 0};
+            Assert.True(function.GetAbsIntegralDifference(zeroFunction,-1,1) > 0);
+            function.Coefficients = new double[] { 0, -1, 0 };
+            Assert.True(function.GetAbsIntegralDifference(zeroFunction, -1, 1) > 0);
+            function.Coefficients = new double[] {0, 0, 1};
+            Assert.True(function.GetAbsIntegralDifference(zeroFunction,-1,1) > 0);
+            function.Coefficients = new double[] { 0, 0, -1 };
+            Assert.True(function.GetAbsIntegralDifference(zeroFunction, -1, 1) > 0);
+            function.Coefficients = new double[] { 2, 1, 5 };
+            Assert.True(function.GetAbsIntegralDifference(zeroFunction,-1,1) > 0);
+            function.Coefficients = new double[] { -2, -1, -54 };
+            Assert.True(function.GetAbsIntegralDifference(zeroFunction, -1, 1) > 0);
+
             // Test Constant
-            function.Coefficients = new double[] { c };
-            integral = function.GetIntegralDifference(zeroFunction, start, end);
+            function.Coefficients = new double[] { coeff };
+            integral = function.GetAbsIntegralDifference(zeroFunction, start, end);
             if (start.IsAlmostEqual(end, double.Epsilon))
             {
                 Assert.Equal(0, integral, 5);
             }
             else
             {
-                expected = Math.Abs(Math.Abs(end - start) * c);
+                expected = Math.Abs(Math.Abs(end - start) * coeff);
                 deviation = expected / integral - 1;
                 Assert.InRange(deviation, -tol, tol); // 1% deviation
             }
           
 
             // Test Linear https://www.wolframalpha.com/input/?i=integral+abs%28x%29
-            function.Coefficients = new double[] { 0, c };
-            integral = function.GetIntegralDifference(zeroFunction, start, end);
+            function.Coefficients = new double[] { 0, coeff };
+            integral = function.GetAbsIntegralDifference(zeroFunction, start, end);
             if (start.IsAlmostEqual(end, double.Epsilon))
             {
                 Assert.Equal(0, integral, 5);
             }
             else {
-                expected = 0.5 * (Math.Sign(end) * end * end - Math.Sign(start) * start * start);
+                var upper = 0.5 * (end * (coeff * end) * Math.Sign(coeff * end));
+                var lower = 0.5 * (start * (coeff * start) * Math.Sign(coeff * start));
+                expected = Math.Abs(upper - lower);
                 deviation = expected / integral - 1;
                 Assert.InRange(deviation, -tol, tol); // 1% deviation
             }
 
             // Test quadratic
-            function.Coefficients = new double[] { 0, 0, c };
-            integral = function.GetIntegralDifference(zeroFunction, start, end);
+            function.Coefficients = new double[] { 0, 0, coeff };
+            integral = function.GetAbsIntegralDifference(zeroFunction, start, end);
             if (start.IsAlmostEqual(end, double.Epsilon))
             {
                 Assert.Equal(0, integral, 5);
             }
             else {
-                expected = (end.FastPower(3) - start.FastPower(3)) / 3;
+                expected = Math.Abs(coeff * (end.FastPower(3) - start.FastPower(3)) / 3);
                 deviation = expected / integral - 1;
                 Assert.InRange(deviation, -tol, tol); // 1% deviation
-
             }
+
 
             // todo: test function with higher degree than 2 (function up to degree of 2 are solved analytical)
 
