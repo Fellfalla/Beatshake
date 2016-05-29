@@ -105,7 +105,7 @@ namespace Beatshake.Core
             PropertyChanged += OnPropertyChanged;
 
             PlaySoundCommand = DelegateCommand.FromAsyncHandler(PlaySound);
-            TeachCommand = new DelegateCommand(Teach);
+            TeachCommand = DelegateCommand.FromAsyncHandler(Teach);
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -168,7 +168,7 @@ namespace Beatshake.Core
             }
         }
 
-        protected async void Teach()
+        protected async Task Teach()
         {
             // unregister current processing
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
@@ -223,7 +223,7 @@ namespace Beatshake.Core
                 var normalizedTimestamps = Utility.NormalizeTimeStamps(timesteps);
                 teachement = Teachement.Create(normalizedTimestamps, xValues, yValues, zValues);
             }
-            catch (InvalidDataException) // thrown if the peak is to near at beginning data
+            catch (InsufficientDataException) // thrown if the peak is to near at beginning data
             {
                 await Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Teachement failed. Please try again. (longer)");
             }

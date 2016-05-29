@@ -20,7 +20,8 @@ namespace Beatshake.Core
         }
 
         /// <summary>
-        /// 
+        /// <exception cref="InsufficientDataException">This exception is thrown when the requested degree
+        /// is greater or equal to the count of the given <paramref name="samplePoints"/></exception>
         /// </summary>
         /// <param name="samplePoints"></param>
         /// <param name="sampleValues"></param>

@@ -60,9 +60,18 @@ namespace Beatshake.ViewModels
         private bool _useFunctionAnalysis;
         private double _lastGradient;
         private bool _useRandom;
+        private double _cycleTime;
+        private readonly Stopwatch _cycleStopwatch = new Stopwatch();
+
+        public double CycleTime
+        {
+            get { return _cycleTime; }
+            set { SetProperty(ref _cycleTime, value); }
+        }
 
         public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
+            _cycleStopwatch.Start();
             Timestamps.Add((long) motionDataProvider.Acceleration.Timestamp);
             XHistory.Add(motionDataProvider.Acceleration.Trans[0]);
             YHistory.Add(motionDataProvider.Acceleration.Trans[1]);
@@ -85,10 +94,10 @@ namespace Beatshake.ViewModels
                 var yCoeff = new PolynomialFunction(normalizedTimestamps, YHistory);
                 var zCoeff = new PolynomialFunction(normalizedTimestamps, ZHistory);
 
-                var teachedOnes = Components.Where(component => component.Teachement != null).ToArray();
+                var teachedOnes = Components.Where(component => component.Teachement != null);
                 foreach (var instrumentalComponent in teachedOnes)
                 {
-                    var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance,
+                    var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance / 50,
                        normalizedTimestamps.Last(), 0, true, xCoeff, yCoeff, zCoeff); // todo: Add Setting for normalizing
                     if (result)
                     {
@@ -150,8 +159,8 @@ namespace Beatshake.ViewModels
                     await Components.Random().PlaySoundCommand.Execute();
                 }
             }
-           
-            
+            CycleTime = _cycleStopwatch.ElapsedMilliseconds;
+            _cycleStopwatch.Reset();
         }
 
         public override string Kit
@@ -173,7 +182,6 @@ namespace Beatshake.ViewModels
             get { return _teachementTolerance; }
             set { SetProperty(ref _teachementTolerance, value); }
         }
-
 
         public ObservableCollection<InstrumentalComponent> Components
         {

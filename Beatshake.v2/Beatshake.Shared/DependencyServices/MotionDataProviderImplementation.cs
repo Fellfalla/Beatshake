@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using Windows.Devices.Sensors;
 using Windows.UI.Core;
 using Beatshake.Core;
@@ -20,10 +20,9 @@ class MotionDataProviderImplementation : IMotionDataProvider
 
         if (_accelerometer != null)
         {
-#if WINDOWS_UWP
+            #if WINDOWS_UWP
                 _accelerometer.ReportLatency = 0;
-#endif
-
+            #endif
 
             _minInterval = Math.Max(_minInterval, _accelerometer.MinimumReportInterval);
             _accelerometer.ReadingChanged += OnNewSensorData;
@@ -44,10 +43,10 @@ class MotionDataProviderImplementation : IMotionDataProvider
         RefreshRate = BeatshakeSettings.SensorRefreshInterval;
     }
 
-    private async void OnNewSensorData(Accelerometer sender, AccelerometerReadingChangedEventArgs args)
+    private void OnNewSensorData(Accelerometer sender, AccelerometerReadingChangedEventArgs args)
     {
-        await
-            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+        
+           var task = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal, () =>
                 {
                     Acceleration.Timestamp = (args.Reading.Timestamp.DateTime - DateTime.MinValue).TotalMilliseconds;
@@ -56,11 +55,12 @@ class MotionDataProviderImplementation : IMotionDataProvider
                     Acceleration.Trans[2] = args.Reading.AccelerationZ;
                     MotionDataRefreshed?.Invoke(this);
                 });
+        Task.WaitAll(task.AsTask());
     }
 
-    private async void OnNewSensorData(Gyrometer sender, GyrometerReadingChangedEventArgs args)
+    private void OnNewSensorData(Gyrometer sender, GyrometerReadingChangedEventArgs args)
     {
-        await
+        var task =
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal, () =>
                 {
@@ -70,10 +70,12 @@ class MotionDataProviderImplementation : IMotionDataProvider
                     Velocity.Rot[2] = args.Reading.AngularVelocityZ;
                     //MotionDataRefreshed?.Invoke(this); // todo: sync Gyrometer and Accelerometer events
                 });
+        Task.WaitAll(task.AsTask());
+
     }
-    private async void OnNewSensorData(OrientationSensor sender, OrientationSensorReadingChangedEventArgs args)
+    private void OnNewSensorData(OrientationSensor sender, OrientationSensorReadingChangedEventArgs args)
     {
-        await
+        var task=
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal, () =>
                 {
@@ -83,6 +85,8 @@ class MotionDataProviderImplementation : IMotionDataProvider
                     Pose.Rot[2] = args.Reading.Quaternion.Z;
                     //MotionDataRefreshed?.Invoke(this); // todo: sync Gyrometer and Accelerometer events
                 });
+        Task.WaitAll(task.AsTask());
+
     }
 
     public DataContainer<double> Pose { get; } = new DataContainer<double>();

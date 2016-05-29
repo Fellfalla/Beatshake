@@ -49,9 +49,13 @@ namespace Beatshake.Core
                 }
             }
 
-            teachement.XCurve = new PolynomialFunction(timesteps.SubArray(startIndex, endIndex), xValues.SubArray(startIndex, endIndex));
-            teachement.YCurve = new PolynomialFunction(timesteps.SubArray(startIndex, endIndex), yValues.SubArray(startIndex, endIndex));
-            teachement.ZCurve = new PolynomialFunction(timesteps.SubArray(startIndex, endIndex), zValues.SubArray(startIndex, endIndex));
+            teachement.XCurve = new PolynomialFunction(timesteps.SubArray(startIndex, endIndex),
+                xValues.SubArray(startIndex, endIndex));
+            teachement.YCurve = new PolynomialFunction(timesteps.SubArray(startIndex, endIndex),
+                yValues.SubArray(startIndex, endIndex));
+            teachement.ZCurve = new PolynomialFunction(timesteps.SubArray(startIndex, endIndex),
+                zValues.SubArray(startIndex, endIndex));
+
 
             return teachement;
         }
@@ -64,9 +68,9 @@ namespace Beatshake.Core
         /// <param name="yValues"></param>
         /// <param name="zValues"></param>
         /// <returns></returns>
-        public static Teachement Create(IEnumerable<double> timesteps, IEnumerable<double> xValues, IEnumerable<double> yValues, IEnumerable<double> zValues)
+        public static Teachement Create(IEnumerable<double> timesteps, IEnumerable<double> xValues, IEnumerable<double> yValues, IEnumerable<double> zValues, bool throwOnThinData = false)
         {
-                return Create(timesteps.ToArray(), xValues.ToArray(), yValues.ToArray(), zValues.ToArray());
+                return Create(timesteps.ToArray(), xValues.ToArray(), yValues.ToArray(), zValues.ToArray(), throwOnThinData);
         }
 
         /// <summary>

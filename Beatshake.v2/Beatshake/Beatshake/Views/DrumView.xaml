@@ -11,85 +11,106 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <converter:ToStringConverter x:Key="ToStringConverter" />
+            <Style TargetType="Frame" x:Key="MenuFrame">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="OutlineColor" Value="Black" />
+            </Style>
+            <Style TargetType="View">
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <RelativeLayout>
-        <Image Source="BeatshakeLogo.png" Opacity="0.5"
-               RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width}"
-               RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height}" />
-        <RelativeLayout
-            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width}"
-            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height}">
 
-            <Grid VerticalOptions="Center" HorizontalOptions="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+    <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Image Grid.Row="0" Grid.RowSpan="4" Source="BeatshakeLogo.png" Opacity="0.5" Aspect="AspectFit" />
+            <!--Header Row-->
+            <Label Grid.Row="0" Text="{Binding Title}" HorizontalOptions="CenterAndExpand" />
 
-                <Label Grid.Row="0" Text="{Binding Title}" HorizontalOptions="CenterAndExpand" />
-
-                <ListView Grid.Row="1" ItemsSource="{Binding Components}" VerticalOptions="Center"
-                          HorizontalOptions="Center">
+            <!--First Row-->
+            <Frame Grid.Row="1" Style="{StaticResource MenuFrame}" VerticalOptions="Start">
+                <ListView ItemsSource="{Binding Components}"
+                          HorizontalOptions="CenterAndExpand"
+                          VerticalOptions="Start"
+                          HasUnevenRows="False"
+                          RowHeight="31">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <StackLayout Orientation="Horizontal">
-                                    <Label HorizontalOptions="Start" Text="{Binding Name}" />
-                                    <Button HeightRequest="30"
-                                            HorizontalOptions="End"
-                                            Text="Push me!">
-                                        <Button.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding PlaySoundCommand}" />
+                                <StackLayout Orientation="Horizontal" VerticalOptions="Fill">
+                                    <Label HorizontalOptions="Start" Text="{Binding Name}" VerticalOptions="Center" FontAttributes="Bold"/>
 
-                                        </Button.GestureRecognizers>
-                                    </Button>
-                                    <Button Text="Teach me!" HeightRequest="30">
+                                    <Button Text="Teach me!" VerticalOptions="Center">
                                         <Button.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding TeachCommand}" />
-
                                         </Button.GestureRecognizers>
                                     </Button>
 
-                                    <Label Text="{Binding Teachement.XCurve}" />
-                                    <Label Text="{Binding Teachement.YCurve}" />
-                                    <Label Text="{Binding Teachement.ZCurve}" />
+                                    <Button HorizontalOptions="End"
+                                            VerticalOptions="Center"
+                                            Text="Play!">
+                                        <Button.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding PlaySoundCommand}" />
+                                        </Button.GestureRecognizers>
+                                    </Button>
+
+                                    <Label Text="{Binding Teachement, Mode=OneWay}" />
+                                    <Label Text="{Binding Teachement.YCurve, Mode=OneWay}" />
+                                    <Label Text="{Binding ., Mode=OneWay}" />
                                 </StackLayout>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <StackLayout Orientation="Vertical" Grid.Row="2">
-                  
-                    <StackLayout Grid.Row="2" Orientation="Horizontal">
-                        <Label Text="Use Randomizer" />
-                        <Switch Grid.Row="2" IsToggled="{Binding UseRandom}" />
-                    </StackLayout>
+            </Frame>
+            <!--Second Row-->
+            <StackLayout Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="FillAndExpand" Grid.Row="2">
+                <Frame Style="{StaticResource MenuFrame}" VerticalOptions="Fill">
+                    <StackLayout Orientation="Vertical">
+                        <Label HorizontalOptions="Center" VerticalOptions="Start">Mode</Label>
 
-                    <StackLayout Grid.Row="2" Orientation="Horizontal">
-                        <Label Text="Use Teachement" />
-                        <Switch Grid.Row="2" IsToggled="{Binding UseTeachement}" />
-                    </StackLayout>
-                  
-                    <StackLayout Grid.Row="2" Orientation="Horizontal">
-                        <Label Text="Use Function analysis" />
-                        <Switch Grid.Row="2" IsToggled="{Binding UseFunctionAnalysis}" />
-                    </StackLayout>
-                  
-                    <StackLayout Grid.Row="2">
-                        <Label Text="Teachement tolerance" />
-                        <Slider Grid.Row="3" Value="{Binding TeachementTolerance}" Minimum="0" Maximum="150" />
-                    </StackLayout>
-                    <StackLayout Grid.Row="2">
-                        <Label Text="Response Time" />
-                        <Label Text="{Binding ResponseTime}" />
-                        <Slider Grid.Row="3" Value="{Binding ResponseTime}" Minimum="0" Maximum="100" />
-                    </StackLayout>
+                        <StackLayout Grid.Row="2" Orientation="Horizontal">
+                            <Label Text="Use Randomizer" />
+                            <Switch IsToggled="{Binding UseRandom}" />
+                        </StackLayout>
 
-                </StackLayout>
-            </Grid>
-        </RelativeLayout>
-    </RelativeLayout>
+                        <StackLayout Grid.Row="2" Orientation="Horizontal">
+                            <Label Text="Use Teachement" />
+                            <Switch IsToggled="{Binding UseTeachement}" />
+                        </StackLayout>
+
+                        <StackLayout Grid.Row="2" Orientation="Horizontal">
+                            <Label Text="Use Function analysis" />
+                            <Switch IsToggled="{Binding UseFunctionAnalysis}" />
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+                <Frame Style="{StaticResource MenuFrame}">
+                    <StackLayout Orientation="Vertical">
+                        <Label HorizontalOptions="Center" VerticalOptions="Start">Preferences</Label>
+                        <StackLayout>
+                            <Label Text="Teachement tolerance" />
+                            <Slider Value="{Binding TeachementTolerance}" Minimum="0" Maximum="150" />
+                        </StackLayout>
+
+                        <StackLayout>
+                            <Label Text="Response Time" />
+                            <Label Text="{Binding ResponseTime}" />
+                            <Slider Value="{Binding ResponseTime}" Minimum="0" Maximum="100" />
+                        </StackLayout>
+
+                      <Label Text="{Binding CycleTime, StringFormat='Cycle time:{0}'}"></Label>
+                    </StackLayout>
+                </Frame>
+
+            </StackLayout>
+        </Grid>
+    </ScrollView>
 </views:BaseContentPage>
