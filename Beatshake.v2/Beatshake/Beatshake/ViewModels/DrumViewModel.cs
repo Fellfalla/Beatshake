@@ -70,6 +70,8 @@ namespace Beatshake.ViewModels
             set { SetProperty(ref _cycleTime, value); }
         }
 
+        public bool Normalize { get; set; }
+
         public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
             _cycleStopwatch.Start();
@@ -98,8 +100,8 @@ namespace Beatshake.ViewModels
                 var tasks = new List<Task>();
                 foreach (var instrumentalComponent in teachedOnes)
                 {
-                    var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance / 50,
-                       normalizedTimestamps.Last(), 0, true, xCoeff, yCoeff, zCoeff); // todo: Add Setting for normalizing
+                    var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance,
+                       normalizedTimestamps.Last(), 0, Normalize, xCoeff, yCoeff, zCoeff); // todo: Add Setting for normalizing
                     if (result)
                     {
                         var task = instrumentalComponent.PlaySoundCommand.Execute();
@@ -157,7 +159,7 @@ namespace Beatshake.ViewModels
             }
             else if (UseRandom)
             {
-                if (motionDataProvider.Acceleration.Trans.Any(d => d > 1))
+                if (motionDataProvider.Acceleration.Trans.Any(d => d > TeachementTolerance / 100))
                 {
                     await Components.Random().PlaySoundCommand.Execute();
                 }

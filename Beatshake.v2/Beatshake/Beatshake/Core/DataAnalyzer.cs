@@ -200,7 +200,7 @@ namespace Beatshake.Core
 
         public static bool AreFunctionsAlmostEqual(double integral, double tolerance, double range)
         {
-            return (integral / range) < tolerance;
+            return Math.Abs(integral / range) < tolerance; // bug : check why integral is negative
         }
 
         public static double GetIntegralDifference(Tuple<double, double, double> func1, Tuple<double, double, double> func2, double start, double end)

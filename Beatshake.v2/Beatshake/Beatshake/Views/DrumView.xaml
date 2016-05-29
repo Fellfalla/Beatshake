@@ -101,6 +101,11 @@
                         </StackLayout>
 
                         <StackLayout>
+                            <Label Text="Normalize" />
+                            <Switch IsToggled="{Binding Normalize}"/>
+                        </StackLayout>
+
+                        <StackLayout>
                             <Label Text="Response Time" />
                             <Label Text="{Binding ResponseTime}" />
                             <Slider Value="{Binding ResponseTime}" Minimum="{Binding MotionDataProvider.MinInterval, Mode=OneWay}" Maximum="100" />
