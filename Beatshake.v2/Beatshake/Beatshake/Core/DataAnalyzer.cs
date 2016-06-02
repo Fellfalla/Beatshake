@@ -152,7 +152,7 @@ namespace Beatshake.Core
         /// </summary>
         /// <param name="values">All input value arrays have to be of same size.</param>
         /// <returns>-1 if no peak was detected</returns>
-        public static int GetPeak(params double[][] values)
+        public static int GetPeak(params IList<double>[] values)
         {
             int dataSetCount = values.Count();
             int resultIndex = -1;

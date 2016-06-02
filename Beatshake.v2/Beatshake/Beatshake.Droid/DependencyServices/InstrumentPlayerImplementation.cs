@@ -90,15 +90,4 @@ namespace Beatshake.Droid.DependencyServices
             return transmitter;
         }
     }
-
-    class AudioTransmitter
-    {
-        //public IRandomAccessStream Stream;
-
-        //public IBuffer Buffer;
-
-        public SoundEffect SoundEffect;
-
-        //public StorageFile StorageFile;
-    }
 }

@@ -189,7 +189,7 @@ namespace Beatshake.Core
             try
             {
                 var normalizedTimestamps = Utility.NormalizeTimeStamps(timesteps);
-                teachement = Teachement.Create(normalizedTimestamps, xValues, yValues, zValues);
+                teachement = Teachement.Create(normalizedTimestamps.ToArray(), false, xValues.ToArray(), yValues.ToArray(), zValues.ToArray());
             }
             catch (InsufficientDataException) // thrown if the peak is to near at beginning data
             {

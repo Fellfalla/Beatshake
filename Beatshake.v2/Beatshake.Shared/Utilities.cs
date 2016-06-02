@@ -1,6 +1,4 @@
-﻿using Beatshake.DependencyServices;
-using Microsoft.Practices.Unity;
-using OxyPlot;
+﻿using Microsoft.Practices.Unity;
 
 public static class Utilities
 {
@@ -25,13 +23,5 @@ public static class Utilities
         //container.RegisterInstance(container.Resolve<UserTextNotifierImplementation>());
         //container.RegisterInstance(container.Resolve<MotionDataProviderImplementation>());
         //container.RegisterInstance(container.Resolve<UserSoudNotifierImplementation>());
-    }
-}
-
-public class PlotViewProviderImplementation : IPlotViewProdiver
-{
-    public IPlotView GetPlotView()
-    {
-        return new OxyPlot.Windows.PlotView();
     }
 }

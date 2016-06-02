@@ -2,11 +2,12 @@
 
 namespace Beatshake.Core
 {
+    [Obsolete("Use  PolynomialFunction instead")]
     public class QuadraticFunction : PolynomialFunction
     {
         public QuadraticFunction()
         {
-            Degree = 2;
+            Coefficients = new double[3];
         }
 
         public double A

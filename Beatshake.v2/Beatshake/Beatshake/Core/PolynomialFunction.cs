@@ -6,17 +6,20 @@ using Beatshake.ExtensionMethods;
 
 namespace Beatshake.Core
 {
-    public enum DataFittingStrategy
-    {
-        LeastSquares,
-        LagrangePolynom,
-    }
-
     public class PolynomialFunction : ICloneable
     {
+        private double[] _coefficients;
+
+        private PolynomialFunction _derivation;
+
+        private PolynomialFunction _normalizedFunction;
+
+        private PolynomialFunction _peakNormalizedFunction;
+
+        private IEnumerable<double> _peaks;
+
         public PolynomialFunction()
         {
-            
         }
 
         public PolynomialFunction(params double[] coefficients)
@@ -25,14 +28,17 @@ namespace Beatshake.Core
         }
 
         /// <summary>
-        /// <exception cref="InsufficientDataException">This exception is thrown when the requested degree
-        /// is greater or equal to the count of the given <paramref name="samplePoints"/></exception>
+        ///     <exception cref="InsufficientDataException">
+        ///         This exception is thrown when the requested degree
+        ///         is greater or equal to the count of the given <paramref name="samplePoints" />
+        ///     </exception>
         /// </summary>
         /// <param name="samplePoints"></param>
         /// <param name="sampleValues"></param>
         /// <param name="n"></param>
         /// <param name="method"></param>
-        public PolynomialFunction(double[] samplePoints, double[] sampleValues, int n = 2, DataFittingStrategy method = DataFittingStrategy.LeastSquares)
+        public PolynomialFunction(double[] samplePoints, double[] sampleValues, int n = 2,
+            DataFittingStrategy method = DataFittingStrategy.LeastSquares)
         {
             if (n != 2 || method != DataFittingStrategy.LeastSquares)
             {
@@ -40,10 +46,11 @@ namespace Beatshake.Core
             }
             if (n >= samplePoints.Length && samplePoints.Length == 2)
             {
-                var coeffs = DataAnalyzer.LinearInterpolation(samplePoints[0], samplePoints[1], sampleValues[0], sampleValues[1]);
+                var coeffs = DataAnalyzer.LinearInterpolation(samplePoints[0], samplePoints[1], sampleValues[0],
+                    sampleValues[1]);
                 Coefficients = new[] {coeffs[0], coeffs[1], 0};
             }
-            else if(n >= samplePoints.Length)
+            else if (n >= samplePoints.Length)
             {
                 throw new InsufficientDataException();
             }
@@ -56,101 +63,166 @@ namespace Beatshake.Core
             End = samplePoints.Last();
         }
 
-        public PolynomialFunction(IEnumerable<double> samplePoints, IEnumerable<double> sampleValues) : this(samplePoints.ToArray(), sampleValues.ToArray())
+        public PolynomialFunction(IEnumerable<double> samplePoints, IEnumerable<double> sampleValues)
+            : this(samplePoints.ToArray(), sampleValues.ToArray())
         {
         }
 
-        private double[] _coefficients;
-
         /// <summary>
-        /// -1 If there are no Coefficients set.
-        /// When new degree is set to fewer element count than old one is -> highest coefficients will be ignored and get lost
+        ///     -1 If there are no Coefficients set.
+        ///     When new degree is set to fewer element count than old one is -> highest coefficients will be ignored and get lost
         /// </summary>
         public int Degree // todo: Write tests
         {
             get
             {
                 if (Coefficients != null) return Coefficients.Length - 1;
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
-            set
-            {
-                if (value == -1)
-                {
-                    // Reset the function
-                    Reset();
-                    return;
-                }
-                else if (value < -1)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Value >= -1 excpected");
-                }
+            //set
+            //{
+            //    if (value == -1)
+            //    {
+            //        // Reset the function
+            //        Coefficients = null;
+            //        return;
+            //    }
+            //    else if (value < -1)
+            //    {
+            //        throw new ArgumentOutOfRangeException("value", "Value >= -1 excpected");
+            //    }
 
-                var coefficientCount = value + 1;
-                var newCoefficients = new double[coefficientCount];
+            //    var coefficientCount = value + 1;
+            //    var newCoefficients = new double[coefficientCount];
 
-                if (Coefficients == null)
-                {
-                    // skip all other Ifs
-                }
-                else if (coefficientCount > Coefficients.Length)
-                {
-                    Array.Copy(Coefficients, newCoefficients, Coefficients.Length);
-                }
-                else if (coefficientCount == Coefficients.Length)
-                {
-                    // no resize needed
-                    return;
-                }
-                else // new Array is smaller
-                {
-                    // Delete highest old coefficients and copy remaining ones
-                    Array.Copy(Coefficients, newCoefficients, newCoefficients.Length);
-                }
+            //    if (Coefficients == null)
+            //    {
+            //        // skip all other Ifs
+            //    }
+            //    else if (coefficientCount > Coefficients.Length)
+            //    {
+            //        Array.Copy(Coefficients, newCoefficients, Coefficients.Length);
+            //    }
+            //    else if (coefficientCount == Coefficients.Length)
+            //    {
+            //        // no resize needed
+            //        return;
+            //    }
+            //    else // new Array is smaller
+            //    {
+            //        // Delete highest old coefficients and copy remaining ones
+            //        Array.Copy(Coefficients, newCoefficients, newCoefficients.Length);
+            //    }
 
-                Coefficients = newCoefficients;
-            }
+            //    Coefficients = newCoefficients;
+            //}
         }
 
         /// <summary>
-        /// Removes all the coefficients and sets the function to initial state
-        /// </summary>
-        public void Reset()
-        {
-            Coefficients = null;
-        }
-
-        /// <summary>
-        /// Start of the definition region of this function
+        ///     Start of the definition region of this function
         /// </summary>
         public double Start { get; set; }
 
         /// <summary>
-        /// End of the definiction region of this function
+        ///     End of the definiction region of this function
         /// </summary>
         public double End { get; set; }
 
         /// <summary>
-        /// Repressenting the coefficients of a polynomial function.
-        /// The lower the index, the lower the exponent of the correlating variable.
-        /// This means that the Variable with the highest exponent is multiplicated with the very last <see cref="Coefficients"/> entry.
-        /// !!! Changes in this array wont be detected !!!
+        ///     Repressenting the coefficients of a polynomial function.
+        ///     The lower the index, the lower the exponent of the correlating variable.
+        ///     This means that the Variable with the highest exponent is multiplicated with the very last
+        ///     <see cref="Coefficients" /> entry.
+        ///     !!! Changes in this array wont be detected !!!
         /// </summary>
         public double[] Coefficients
         {
             get { return _coefficients; }
             set
             {
+                Reset();
                 _coefficients = value;
-                _normalizedFunction = null; // Reset normalized version
+            }
+        }
+
+        public PolynomialFunction Derivation
+        {
+            get
+            {
+                if (_derivation == null)
+                {
+                    _derivation = CalculateDerivation();
+                }
+
+                return (PolynomialFunction) _derivation.Clone();
+            }
+        }
+
+        public IEnumerable<double> Peaks
+        {
+            get
+            {
+                if (_peaks == null)
+                {
+                    _peaks = CalculatePeaks();
+                }
+                return _peaks;
+            }
+        }
+
+        public int CoefficientCount
+        {
+            get { return Coefficients?.Length ?? 0; }
+        }
+
+        /// <summary>
+        ///     Prefer this property over <see cref="CalculateNormalizedFunction" />
+        ///     if you want to have a normalization to 1
+        ///     due to performance advantages
+        /// </summary>
+        public PolynomialFunction Normalized
+        {
+            get
+            {
+                if (_normalizedFunction == null)
+                {
+                    _normalizedFunction = CalculateNormalizedFunction(1);
+                }
+                return (PolynomialFunction) _normalizedFunction.Clone();
             }
         }
 
         /// <summary>
-        /// Source: https://de.wikipedia.org/wiki/Polynom -> Eigenschafte
+        ///     Clones the executing class
+        /// </summary>
+        /// <returns></returns>
+        public virtual object Clone()
+        {
+            var clone = new PolynomialFunction();
+
+            clone._coefficients = _coefficients;
+            clone._peaks = _peaks;
+            clone._derivation = _derivation; // Pay Attention ! The clone is referencing the same derivation
+            clone._normalizedFunction = _normalizedFunction;
+            clone._peakNormalizedFunction = _peakNormalizedFunction;
+
+            return clone;
+        }
+
+        /// <summary>
+        ///     Removes all stored calculations and Coefficients about this Function
+        /// </summary>
+        public void Reset()
+        {
+            _normalizedFunction = null; // Reset normalized version
+            _derivation = null;
+            _peakNormalizedFunction = null;
+            _peaks = null;
+            _coefficients = null;
+        }
+
+        /// <summary>
+        ///     Source: https://de.wikipedia.org/wiki/Polynom -> Eigenschafte
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
@@ -167,12 +239,12 @@ namespace Beatshake.Core
             //    grad += (degree) * Coefficients[degree] * x.FastPower((uint) i);
 
             //}
-            var deriv = GetDerivation();
+            var deriv = Derivation;
 
             return deriv.ValueAt(x);
         }
 
-        public PolynomialFunction GetDerivation()
+        private PolynomialFunction CalculateDerivation()
         {
             var derivation = new PolynomialFunction();
 
@@ -181,10 +253,10 @@ namespace Beatshake.Core
                 return derivation;
             }
 
-            double[] derivedCoefficients = new double[Coefficients.Length-1];
+            var derivedCoefficients = new double[Coefficients.Length - 1];
 
             // multiply all coefficients with the value of the correlating x-exponent
-            for (int i = 1; i < Coefficients.Length; i++)
+            for (var i = 1; i < Coefficients.Length; i++)
             {
                 derivedCoefficients[i - 1] = Coefficients[i]*i;
             }
@@ -193,17 +265,16 @@ namespace Beatshake.Core
             return derivation;
         }
 
-        public IEnumerable<double> GetPeaks()
+        private IEnumerable<double> CalculatePeaks()
         {
-            var derivation = GetDerivation();
+            var derivation = Derivation;
             if (derivation.Degree <= 0)
             {
-                yield break;
             }
             else if (derivation.Degree == 1)
             {
                 // f(x) = ax + b =!= 0 falls ax = -b -> x = -b/a
-                yield return -derivation.Coefficients[0]/ derivation.Coefficients[1];
+                yield return -derivation.Coefficients[0]/derivation.Coefficients[1];
             }
             else if (derivation.Degree == 2)
             {
@@ -223,80 +294,84 @@ namespace Beatshake.Core
             }
         }
 
-        public int CoefficientCount
-        {
-            get
-            {
-                return Coefficients?.Length ?? 0;
-            }
-        }
-
         public void Scale(double scale)
         {
-            for (int i = 0; i < CoefficientCount; i++) // this could be parallelized
+            for (var i = 0; i < CoefficientCount; i++) // this could be parallelized
             {
                 Coefficients[i] *= scale;
             }
         }
 
         /// <summary>
-        /// Normalizes the function in a way, that the highest peak has a value of 1
+        ///     Normalizes the function in a way, that the highest peak has a value of 1.
         /// </summary>
+        /// <param name="i">The normalization Target value</param>
         /// <returns></returns>
-        public PolynomialFunction GetNormalizedFunction()
+        public PolynomialFunction CalculateNormalizedFunction(double i)
         {
-            if (_normalizedFunction == null)
-            {
-                var absCoefficients = Coefficients.Select(Math.Abs);
+            PolynomialFunction normalized;
+            var absCoefficients = Coefficients.Select(Math.Abs);
 
-                double sum = absCoefficients.Sum();
-                if (sum < double.Epsilon && sum > - double.Epsilon) // the function is nearly 0
-                {
-                    _normalizedFunction = (PolynomialFunction) Clone();
-                }
-                else
-                {
-                    double scale = 1 / sum;
-                    _normalizedFunction = (PolynomialFunction)Clone();
-                    _normalizedFunction.Scale(scale);
-                }
+            var sum = absCoefficients.Sum();
+            if (sum.IsAlmostZero()) // the function is nearly 0
+            {
+                normalized = (PolynomialFunction) Clone(); // todo: think about throwing error
+            }
+            else
+            {
+                var scale = i/sum;
+                normalized = (PolynomialFunction) Clone();
+                normalized.Scale(scale);
             }
 
-            return (PolynomialFunction) _normalizedFunction.Clone();
-        }
-
-        public PolynomialFunction GetPeakNormalizedFunction()
-        {
-            if (_peakNormalizedFunction == null)
-            {
-                double maxValue = GetPeaks().Max();
-                double scale = 1 / maxValue;
-                _peakNormalizedFunction = (PolynomialFunction)Clone();
-                _peakNormalizedFunction.Scale(scale);
-            }
-
-            return (PolynomialFunction)_peakNormalizedFunction.Clone();
-        }
-
-        private PolynomialFunction _normalizedFunction;
-
-        private PolynomialFunction _peakNormalizedFunction;
-
-        /// <summary>
-        /// Clones the executing class
-        /// </summary>
-        /// <returns></returns>
-        public virtual object Clone()
-        {
-            var clone = new PolynomialFunction();
-
-            clone.Coefficients = Coefficients;
-
-            return clone;
+            return normalized;
         }
 
         /// <summary>
-        /// Returns the functional-Value f(x) at a specific point x
+        /// This function returns a copy with a max peak value of 1
+        /// </summary>
+        /// <returns>null if there are no peaks</returns>
+        public PolynomialFunction PeakNormalized
+        {
+            get
+            {
+                if (!Peaks.Any())
+                {
+                    return null;
+                }
+                if (_peakNormalizedFunction == null)
+                {
+                    var maxValue = Peaks.Max();
+                    var scale = 1 / ValueAt(maxValue);
+                    _peakNormalizedFunction = (PolynomialFunction)Clone();
+                    _peakNormalizedFunction.Scale(scale);
+                }
+
+                return (PolynomialFunction)_peakNormalizedFunction.Clone();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="desiredPeakValue">If desired peak == 1 use <see cref="PeakNormalized"/></param>
+        /// <returns></returns>
+        public PolynomialFunction GetPeakNormalizedFunction(double desiredPeakValue)
+        {
+            if (!Peaks.Any())
+            {
+                return null;
+            }
+            var maxValue = Peaks.Max();
+            var scale = desiredPeakValue / ValueAt(maxValue);
+            var peakNormalizedFunction = (PolynomialFunction)Clone();
+            peakNormalizedFunction.Scale(scale);
+
+            return (PolynomialFunction) peakNormalizedFunction.Clone();
+        }
+
+        /// <summary>
+        ///     Returns the functional-Value f(x) at a specific point x
         /// </summary>
         /// <param name="x">The point where this function should be evaluated</param>
         /// <returns></returns>
@@ -321,10 +396,7 @@ namespace Beatshake.Core
             {
                 return Coefficients[degree];
             }
-            else // the x^degree is eliminated by a coefficient with value 0
-            {
-                return 0;
-            }
+            return 0;
         }
 
         public double GetAbsIntegralDifference(PolynomialFunction other, double start, double end)
@@ -334,7 +406,7 @@ namespace Beatshake.Core
             // sort for func with highest degree
             PolynomialFunction func1;
             PolynomialFunction func2;
-            if (this.Degree >= other.Degree)
+            if (Degree >= other.Degree)
             {
                 func1 = this;
                 func2 = other;
@@ -361,7 +433,7 @@ namespace Beatshake.Core
 
                 // https://www.wolframalpha.com/input/?i=integral+abs%28ax%2Bb%29
                 var upper = 0.5*(end*(a*end + 2*b)*Math.Sign(a*end + b));
-                var lower = 0.5*(start*(a* start + 2*b)*Math.Sign(a* start + b));
+                var lower = 0.5*(start*(a*start + 2*b)*Math.Sign(a*start + b));
                 integral = upper - lower;
             }
             else if (func1.Degree == 2)
@@ -371,17 +443,18 @@ namespace Beatshake.Core
                 var b = func1.GetCoefficient(1) - func2.GetCoefficient(1);
                 var c = func1.GetCoefficient(0) - func2.GetCoefficient(0);
 
-                var upper = (end*(6*c + end*(3*b + 2*a*end))*Math.Sign(c + end*(b + a*end))) / 6;
-                var lower = (start*(6*c + start * (3*b + 2*a* start))*Math.Sign(c + start * (b + a* start))) / 6;
+                var upper = end*(6*c + end*(3*b + 2*a*end))*Math.Sign(c + end*(b + a*end))/6;
+                var lower = start*(6*c + start*(3*b + 2*a*start))*Math.Sign(c + start*(b + a*start))/6;
                 return upper - lower;
             }
             else // solve numerical
             {
-                double delta = (end - start) / BeatshakeSettings.IntegralPrecision;
-                for (double x = start; x < end; x += delta)
+                // Todo Use gaussian integral
+                var delta = (end - start)/BeatshakeSettings.IntegralPrecision;
+                for (var x = start; x < end; x += delta)
                 {
                     var diff = other.ValueAt(x) - ValueAt(x);
-                    integral += Math.Abs(diff) * delta;
+                    integral += Math.Abs(diff)*delta;
                 }
             }
 
@@ -391,19 +464,15 @@ namespace Beatshake.Core
         public IEnumerable<double> GetIntersectionsWith(PolynomialFunction other)
         {
             // todo: test
-            if (this.Degree != 2 ||other.Degree != 2)
+            if (Degree != 2 || other.Degree != 2)
             {
                 throw new NotImplementedException();
             }
-            else
-            {
-                // (a1 - a2)x^2 + (b1 - b2)t + (c1 - c2)
-                var a = this.GetCoefficient(2) - other.GetCoefficient(2);
-                var b = this.GetCoefficient(1) - other.GetCoefficient(1);
-                var c = this.GetCoefficient(0) - other.GetCoefficient(0);
-                return Utility.MidnightFormula(a, b, c);
-            }
-
+            // (a1 - a2)x^2 + (b1 - b2)t + (c1 - c2)
+            var a = GetCoefficient(2) - other.GetCoefficient(2);
+            var b = GetCoefficient(1) - other.GetCoefficient(1);
+            var c = GetCoefficient(0) - other.GetCoefficient(0);
+            return Utility.MidnightFormula(a, b, c);
         }
 
 
@@ -411,22 +480,17 @@ namespace Beatshake.Core
         /// <returns>Eine Zeichenfolge, die das aktuelle Objekt darstellt.</returns>
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < CoefficientCount; i++)
+            var builder = new StringBuilder();
+            for (var i = 0; i < CoefficientCount; i++)
             {
-                builder.Append(string.Format(" {0:+#;-#}x^{1}", GetCoefficient(i), i));
+                var coeff = GetCoefficient(i);
+                if (!coeff.IsAlmostZero()) // Ignore x^n with 0 coefficient
+                {
+                    builder.Append(string.Format(" {0:+#;-#}x^{1}", GetCoefficient(i), i));
+                }
             }
-            
+
             return builder.ToString().Trim();
         }
-    }
-
-    public interface ICloneable
-    {
-        /// <summary>
-        /// Clones the executing class
-        /// </summary>
-        /// <returns></returns>
-        object Clone();
     }
 }

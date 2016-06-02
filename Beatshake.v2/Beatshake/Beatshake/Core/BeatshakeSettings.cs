@@ -49,11 +49,4 @@ namespace Beatshake.Core
         /// </summary>
         public static int SamplePoints = 6;
     }
-
-    public static class BeatshakeGlobals
-    {
-        public static string NavigateToDrumKit = "NavigatteToDrumKit";
-
-        public static string NavigateToMainPage = "NavigatteToDrumKit";
-    }
 }

@@ -24,7 +24,7 @@ namespace Beatshake.Tests
             // degree 1
             double secondCoefficient = 345.234;
             function.Coefficients = new double[] {3425, secondCoefficient};
-            Assert.Equal(secondCoefficient, function.GetGradient(33526.124));
+            Assert.Equal(secondCoefficient, function.GetGradient(33526.124), 13);
 
             // degree 2
             double c0 = 13526;
@@ -44,6 +44,37 @@ namespace Beatshake.Tests
             // f'(x) = 3ax^2 + 2bx + c
             Assert.Equal(xValue * xValue * 3 * a + b * 2 * xValue + c, function.GetGradient(xValue), 10);
 
+        }
+
+        [Fact]
+        public void CloneTest()
+        {
+            PolynomialFunction function;
+            PolynomialFunction clone;
+            double[] sequence;
+            // Const
+            sequence = new double[] {1};
+            function = new PolynomialFunction(sequence);
+            clone = (PolynomialFunction) function.Clone();
+            Assert.Equal(sequence, clone.Coefficients);
+            Assert.Equal(sequence.Length - 1, clone.Degree);
+            Assert.Equal(sequence.Length, clone.CoefficientCount);
+
+            // Linear 
+            sequence = new double[] {1,2};
+            function = new PolynomialFunction(sequence);
+            clone = (PolynomialFunction)function.Clone();
+            Assert.Equal(sequence, clone.Coefficients);
+            Assert.Equal(sequence.Length - 1, clone.Degree);
+            Assert.Equal(sequence.Length, clone.CoefficientCount);
+
+            // Quadratic
+            sequence = new double[] { 1, 2 , 3};
+            function = new PolynomialFunction(sequence);
+            clone = (PolynomialFunction)function.Clone();
+            Assert.Equal(sequence, clone.Coefficients);
+            Assert.Equal(sequence.Length - 1, clone.Degree);
+            Assert.Equal(sequence.Length, clone.CoefficientCount);
         }
 
         /// <summary>
@@ -67,7 +98,7 @@ namespace Beatshake.Tests
 
             // Run Test
             var function = DataAnalyzer.CalculateQuadraticFunction(timeSteps, data.ToList());
-            var peaks = function.GetPeaks().ToArray();
+            var peaks = function.Peaks.ToArray();
             Assert.Equal(1, peaks.Count());
             Assert.True(peaks.First().IsAlmostEqual(peakPosition, 0.000001));
         }
@@ -83,7 +114,7 @@ namespace Beatshake.Tests
         {
             var function = new PolynomialFunction();
             function.Coefficients = coefficients;
-            var peaks = function.GetPeaks();
+            var peaks = function.Peaks;
             var peakCount = Math.Max(coefficients.Length - 2, 0);
             Assert.Equal(peakCount, peaks.Count());
         }
@@ -115,20 +146,20 @@ namespace Beatshake.Tests
             Assert.Equal(3, function.Degree);
             Assert.True(initialCoeffs.SequenceEqual(function.Coefficients));
 
-            var functionD = function.GetDerivation();
+            var functionD = function.Derivation;
             Assert.Equal(function.Degree-1, functionD.Degree);
             Assert.True(new double[] {1,0,3}.SequenceEqual(functionD.Coefficients));
 
-            var functionDD = functionD.GetDerivation();
+            var functionDD = functionD.Derivation;
             Assert.Equal(functionD.Degree-1, functionDD.Degree);
             Assert.True(new double[] {0,6}.SequenceEqual(functionDD.Coefficients));
 
-            var functionDDD = functionDD.GetDerivation();
+            var functionDDD = functionDD.Derivation;
             Assert.Equal(functionDD.Degree-1, functionDDD.Degree);
             Assert.True(new double[] {6}.SequenceEqual(functionDDD.Coefficients));
 
             // Get some empty Derivations
-            functionDDD.GetDerivation().GetDerivation().GetDerivation();
+            var _ = functionDDD.Derivation.Derivation.Derivation;
         }
 
         [Theory]
@@ -246,6 +277,33 @@ namespace Beatshake.Tests
         }
 
         [Fact]
+        public void GetAbsIntegralIsPositive()
+        {
+            PolynomialFunction LowerFunction;
+             PolynomialFunction HigherFunction ;
+            double start = 0;
+            double end = 35.2;
+
+            // Const function
+            LowerFunction = new PolynomialFunction(1);
+            HigherFunction = new PolynomialFunction(3);
+            Assert.True(HigherFunction.GetAbsIntegralDifference(LowerFunction,start, end) > 0);
+            Assert.True(LowerFunction.GetAbsIntegralDifference(HigherFunction, start, end) > 0);
+
+            // Lin function
+            LowerFunction = new PolynomialFunction(0,1);
+            HigherFunction = new PolynomialFunction(1,1);
+            Assert.True(HigherFunction.GetAbsIntegralDifference(LowerFunction,start, end) > 0);
+            Assert.True(LowerFunction.GetAbsIntegralDifference(HigherFunction, start, end) > 0);
+            
+            // Quad function
+            LowerFunction = new PolynomialFunction(-5,0,1);
+            HigherFunction = new PolynomialFunction(1,0,2);
+            Assert.True(HigherFunction.GetAbsIntegralDifference(LowerFunction,start, end) > 0);
+            Assert.True(LowerFunction.GetAbsIntegralDifference(HigherFunction, start, end) > 0);
+        }
+
+        [Fact]
         public void GetCoefficientTest()
         {
             double first = 1;
@@ -267,31 +325,31 @@ namespace Beatshake.Tests
 
             // 0 degree
             function.Coefficients = new double[] {5};
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
             Assert.Equal(1, normalizedFunction.Coefficients[0]);
             Assert.Equal(1, normalizedFunction.ValueAt(4645.51));
             // 0 degree negative
             function.Coefficients = new double[] { -5 };
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
             Assert.Equal(-1, normalizedFunction.Coefficients[0]);
             Assert.Equal(-1, normalizedFunction.ValueAt(4645.51));
 
             // 1 degree
             function.Coefficients = new double[] { 5, 5 };
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.Equal(0.5, normalizedFunction.Coefficients[0]);
             Assert.Equal(0.5, normalizedFunction.Coefficients[1]);
             // 1 degree negative
             function.Coefficients = new double[] { 5, -5 };
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.Equal(0.5, normalizedFunction.Coefficients[0]);
             Assert.Equal(-0.5, normalizedFunction.Coefficients[1]);
 
             // 2 degree
             function.Coefficients = new double[] { 5, 5, 5 };
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
@@ -300,7 +358,7 @@ namespace Beatshake.Tests
             Assert.Equal(1d/3, normalizedFunction.Coefficients[2], 10);
             // 2 degree negative
             function.Coefficients = new double[] { 5, 5, -5 };
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
@@ -310,7 +368,7 @@ namespace Beatshake.Tests
 
             // all 0
             function.Coefficients = new double[] {0,0,0};
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
@@ -320,7 +378,7 @@ namespace Beatshake.Tests
 
             // very small coefficients
             function.Coefficients = new double[] { 0.000001, 0, 0.000001 };
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
@@ -330,7 +388,7 @@ namespace Beatshake.Tests
 
             // very different coefficients
             function.Coefficients = new double[] { 0.00000001, 0.000000001, 1000000000000 };
-            normalizedFunction = function.GetNormalizedFunction();
+            normalizedFunction = function.Normalized;
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[0]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[1]);
             Assert.NotEqual(double.NaN, normalizedFunction.Coefficients[2]);
@@ -341,6 +399,14 @@ namespace Beatshake.Tests
         }
 
         [Fact]
+        public void ResetPolynomialFunctionTest()
+        {
+            var function = new PolynomialFunction(2,3,4);
+            function.Reset(); // todo: look if properties are set back
+        }
+
+
+        [Fact]
         public void PeakNormalizedTest()
         {
             var function = new PolynomialFunction();
@@ -348,21 +414,23 @@ namespace Beatshake.Tests
 
             // 0 degree
             function.Coefficients = new double[] {5};
-            normalizedFunction = function.GetPeakNormalizedFunction();
-            Assert.Equal(1, normalizedFunction.Coefficients[0]);
-            Assert.Equal(1, normalizedFunction.ValueAt(4645.51));
+            normalizedFunction = function.PeakNormalized;
+            Assert.Null(normalizedFunction);
+            //Assert.Equal(1, normalizedFunction.Coefficients[0]);
+            //Assert.Equal(1, normalizedFunction.ValueAt(4645.51));
 
             // 1 degree
-            //function.Coefficients = new double[] { 5, 5 };
-            //normalizedFunction = function.GetPeakNormalizedFunction();
-            //Assert.Equal(0.5, normalizedFunction.Coefficients[0]);
-            //Assert.Equal(0.5, normalizedFunction.Coefficients[1]);
+            function.Coefficients = new double[] { 5, 5 };
+            normalizedFunction = function.PeakNormalized;
+            Assert.Null(normalizedFunction);
 
             // 2 degree
             function.Coefficients = new double[] { 5, -5, 5 };
-            normalizedFunction = function.GetPeakNormalizedFunction();
-            Assert.Equal(1, normalizedFunction.ValueAt(0), 10);
-
+            var expectedPeakPos = 0.5;
+            Assert.Equal(expectedPeakPos, function.Peaks.First(), 10);
+            normalizedFunction = function.PeakNormalized;
+            Assert.Equal(1, normalizedFunction.ValueAt(expectedPeakPos), 10);
+            Assert.Equal(expectedPeakPos, function.Peaks.First(), 10); // x of peak shall not change
         }
 
     }

@@ -13,6 +13,21 @@ namespace Beatshake.ExtensionMethods
             return tol >= Math.Abs(a - b);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="tol"></param>
+        /// <returns>True if the abs of the give value is lower or equal <paramref name="tol"/></returns>
+        public static bool IsAlmostZero(this double a, double tol = double.Epsilon)
+        {
+            if (tol < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tol), "Tolerance must be positive");
+            }
+            return a <= tol && a >= -tol;
+        }
+
         public static double NextLower(this double value)
         {
             long bits = BitConverter.DoubleToInt64Bits(value);

@@ -9,10 +9,12 @@
     <Import_RootNamespace>Beatshake.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\AudioTransmitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\InstrumentPlayerImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\MotionDataProviderImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\UserSoudNotifierImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\UserTextNotifierImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlotViewProviderImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities.cs" />
   </ItemGroup>
 </Project>

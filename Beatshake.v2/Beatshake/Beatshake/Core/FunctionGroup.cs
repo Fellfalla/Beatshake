@@ -8,6 +8,7 @@ namespace Beatshake.Core
 {
     public class FunctionGroup
     {
+
         public FunctionGroup()
         {
             
@@ -15,14 +16,14 @@ namespace Beatshake.Core
 
         public FunctionGroup(params PolynomialFunction[] functions)
         {
-            _functions = functions.ToList();
+            Functions = functions.ToList();
         }
 
-        private readonly List<PolynomialFunction> _functions = new List<PolynomialFunction>(); 
+        public List<PolynomialFunction> Functions { get; } = new List<PolynomialFunction>(3) {null,null,null};
 
         public void AddFunction(PolynomialFunction function)
         {
-            _functions.Add(function);
+            Functions.Add(function);
         }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace Beatshake.Core
         public bool RemoveFunction(PolynomialFunction function)
         {
 
-            var index = _functions.IndexOf(function);
+            var index = Functions.IndexOf(function);
             if (index == -1) 
             {
                 // function is not contained
@@ -41,7 +42,7 @@ namespace Beatshake.Core
             }
             else
             {
-                _functions.RemoveAt(index);
+                Functions.RemoveAt(index);
                 return true;
             }
         }
@@ -51,5 +52,47 @@ namespace Beatshake.Core
             return 0;
         }
 
+        public void PeakNormalizeDownTo(FunctionGroup other)
+        {
+            AssertDimensionalEquality(other, nameof(other));
+            // the question is: normalize down all seperately or all with same amount
+            for (int i = 0; i < Functions.Count; i++)
+            {
+                var peakVal = Functions[i].Peaks.Max();
+                var desiredPeak = Math.Abs(other.Functions[i].Peaks.Max());
+                if (Math.Abs(peakVal) > desiredPeak) // only scale down
+                {
+                    Functions[i] = Functions[i].GetPeakNormalizedFunction(desiredPeak*Math.Sign(peakVal)); // Do not swap sign
+                }
+            }
+        }
+
+
+
+        public double GetDifferenceIntegral(double start, double end, params PolynomialFunction[] others)
+        {
+            return GetDifferenceIntegral(start, end, new FunctionGroup(others));
+        }
+
+        public double GetDifferenceIntegral (double start, double end, FunctionGroup other)
+        {
+            AssertDimensionalEquality(other, nameof(other));
+            double error = 0;
+
+            for (int i = 0; i < Functions.Count; i++)
+            {
+                error += Functions[i].GetAbsIntegralDifference(other.Functions[i], start, end);
+            }
+
+            return error;
+        }
+
+        private void AssertDimensionalEquality(FunctionGroup other, string nameOf)
+        {
+            if (other.Functions.Count != Functions.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameOf, "Count of functions must not differ!");
+            }
+        }
     }
 }

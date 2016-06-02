@@ -23,11 +23,4 @@ namespace Beatshake.ViewModels
         public abstract void ProcessMotionData(IMotionDataProvider sender);
 
     }
-
-    public interface IMotionDataProcessor
-    {
-        IMotionDataProvider MotionDataProvider { get; set; }
-
-        void ProcessMotionData(IMotionDataProvider sender);
-    }
 }

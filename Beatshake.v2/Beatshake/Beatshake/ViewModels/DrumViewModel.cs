@@ -100,13 +100,14 @@ namespace Beatshake.ViewModels
                 var xCoeff = new PolynomialFunction(normalizedTimestamps, _xHistory);
                 var yCoeff = new PolynomialFunction(normalizedTimestamps, _yHistory);
                 var zCoeff = new PolynomialFunction(normalizedTimestamps, _zHistory);
+                var group = new FunctionGroup(xCoeff, yCoeff, zCoeff);
 
                 var teachedOnes = activatedComponents.Where(component => component.Teachement != null);
                 var tasks = new List<Task>();
                 foreach (var instrumentalComponent in teachedOnes)
                 {
                     var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance / 10,
-                       normalizedTimestamps.Last(), 0, Normalize, xCoeff, yCoeff, zCoeff); // todo: Add Setting for normalizing
+                       normalizedTimestamps.Last(), 0, ComparisonStrategy.PeakNormalized, group); // todo: Add Setting for normalizing
                     if (result)
                     {
                         var task = instrumentalComponent.PlaySoundCommand.Execute();

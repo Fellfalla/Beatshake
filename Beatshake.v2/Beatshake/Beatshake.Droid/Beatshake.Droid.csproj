@@ -141,12 +141,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AndroidApplication.cs" />
+    <Compile Include="DependencyServices\AudioTransmitter.cs" />
     <Compile Include="DependencyServices\InstrumentPlayerImplementation.cs" />
     <Compile Include="DependencyServices\MotionDataProviderImplementation.cs" />
     <Compile Include="DependencyServices\UserSoudNotifierImplementation.cs" />
     <Compile Include="DependencyServices\UserTextNotifierImplementation.cs" />
     <Compile Include="MainActivity.cs" />
-    <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Resources\Resource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

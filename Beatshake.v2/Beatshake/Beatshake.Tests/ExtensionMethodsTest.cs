@@ -96,6 +96,23 @@ namespace Beatshake.Tests
             Assert.Equal(8,value.FastPower(3));
             Assert.Equal(16,value.FastPower(4));
         }
+
+        [Fact]
+        public void IsAlmostZeroTest()
+        {
+            double a = 0;
+            Assert.True(a.IsAlmostZero());
+            Assert.True(a.IsAlmostZero(Double.Epsilon));
+            Assert.True(a.IsAlmostZero(Double.MaxValue));
+            Assert.Throws<ArgumentOutOfRangeException>(() => a.IsAlmostZero(-1));
+
+            a = 1;
+            Assert.False(a.IsAlmostZero());
+            Assert.False(a.IsAlmostZero(0.9));
+            Assert.True(a.IsAlmostZero(1));
+            Assert.True(a.IsAlmostZero(10));
+            Assert.True(a.IsAlmostZero(Double.MaxValue));
+        }
     }
 
 }
