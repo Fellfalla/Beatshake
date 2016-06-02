@@ -10,10 +10,10 @@ namespace Beatshake.Core
     {
         /// <summary>
         /// The cooldown a instrumental component needs to be played again in milliseconds.
-        /// 120 BPM -> (1000 * 60) / 120       / 64
-        ///             sec per min  120 beats  hit length
+        /// 120 BPM -> (1000 * 60) / 120       / 32
+        ///             sec per min  120 beats  hits length
         /// </summary>
-        public static int InstrumentalCooldown = (1000 * 60) / 120 / 64;
+        public static int InstrumentalCooldown = (1000 * 60) / 120 / 32;
 
         /// <summary>
         /// This value gives the max amount of time, that a instrumental play request can be sent,
@@ -47,6 +47,6 @@ namespace Beatshake.Core
         /// <summary>
         /// This is the amount of points which are used to create a function aproximation upon measure values.
         /// </summary>
-        public static int SamplePoints = 6;
+        public static int SamplePoints = InstrumentalCooldown;
     }
 }
