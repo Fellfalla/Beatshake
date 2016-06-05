@@ -1,6 +1,6 @@
-#![alt tag](https://raw.githubusercontent.com/Fellfalla/Beatshake/master/Resources/Beatshake.png)
+#Beatshake
 
 No drums? Need for metronome? Let's take your phone!
 
 
-![alt tag](https://raw.githubusercontent.com/Fellfalla/Beatshake/master/Resources/BeatshakeLogo.png)
+![alt tag](/master/Resources/BeatshakeLogo.png)
