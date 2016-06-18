@@ -25,8 +25,7 @@ namespace Beatshake.ExtensionMethods
             }
         }
 
-        private static readonly MethodInfo CloneMethod = typeof (object).GetMethod("MemberwiseClone",
-            BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo CloneMethod = typeof (object).GetRuntimeMethod("MemberwiseClone", null);
 
         public static bool IsPrimitive(this Type type)
         {
@@ -71,18 +70,15 @@ namespace Beatshake.ExtensionMethods
             {
                 RecursiveCopyBaseTypePrivateFields(originalObject, visited, cloneObject,
                     typeToReflect.GetTypeInfo().BaseType);
-                CopyFields(originalObject, visited, cloneObject, typeToReflect.GetTypeInfo().BaseType,
-                    BindingFlags.Instance | BindingFlags.NonPublic, info => info.IsPrivate);
+                CopyFields(originalObject, visited, cloneObject, typeToReflect.GetTypeInfo().BaseType, info => info.IsPrivate);
             }
         }
 
         private static void CopyFields(object originalObject, IDictionary<object, object> visited, object cloneObject,
-            Type typeToReflect,
-            BindingFlags bindingFlags =
-                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy,
-            Func<FieldInfo, bool> filter = null)
+            Type typeToReflect, Func<FieldInfo, bool> filter = null)
         {
-            foreach (FieldInfo fieldInfo in typeToReflect.GetFields(bindingFlags))
+
+            foreach (FieldInfo fieldInfo in typeToReflect.GetRuntimeFields())
             {
                 if (filter != null && filter(fieldInfo) == false) continue;
                 if (IsPrimitive(fieldInfo.FieldType)) continue;

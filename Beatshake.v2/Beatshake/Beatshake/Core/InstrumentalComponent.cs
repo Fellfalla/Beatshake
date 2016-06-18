@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Beatshake.DependencyServices;
 using Beatshake.ViewModels;
 using Prism.Commands;
 using Prism.Mvvm;
-using Xamarin.Forms;
 using DependencyService = Prism.Services.DependencyService;
 
 namespace Beatshake.Core
@@ -57,7 +54,11 @@ namespace Beatshake.Core
         }
 
         [DefaultValue(1)]
-        public int Number { get; set; }
+        public int Number
+        {
+            get { return _number; }
+            set { SetProperty(ref _number, value); }
+        }
 
         public InstrumentalComponent(IInstrumentalIdentification containingInstrument, 
             IMotionDataProcessor dataProcessor, IMotionDataProvider dataProvider, IInstrumentPlayer player, string name)
@@ -71,27 +72,28 @@ namespace Beatshake.Core
             Name = name;
             ContainingInstrument = containingInstrument;
 
-            PreLoadAudio();
+            var audioLoader = PreLoadAudio();
+
             PropertyChanged += OnPropertyChanged;
 
             PlaySoundCommand = DelegateCommand.FromAsyncHandler(PlaySound);
             TeachCommand = DelegateCommand.FromAsyncHandler(Teach);
+
+            //Task.WaitAll(audioLoader);
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == nameof(Name) ||
-                args.PropertyName == nameof(Number)
-                )
+            if (args.PropertyName == nameof(Name) || args.PropertyName == nameof(Number))
             {
-                PreLoadAudio();
+                PreLoadAudio().ConfigureAwait(false);
             }
         }
 
 
-        public async void PreLoadAudio()
+        public async Task PreLoadAudio()
         {
-            _audionInstance = await _player.PreLoadAudio(this); //.ConfigureAwait(false);
+            _audionInstance = await _player.PreLoadAudio(this).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -101,7 +103,7 @@ namespace Beatshake.Core
         /// <returns></returns>
         public async Task PlaySound()
         {
-            cooldown.TryAddAsyncRequest(async () => await _player.Play(_audionInstance));
+            cooldown.TryAddAsyncRequest(async () => await _player.Play(_audionInstance).ConfigureAwait(false));
 
             if (cooldown.IsCoolingDown)
             {
@@ -110,12 +112,12 @@ namespace Beatshake.Core
 
             try
             {
-                await cooldown.Activate();
+                await cooldown.Activate().ConfigureAwait(false);
             }
             catch (Exception e)
             {
                 var dependencyService = new DependencyService();
-                dependencyService.Get<IUserTextNotifier>().Notify(e);
+                await dependencyService.Get<IUserTextNotifier>().Notify(e).ConfigureAwait(false);
             }
         }
 
@@ -123,6 +125,7 @@ namespace Beatshake.Core
         private string _name;
         private IInstrumentalIdentification _containingInstrument;
         private bool _isActivated = true;
+        private int _number;
 
         public DelegateCommand PlaySoundCommand
         {
@@ -140,72 +143,14 @@ namespace Beatshake.Core
         {
             // unregister current processing
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
+            MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
 
-            Teachement = await TeachMovement();
+            Teachement = await Teachement.TeachMovement(MotionDataProvider);
 
             // reenable motion processing 
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
-        }
-
-        protected async Task<Teachement> TeachMovement()
-        {
-            MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
-
-            // record movement
-            Teachement teachement = null;
-            List<double> xValues = new List<double>();
-            List<double> yValues = new List<double>();
-            List<double> zValues = new List<double>();
-            List<double> timesteps = new List<double>();
-            var userConfirmation = Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
-
-            var measureTask = Task.Factory.StartNew(() =>
-            {
-                while (!userConfirmation.IsCompleted)
-                {
-                    timesteps.Add(MotionDataProvider.Acceleration.Timestamp);
-                    xValues.Add(MotionDataProvider.Acceleration.Trans[0]);
-                    yValues.Add(MotionDataProvider.Acceleration.Trans[1]);
-                    zValues.Add(MotionDataProvider.Acceleration.Trans[2]);
-                    var task = Task.Delay((int) MotionDataProvider.RefreshRate);
-                    task.Wait();
-                }
-            });
-
-            
-
-            //userConfirmation.Wait(30000);
-            await userConfirmation.ConfigureAwait(true);
-            try
-            {
-                //Task.WaitAll(userConfirmation, measureTask);
-                
-                await measureTask;
-            }
-            catch (TaskCanceledException)
-            {
-            }
-
-            try
-            {
-                var normalizedTimestamps = Utility.NormalizeTimeStamps(timesteps);
-                teachement = Teachement.Create(normalizedTimestamps.ToArray(), false, xValues.ToArray(), yValues.ToArray(), zValues.ToArray());
-            }
-            catch (InsufficientDataException) // thrown if the peak is to near at beginning data
-            {
-                await Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Teachement failed. Please try again. (longer)");
-            }
-            catch (InvalidOperationException)
-            {
-                await Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
-            }
-
             MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
-
-            return teachement;
         }
-
-
 
     }
 }

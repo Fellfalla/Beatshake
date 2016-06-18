@@ -10,7 +10,7 @@ namespace Beatshake.Core
         public TDataType[] Rot = new TDataType[3];
 
         // this is the timestamp in milliseconds
-        public double Timestamp;
+        public double Timestamp = (DateTime.Now - DateTime.MinValue).TotalMilliseconds;
 
         public Tuple<TDataType, TDataType, TDataType> TransAsTuple()
         {

@@ -14,7 +14,6 @@ class InstrumentPlayerImplementation : IInstrumentPlayer
     public async Task Play(object audioData)
     {
         
-        int nr;
         //var soundElement = _mediaElementPool.GetInstance(out nr);
 
         var transmitter = audioData as AudioTransmitter;
@@ -71,21 +70,26 @@ class InstrumentPlayerImplementation : IInstrumentPlayer
 
         string path = string.Format(@"Assets\{0}\{1}", component.ContainingInstrument.Kit, fileName);
         // return prefetched stream
-        var transmitter = new AudioTransmitter();
-        try
+        return await Task.Factory.StartNew(() =>
         {
-            transmitter.SoundEffect = SoundEffect.FromStream(TitleContainer.OpenStream(path));
-        }
-        catch (Exception e)
-        {
-            System.Diagnostics.Debug.WriteLine(e);
-        }
+            var transmitter = new AudioTransmitter();
+            try
+            {
+                transmitter.SoundEffect = SoundEffect.FromStream(TitleContainer.OpenStream(path));
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+            return transmitter;
+        });
+
         //if (transmitter.SoundEffect == null)
         //{
         //    var buffer = new byte[stream.Length];
         //    stream.Read(buffer, 0, buffer.Length);
         //    transmitter.SoundEffect = new SoundEffect(buffer, 44000, AudioChannels.Stereo);
         //}
-        return transmitter;
+        //return transmitter;
     }
 }

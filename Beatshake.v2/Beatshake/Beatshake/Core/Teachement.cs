@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Beatshake.DependencyServices;
 using Beatshake.ExtensionMethods;
 
 namespace Beatshake.Core
@@ -22,6 +24,12 @@ namespace Beatshake.Core
             get { return Functions[2]; }
             set { Functions[2] = value; }
         }
+
+        public double XPosition { get; private set; }
+
+        public double YPosition { get; private set; }
+
+        public double ZPosition { get; private set; }
 
         /// <summary>
         /// <exception cref="InsufficientDataException">Thrown if a peak is to close to the start of the data</exception>
@@ -68,6 +76,81 @@ namespace Beatshake.Core
             return teachement;
         }
 
+
+        public static async Task<Teachement> TeachMovement(IMotionDataProvider motionDataProvider)
+        {
+
+            // record movement
+            Teachement teachement = null;
+
+            List<double> xAcc = new List<double>();
+            List<double> yAcc = new List<double>();
+            List<double> zAcc = new List<double>();
+
+            List<double> xPos = new List<double>();
+            List<double> yPos = new List<double>();
+            List<double> zPos = new List<double>();
+
+            List<double> timesteps = new List<double>();
+            var userConfirmation = Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
+
+            var measureTask = Task.Factory.StartNew(() =>
+            {
+                while (!userConfirmation.IsCompleted)
+                {
+                    timesteps.Add(motionDataProvider.Acceleration.Timestamp);
+
+                    // Set Accelerations
+                    xAcc.Add(motionDataProvider.Acceleration.Trans[0]);
+                    yAcc.Add(motionDataProvider.Acceleration.Trans[1]);
+                    zAcc.Add(motionDataProvider.Acceleration.Trans[2]);
+
+                    // Set Positions
+                    xPos.Add(motionDataProvider.Pose.Trans[0]);
+                    yPos.Add(motionDataProvider.Pose.Trans[1]);
+                    zPos.Add(motionDataProvider.Pose.Trans[2]);
+
+                    var task = Task.Delay((int)motionDataProvider.RefreshRate);
+                    task.Wait();
+                }
+            });
+
+            //userConfirmation.Wait(30000);
+            await userConfirmation.ConfigureAwait(true);
+            try
+            {
+                //Task.WaitAll(userConfirmation, measureTask);
+
+                await measureTask;
+            }
+            catch (TaskCanceledException)
+            {
+            }
+
+            try
+            {
+                var normalizedTimestamps = Utility.NormalizeTimeStamps(timesteps);
+                teachement = Teachement.Create(normalizedTimestamps.ToArray(), false, xAcc, yAcc, zAcc);
+
+                int peakPos = DataAnalyzer.GetPeak(xAcc, yAcc, zAcc);
+
+                teachement.XPosition = xPos[peakPos];
+                teachement.YPosition = yPos[peakPos];
+                teachement.ZPosition = zPos[peakPos];
+            }
+            catch (InsufficientDataException) // thrown if the peak is to near at beginning data
+            {
+                await Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Teachement failed. Please try again. (longer)");
+            }
+            catch (InvalidOperationException)
+            {
+                await Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
+            }
+
+
+            return teachement;
+        }
+
         ///// <summary>
         ///// <seealso cref="Create(double[],double[],double[],double[])"/>
         ///// </summary>
@@ -88,6 +171,8 @@ namespace Beatshake.Core
             {
                 case ComparisonStrategy.Absolute: throw new NotImplementedException();
                 case ComparisonStrategy.CoefficientNormalized: throw new NotImplementedException();
+                case ComparisonStrategy.Position:
+
                 case ComparisonStrategy.PeakNormalized:
                     functions.PeakNormalizeDownTo(this);
                     var difference = GetDifferenceIntegral(end, start, functions);
@@ -101,6 +186,13 @@ namespace Beatshake.Core
                     }
             }
             return false;
+        }
+
+        public bool FitsPositionData(double tolerance, IMotionDataProvider motionData)
+        {
+            return motionData.Pose.Trans[0].IsAlmostEqual(XPosition, tolerance) &&
+                   motionData.Pose.Trans[1].IsAlmostEqual(YPosition, tolerance) &&
+                   motionData.Pose.Trans[2].IsAlmostEqual(ZPosition, tolerance);
         }
     }
 }

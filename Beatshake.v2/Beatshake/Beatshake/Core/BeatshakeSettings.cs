@@ -48,5 +48,23 @@ namespace Beatshake.Core
         /// This is the amount of points which are used to create a function aproximation upon measure values.
         /// </summary>
         public static int SamplePoints = InstrumentalCooldown;
+
+        /// <summary>
+        /// The device accelleration state is every measure step damped by this value to avoid 
+        /// big error accumulations
+        /// </summary>
+        public static double AccelerationDamp = 1;
+
+        /// <summary>
+        /// The devices velocity is every measure step damped by this value to avoid 
+        /// big error accumulations
+        /// </summary>
+        public static double VelocityDamp = 0.95;
+
+        /// <summary>
+        /// The devices position is every measure step damped by this value to avoid 
+        /// big error accumulations
+        /// </summary>
+        public static double PositionDamp = 0.92;
     }
 }

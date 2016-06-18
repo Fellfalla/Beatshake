@@ -12,7 +12,7 @@
     "SharpDX": "3.0.2",
     "SharpDX.XAudio2": "3.0.2",
     "Unity": "4.0.1",
-    "Xamarin.Forms": "2.3.0.38-pre2"
+    "Xamarin.Forms": "2.3.0.49"
   },
   "frameworks": {
     "uap10.0": {}

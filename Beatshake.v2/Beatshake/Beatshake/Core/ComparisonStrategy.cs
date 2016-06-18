@@ -4,6 +4,7 @@ namespace Beatshake.Core
     {
         PeakNormalized = 0,
         CoefficientNormalized,
-        Absolute
+        Absolute,
+        Position
     }
 }

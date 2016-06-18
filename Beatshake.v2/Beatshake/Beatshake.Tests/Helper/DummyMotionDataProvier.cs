@@ -8,7 +8,9 @@ namespace Beatshake.Tests.ViewModels
         public DataContainer<double> Pose { get; }
         public DataContainer<double> Velocity { get; }
         public DataContainer<double> Acceleration { get; }
-        public bool HasAccellerometer { get; }
+        public DataContainer<double> AbsoluteAcceleration { get; }
+        public DataContainer<double> AccelerationDerivation { get; }
+        public bool HasAccelerometer { get; }
         public bool HasGyrometer { get; }
         public bool HasOrientationSensor { get; }
 

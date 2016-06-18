@@ -90,19 +90,24 @@ namespace Beatshake.ViewModels
 
         public override void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
-            if (_stopwatch.IsRunning)
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
             {
-                _measurePoints++;
-                _stopwatch.Stop();
-                _timeMeasurements.Add(_stopwatch.ElapsedMilliseconds);
-                AverageMeasureTime = _timeMeasurements.Average();
-                MeasureTimeJitter = _timeMeasurements.Max() - _timeMeasurements.Min();
-                XAccel = MotionDataProvider.Acceleration.Trans[0];
-                YAccel = MotionDataProvider.Acceleration.Trans[1];
-                ZAccel = MotionDataProvider.Acceleration.Trans[2];
-            }
-            _stopwatch.Restart();
 
+
+
+                if (_stopwatch.IsRunning)
+                {
+                    _measurePoints++;
+                    _stopwatch.Stop();
+                    _timeMeasurements.Add(_stopwatch.ElapsedMilliseconds);
+                    AverageMeasureTime = _timeMeasurements.Average();
+                    MeasureTimeJitter = _timeMeasurements.Max() - _timeMeasurements.Min();
+                    XAccel = MotionDataProvider.Acceleration.Trans[0];
+                    YAccel = MotionDataProvider.Acceleration.Trans[1];
+                    ZAccel = MotionDataProvider.Acceleration.Trans[2];
+                }
+                _stopwatch.Restart();
+            });
         }
     }
 }

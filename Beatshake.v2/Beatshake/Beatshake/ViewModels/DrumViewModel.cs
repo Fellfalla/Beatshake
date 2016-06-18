@@ -34,7 +34,6 @@ namespace Beatshake.ViewModels
             }
 
             ResponseTime = BeatshakeSettings.SensorRefreshInterval;
-            UseRandom = true;
         }
 
         private string _heading = "Shake your Drums!";
@@ -61,6 +60,7 @@ namespace Beatshake.ViewModels
         private bool _useRandom;
         private double _cycleTime;
         private readonly Stopwatch _cycleStopwatch = new Stopwatch();
+        private bool _usePosition;
 
         public double CycleTime
         {
@@ -69,6 +69,8 @@ namespace Beatshake.ViewModels
         }
 
         public bool Normalize { get; set; }
+
+        public int MaxTeachementTolerance { get { return 150; } }
 
         public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
@@ -96,64 +98,17 @@ namespace Beatshake.ViewModels
             // todo: use Strategy pattern
             if (UseTeachement)
             {
-                var normalizedTimestamps = Utility.NormalizeTimeStamps(_timestamps);
-                var xCoeff = new PolynomialFunction(normalizedTimestamps, _xHistory);
-                var yCoeff = new PolynomialFunction(normalizedTimestamps, _yHistory);
-                var zCoeff = new PolynomialFunction(normalizedTimestamps, _zHistory);
-                var group = new FunctionGroup(xCoeff, yCoeff, zCoeff);
-
-                var teachedOnes = activatedComponents.Where(component => component.Teachement != null);
-                var tasks = new List<Task>();
-                foreach (var instrumentalComponent in teachedOnes)
-                {
-                    var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance / 10,
-                       normalizedTimestamps.Last(), 0, ComparisonStrategy.PeakNormalized, group); // todo: Add Setting for normalizing
-                    if (result)
-                    {
-                        var task = instrumentalComponent.PlaySoundCommand.Execute();
-                        //var awaiter = task.ConfigureAwait(false);
-                        //awaitables.Add(awaiter);
-                        tasks.Add(task);
-                    }
-                }
-                await Task.WhenAll(tasks);
-
+                await TriggerOnTeachementMatch(activatedComponents);
+            }
+            if (UsePosition)
+            {
+                await TriggerOnPositionMatch(activatedComponents);
             }
             else if (UseFunctionAnalysis)
             {
-                var xFunction = new QuadraticFunction();
-                var yFunction = new QuadraticFunction();
-                var zFunction = new QuadraticFunction();
-
-                // Get Coefficients
-                var normaliedTimestamps = Utility.NormalizeTimeStamps(_timestamps);
-                xFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _xHistory);
-                yFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _yHistory);
-                zFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _zHistory);
-
-                // Set start and Endpoints
-                var start = normaliedTimestamps[0];
-                var end = normaliedTimestamps.Last();
-                xFunction.Start = start;
-                xFunction.End = end;
-                yFunction.Start = start;
-                yFunction.End = end;
-                zFunction.Start = start;
-                zFunction.End = end;
-
-                var gradX = 2 * xFunction.A * end + xFunction.B;
-                var gradY = 2 * yFunction.A * end + yFunction.B;
-                var gradZ = 2 * zFunction.A * end + zFunction.B;
-
-                var absGrad = Math.Abs(gradX) + Math.Abs(gradY) + Math.Abs(gradZ);
-
-                if (absGrad < _lastGradient && absGrad > TeachementTolerance / 200)
-                {
-                    await activatedComponents.Random().PlaySoundCommand.Execute();
-                }
-
-                _lastGradient = absGrad;
+                await TriggerOnHighFunctionDerivation(activatedComponents);
             }
+
             else if (UseRandom)
             {
                 if (motionDataProvider.Acceleration.Trans.Any(d => d > TeachementTolerance / 100))
@@ -163,6 +118,85 @@ namespace Beatshake.ViewModels
             }
             CycleTime = _cycleStopwatch.ElapsedMilliseconds;
             _cycleStopwatch.Reset();
+        }
+
+        private async Task TriggerOnPositionMatch(InstrumentalComponent[] activatedComponents)
+        {
+
+            var teachedOnes = activatedComponents.Where(component => component.Teachement != null);
+            var tasks = new List<Task>();
+            foreach (var instrumentalComponent in teachedOnes)
+            {
+                // Full Teachement tolerance shall be 1 Meter -> Multiply by maxTeachement^-1 9,81^-1 10^6
+                var transformedTolerance = TeachementTolerance*(10E6/(MaxTeachementTolerance*BeatshakeGlobals.G));
+                if (instrumentalComponent.Teachement.FitsPositionData(transformedTolerance, MotionDataProvider))
+                {
+                    tasks.Add(instrumentalComponent.PlaySound());
+                }
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task TriggerOnTeachementMatch(InstrumentalComponent[] activatedComponents)
+        {
+            var normalizedTimestamps = Utility.NormalizeTimeStamps(_timestamps);
+            var xCoeff = new PolynomialFunction(normalizedTimestamps, _xHistory);
+            var yCoeff = new PolynomialFunction(normalizedTimestamps, _yHistory);
+            var zCoeff = new PolynomialFunction(normalizedTimestamps, _zHistory);
+            var group = new FunctionGroup(xCoeff, yCoeff, zCoeff);
+
+            var teachedOnes = activatedComponents.Where(component => component.Teachement != null);
+            var tasks = new List<Task>();
+            foreach (var instrumentalComponent in teachedOnes)
+            {
+                var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance/10,
+                    normalizedTimestamps.Last(), 0, ComparisonStrategy.PeakNormalized, @group);
+                    // todo: Add Setting for normalizing
+                if (result)
+                {
+                    var task = instrumentalComponent.PlaySoundCommand.Execute();
+                    //var awaiter = task.ConfigureAwait(false);
+                    //awaitables.Add(awaiter);
+                    tasks.Add(task);
+                }
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task TriggerOnHighFunctionDerivation(InstrumentalComponent[] activatedComponents)
+        {
+            var xFunction = new QuadraticFunction();
+            var yFunction = new QuadraticFunction();
+            var zFunction = new QuadraticFunction();
+
+            // Get Coefficients
+            var normaliedTimestamps = Utility.NormalizeTimeStamps(_timestamps);
+            xFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _xHistory);
+            yFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _yHistory);
+            zFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _zHistory);
+
+            // Set start and Endpoints
+            var start = normaliedTimestamps[0];
+            var end = normaliedTimestamps.Last();
+            xFunction.Start = start;
+            xFunction.End = end;
+            yFunction.Start = start;
+            yFunction.End = end;
+            zFunction.Start = start;
+            zFunction.End = end;
+
+            var gradX = 2*xFunction.A*end + xFunction.B;
+            var gradY = 2*yFunction.A*end + yFunction.B;
+            var gradZ = 2*zFunction.A*end + zFunction.B;
+
+            var absGrad = Math.Abs(gradX) + Math.Abs(gradY) + Math.Abs(gradZ);
+
+            if (absGrad < _lastGradient && absGrad > TeachementTolerance/200)
+            {
+                await activatedComponents.Random().PlaySoundCommand.Execute();
+            }
+
+            _lastGradient = absGrad;
         }
 
         public override string Kit
@@ -216,6 +250,18 @@ namespace Beatshake.ViewModels
                 SetProperty(ref _useRandom, value);
             }
         }
+        public bool UsePosition
+        {
+            get { return _usePosition; }
+            set
+            {
+                if (value)
+                {
+                    ConcurrentOptionSet();
+                }
+                SetProperty(ref _usePosition, value);
+            }
+        }
 
         public bool UseFunctionAnalysis 
         {
@@ -235,6 +281,7 @@ namespace Beatshake.ViewModels
             UseTeachement = false;
             UseFunctionAnalysis = false;
             UseRandom = false;
+            UsePosition = false;
         }
 
         public uint ResponseTime

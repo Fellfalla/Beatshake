@@ -82,25 +82,31 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </Frame>
+          
             <!--Second Row-->
             <StackLayout Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="FillAndExpand" Grid.Row="2">
                 <Frame Style="{StaticResource MenuFrame}" VerticalOptions="Fill">
                     <StackLayout Orientation="Vertical">
                         <Label HorizontalOptions="Center" VerticalOptions="Start">Mode</Label>
 
-                        <StackLayout Grid.Row="2" Orientation="Horizontal">
+                        <StackLayout Orientation="Horizontal">
                             <Label Text="Use Randomizer" />
                             <Switch IsToggled="{Binding UseRandom}" />
                         </StackLayout>
 
-                        <StackLayout Grid.Row="2" Orientation="Horizontal">
+                        <StackLayout Orientation="Horizontal">
                             <Label Text="Use Teachement" />
                             <Switch IsToggled="{Binding UseTeachement}" />
                         </StackLayout>
 
-                        <StackLayout Grid.Row="2" Orientation="Horizontal">
+                        <StackLayout Orientation="Horizontal">
                             <Label Text="Use Function analysis" />
                             <Switch IsToggled="{Binding UseFunctionAnalysis}" />
+                        </StackLayout>
+                      
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Use Position" />
+                            <Switch IsToggled="{Binding UsePosition}" />
                         </StackLayout>
                     </StackLayout>
                 </Frame>
@@ -112,10 +118,10 @@
 
                         <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                             <Label Text="Teachement tolerance" VerticalOptions="Center"/>
-                            <Slider Value="{Binding TeachementTolerance}" Minimum="0" Maximum="150"
+                            <Slider Value="{Binding TeachementTolerance}" Minimum="0" Maximum="{Binding MaxTeachementTolerance}"
                                     HorizontalOptions="FillAndExpand" VerticalOptions="Center"/>
                         </StackLayout>
-
+                        
                         <StackLayout Orientation="Horizontal">
                             <Label Text="Normalize" VerticalOptions="Center"/>
                             <Switch IsToggled="{Binding Normalize}" VerticalOptions="Center"/>

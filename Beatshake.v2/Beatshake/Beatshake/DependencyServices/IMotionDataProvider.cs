@@ -12,7 +12,11 @@ namespace Beatshake.DependencyServices
 
         DataContainer<double> Acceleration { get; }
 
-        bool HasAccellerometer { get; }
+        DataContainer<double> AbsoluteAcceleration { get; }
+
+        DataContainer<double> AccelerationDerivation { get; }
+
+        bool HasAccelerometer { get; }
 
         bool HasGyrometer { get; }
 
