@@ -1,15 +1,17 @@
 ﻿using Beatshake.Core;
 using Beatshake.DependencyServices;
 
-namespace Beatshake.Tests.ViewModels
+namespace Beatshake.Tests.Helper
 {
-    class DummyMotionDataProvier : IMotionDataProvider
+    internal class DummyMotionDataProvier : IMotionDataProvider
     {
         public DataContainer<double> Pose { get; }
         public DataContainer<double> Velocity { get; }
-        public DataContainer<double> Acceleration { get; }
-        public DataContainer<double> AbsoluteAcceleration { get; }
-        public DataContainer<double> AccelerationDerivation { get; }
+        public DataContainer<double> RelAcceleration { get; }
+        public DataContainer<double> AbsAcceleration { get; }
+        public DataContainer<double> Jolt { get; }
+        public MotionData MotionDataNeeds { get; set; }
+
         public bool HasAccelerometer { get; }
         public bool HasGyrometer { get; }
         public bool HasOrientationSensor { get; }

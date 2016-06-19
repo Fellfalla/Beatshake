@@ -16,8 +16,7 @@ namespace Beatshake.ViewModels
     public class DrumViewModel : InstrumentViewModelBase
     {
 
-        public DrumViewModel(INavigationService navigationService, 
-            IMotionDataProvider motionDataProvider, 
+        public DrumViewModel(INavigationService navigationService, IMotionDataProvider motionDataProvider, 
             InstrumentalComponentFactory componentFactory) : base(navigationService, motionDataProvider)
         {
             _timeElapsedStopwatch.Start();
@@ -75,10 +74,10 @@ namespace Beatshake.ViewModels
         public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
             _cycleStopwatch.Start();
-            _timestamps.Add((long) motionDataProvider.Acceleration.Timestamp);
-            _xHistory.Add(motionDataProvider.Acceleration.Trans[0]);
-            _yHistory.Add(motionDataProvider.Acceleration.Trans[1]);
-            _zHistory.Add(motionDataProvider.Acceleration.Trans[2]);
+            _timestamps.Add((long) motionDataProvider.RelAcceleration.Timestamp);
+            _xHistory.Add(motionDataProvider.RelAcceleration.Trans[0]);
+            _yHistory.Add(motionDataProvider.RelAcceleration.Trans[1]);
+            _zHistory.Add(motionDataProvider.RelAcceleration.Trans[2]);
             var cap = BeatshakeSettings.SamplePoints;
             var tooMuch = _xHistory.Count - cap;
             if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
@@ -111,7 +110,7 @@ namespace Beatshake.ViewModels
 
             else if (UseRandom)
             {
-                if (motionDataProvider.Acceleration.Trans.Any(d => d > TeachementTolerance / 100))
+                if (motionDataProvider.RelAcceleration.Trans.Any(d => d > TeachementTolerance / 100))
                 {
                     await activatedComponents.Random().PlaySoundCommand.Execute();
                 }
@@ -151,12 +150,9 @@ namespace Beatshake.ViewModels
             {
                 var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance/10,
                     normalizedTimestamps.Last(), 0, ComparisonStrategy.PeakNormalized, @group);
-                    // todo: Add Setting for normalizing
                 if (result)
                 {
                     var task = instrumentalComponent.PlaySoundCommand.Execute();
-                    //var awaiter = task.ConfigureAwait(false);
-                    //awaitables.Add(awaiter);
                     tasks.Add(task);
                 }
             }
@@ -212,7 +208,6 @@ namespace Beatshake.ViewModels
             }
         }
 
-
         public double TeachementTolerance
         {
             get { return _teachementTolerance; }
@@ -259,6 +254,7 @@ namespace Beatshake.ViewModels
                 {
                     ConcurrentOptionSet();
                 }
+                MotionDataProvider.MotionDataNeeds |= MotionData.PoseTrans;
                 SetProperty(ref _usePosition, value);
             }
         }

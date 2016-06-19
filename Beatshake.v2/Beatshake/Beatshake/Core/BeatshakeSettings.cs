@@ -66,5 +66,11 @@ namespace Beatshake.Core
         /// big error accumulations
         /// </summary>
         public static double PositionDamp = 0.92;
+
+        /// <summary>
+        /// This enum gives modi to specify the strategy for removing 
+        /// gravitional influence from the devices acceleration data.
+        /// </summary>
+        public static GravityEliminationMode GravityEliminationMode = GravityEliminationMode.Orientation;
     }
 }

@@ -98,12 +98,12 @@ namespace Beatshake.Core
             {
                 while (!userConfirmation.IsCompleted)
                 {
-                    timesteps.Add(motionDataProvider.Acceleration.Timestamp);
+                    timesteps.Add(motionDataProvider.RelAcceleration.Timestamp);
 
                     // Set Accelerations
-                    xAcc.Add(motionDataProvider.Acceleration.Trans[0]);
-                    yAcc.Add(motionDataProvider.Acceleration.Trans[1]);
-                    zAcc.Add(motionDataProvider.Acceleration.Trans[2]);
+                    xAcc.Add(motionDataProvider.RelAcceleration.Trans[0]);
+                    yAcc.Add(motionDataProvider.RelAcceleration.Trans[1]);
+                    zAcc.Add(motionDataProvider.RelAcceleration.Trans[2]);
 
                     // Set Positions
                     xPos.Add(motionDataProvider.Pose.Trans[0]);

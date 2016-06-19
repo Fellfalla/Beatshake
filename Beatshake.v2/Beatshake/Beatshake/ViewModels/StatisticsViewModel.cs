@@ -102,9 +102,9 @@ namespace Beatshake.ViewModels
                     _timeMeasurements.Add(_stopwatch.ElapsedMilliseconds);
                     AverageMeasureTime = _timeMeasurements.Average();
                     MeasureTimeJitter = _timeMeasurements.Max() - _timeMeasurements.Min();
-                    XAccel = MotionDataProvider.Acceleration.Trans[0];
-                    YAccel = MotionDataProvider.Acceleration.Trans[1];
-                    ZAccel = MotionDataProvider.Acceleration.Trans[2];
+                    XAccel = MotionDataProvider.RelAcceleration.Trans[0];
+                    YAccel = MotionDataProvider.RelAcceleration.Trans[1];
+                    ZAccel = MotionDataProvider.RelAcceleration.Trans[2];
                 }
                 _stopwatch.Restart();
             });

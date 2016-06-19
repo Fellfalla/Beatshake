@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\AudioTransmitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\FactoryExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\InstrumentPlayerImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\MotionDataProviderImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DependencyServices\UserSoudNotifierImplementation.cs" />

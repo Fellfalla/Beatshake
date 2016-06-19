@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Beatshake.DependencyServices;
-using Beatshake.ExtensionMethods;
+﻿using Beatshake.DependencyServices;
+using Beatshake.Tests.Helper;
 using Beatshake.ViewModels;
 using Microsoft.Practices.Unity;
 using Prism.Navigation;
