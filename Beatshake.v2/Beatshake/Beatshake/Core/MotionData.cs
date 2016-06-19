@@ -9,6 +9,7 @@ namespace Beatshake.Core
     [Flags]
     public enum MotionData
     {
+        None                        = 0,
         AbsAccelerationTrans        = 4,
         AbsAccelerationRot          = 8,
         RelAccelerationTrans        = 16    |   AbsAccelerationTrans,

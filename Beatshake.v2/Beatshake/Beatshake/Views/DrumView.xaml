@@ -6,11 +6,13 @@
                        xmlns:viewModels="clr-namespace:Beatshake.ViewModels;assembly=Beatshake"
                        xmlns:converter="clr-namespace:Beatshake.Converter;assembly=Beatshake"
                        xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
+                       xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                        x:Class="Beatshake.Views.DrumView"
                        mvvm:ViewModelLocator.AutowireViewModel="True">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converter:ToStringConverter x:Key="ToStringConverter" />
+            <converter:EnumBoolConverter x:Key="EnumBoolConverter" />
             <Style TargetType="Frame" x:Key="MenuFrame">
                 <Setter Property="HorizontalOptions" Value="FillAndExpand" />
                 <Setter Property="OutlineColor" Value="Black" />
@@ -18,7 +20,18 @@
             <Style TargetType="View">
                 <Setter Property="VerticalOptions" Value="Center" />
             </Style>
+            <Style TargetType="StackLayout" x:Key="SettingStackLayout">
+                <Setter Property="Orientation" Value="Horizontal" />
+            </Style>
+            <Style TargetType="{x:Type ListView}" >
+              <Setter Property="RowHeight" Value="31"></Setter>
+              <Setter Property="HasUnevenRows" Value="True"></Setter>
+              <Setter Property="VerticalOptions" Value="Start"></Setter>
+              <Setter Property="HorizontalOptions" Value="CenterAndExpand"></Setter>
+            </Style>
         </ResourceDictionary>
+                                
+
     </ContentPage.Resources>
 
     <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand">
@@ -36,10 +49,7 @@
             <!--First Row-->
             <Frame Grid.Row="1" Style="{StaticResource MenuFrame}" VerticalOptions="Start">
                 <ListView ItemsSource="{Binding Components}"
-                          HorizontalOptions="CenterAndExpand"
-                          VerticalOptions="Start"
-                          HasUnevenRows="False"
-                          RowHeight="31">
+                          HasUnevenRows="False">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -89,7 +99,40 @@
                     <StackLayout Orientation="Vertical">
                         <Label HorizontalOptions="Center" VerticalOptions="Start">Mode</Label>
 
-                        <StackLayout Orientation="Horizontal">
+                        <!--<ListView ItemsSource="{Binding AvailableDrumModes}"
+                        todo: add dynamic mode list
+                                  HasUnevenRows="False">
+                          <ListView.ItemTemplate>
+                            <DataTemplate>
+                                 <StackLayout Orientation="Horizontal">
+                                  <Label Text="test" />
+                                  --><!--<Switch IsToggled="{Binding ., Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Jolt}}" />--><!--
+                              </StackLayout>
+                            </DataTemplate>
+                          </ListView.ItemTemplate>
+                        </ListView>-->
+                      
+                        <StackLayout Style="{StaticResource SettingStackLayout}">
+                            <Label Text="{Binding Source={x:Static viewModels:DrumMode.Jolt}}" />
+                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Jolt}}" />
+                        </StackLayout>
+
+                        <StackLayout Style="{StaticResource SettingStackLayout}">
+                            <Label Text="{Binding Source={x:Static viewModels:DrumMode.FunctionAnalysis}}" />
+                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.FunctionAnalysis}}" />
+                        </StackLayout>
+
+                        <StackLayout Style="{StaticResource SettingStackLayout}">
+                            <Label Text="{Binding Source={x:Static viewModels:DrumMode.Position}}" />
+                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Position}}" />
+                        </StackLayout>
+
+                        <StackLayout Style="{StaticResource SettingStackLayout}">
+                            <Label Text="{Binding Source={x:Static viewModels:DrumMode.Random}}" />
+                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Random}}" />
+                        </StackLayout>
+
+                        <!--<StackLayout Orientation="Horizontal">
                             <Label Text="Use Randomizer" />
                             <Switch IsToggled="{Binding UseRandom}" />
                         </StackLayout>
@@ -107,7 +150,7 @@
                         <StackLayout Orientation="Horizontal">
                             <Label Text="Use Position" />
                             <Switch IsToggled="{Binding UsePosition}" />
-                        </StackLayout>
+                        </StackLayout>-->
                     </StackLayout>
                 </Frame>
 

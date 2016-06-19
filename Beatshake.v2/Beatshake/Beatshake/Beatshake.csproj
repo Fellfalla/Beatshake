@@ -36,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Converter\EnumBoolConverter.cs" />
     <Compile Include="CoreApplication.xaml.cs">
       <DependentUpon>CoreApplication.xaml</DependentUpon>
     </Compile>

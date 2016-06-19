@@ -37,6 +37,49 @@ namespace Beatshake.ViewModels
 
         private string _heading = "Shake your Drums!";
 
+        public DrumMode CurrentDrumMode
+        {
+            get { return _currentDrumMode; }
+            set
+            {
+                if (value.HasFlag(DrumMode.None) && value.HasFlag(_currentDrumMode))
+                {
+                    // Having a flag, which is already set plus None means: Resetting to None
+                    SetProperty(ref _currentDrumMode, DrumMode.None);
+                }
+                else if (value.HasFlag(DrumMode.None)) // meanwhile another value has been switched on
+                {
+                    return;
+                }
+                else
+                {
+                    SetProperty(ref _currentDrumMode, value);
+                }
+                ConfigureMotionDataProviderForMode(_currentDrumMode, MotionDataProvider);
+            }
+        }
+
+        private static void ConfigureMotionDataProviderForMode(DrumMode mode, IMotionDataProvider provider)
+        {
+            switch (mode)
+            {
+                case DrumMode.FunctionAnalysis:
+                case DrumMode.Random:
+                    provider.MotionDataNeeds |= MotionData.RelAccelerationTrans;
+                    break;
+                case DrumMode.Jolt:
+                    provider.MotionDataNeeds |= MotionData.JoltTrans;
+                    break;
+                case DrumMode.Position:
+                    provider.MotionDataNeeds |= MotionData.PoseTrans;
+                    break;
+                case DrumMode.None:
+                default:
+                    provider.MotionDataNeeds = MotionData.None;
+                    break;
+            }
+        }
+
         public string Heading
         {
             get { return _heading; }
@@ -46,7 +89,6 @@ namespace Beatshake.ViewModels
         private ObservableCollection<InstrumentalComponent> _components;
         private string _title;
         private string _kit;
-        private bool _useTeachement;
         private double _teachementTolerance = 50;
         private readonly List<double> _xHistory = new List<double>(); 
         private readonly List<double> _yHistory = new List<double>(); 
@@ -54,12 +96,10 @@ namespace Beatshake.ViewModels
         private readonly List<long> _timestamps = new List<long>(); 
         private readonly Stopwatch _timeElapsedStopwatch = new Stopwatch();
         private uint _responseTime;
-        private bool _useFunctionAnalysis;
         private double _lastGradient;
-        private bool _useRandom;
         private double _cycleTime;
         private readonly Stopwatch _cycleStopwatch = new Stopwatch();
-        private bool _usePosition;
+        private DrumMode _currentDrumMode;
 
         public double CycleTime
         {
@@ -68,6 +108,23 @@ namespace Beatshake.ViewModels
         }
 
         public bool Normalize { get; set; }
+
+        public ObservableCollection<DrumMode> AvailableDrumModes
+        {
+            get
+            {
+                var collection = new ObservableCollection<DrumMode>();
+                foreach (var mode in Enum.GetValues(typeof(DrumMode)))
+                {
+                    collection.Add((DrumMode)mode);
+                }
+                return collection;
+            }
+            set
+            {
+                
+            }
+        }
 
         public int MaxTeachementTolerance { get { return 150; } }
 
@@ -127,7 +184,7 @@ namespace Beatshake.ViewModels
             foreach (var instrumentalComponent in teachedOnes)
             {
                 // Full Teachement tolerance shall be 1 Meter -> Multiply by maxTeachement^-1 9,81^-1 10^6
-                var transformedTolerance = TeachementTolerance*(10E6/(MaxTeachementTolerance*BeatshakeGlobals.G));
+                var transformedTolerance = TeachementTolerance*(10E5/(MaxTeachementTolerance*BeatshakeGlobals.G));
                 if (instrumentalComponent.Teachement.FitsPositionData(transformedTolerance, MotionDataProvider))
                 {
                     tasks.Add(instrumentalComponent.PlaySound());
@@ -222,63 +279,82 @@ namespace Beatshake.ViewModels
 
         public bool UseTeachement
         {
-            get { return _useTeachement; }
+            get { return CurrentDrumMode == DrumMode.Jolt; }
             set
             {
+                //if (value)
+                //{
+                //    ConcurrentOptionSet();
+                //}
+                //SetProperty(ref _useTeachement, value);
                 if (value)
                 {
-                    ConcurrentOptionSet();
+                    CurrentDrumMode = DrumMode.Jolt;
                 }
-                SetProperty(ref _useTeachement, value);
+                else
+                {
+                    CurrentDrumMode = DrumMode.None;
+                }
             }
         }
 
         public bool UseRandom
         {
-            get { return _useRandom; }
+            get { return CurrentDrumMode == DrumMode.Random; }
             set
             {
                 if (value)
                 {
-                    ConcurrentOptionSet();
+                    CurrentDrumMode = DrumMode.Random;
                 }
-                SetProperty(ref _useRandom, value);
+                else
+                {
+                    CurrentDrumMode = DrumMode.None;
+                }
             }
         }
+
         public bool UsePosition
         {
-            get { return _usePosition; }
+            get { return CurrentDrumMode == DrumMode.Position; }
             set
             {
                 if (value)
                 {
-                    ConcurrentOptionSet();
+                    MotionDataProvider.MotionDataNeeds |= MotionData.PoseTrans;
+                    CurrentDrumMode = DrumMode.Position;
                 }
-                MotionDataProvider.MotionDataNeeds |= MotionData.PoseTrans;
-                SetProperty(ref _usePosition, value);
+                else
+                {
+                    MotionDataProvider.MotionDataNeeds ^= MotionData.PoseTrans;
+                    CurrentDrumMode = DrumMode.None;
+                }
             }
         }
 
         public bool UseFunctionAnalysis 
         {
-            get { return _useFunctionAnalysis; }
+            get { return CurrentDrumMode == DrumMode.FunctionAnalysis; }
             set
             {
                 if (value)
                 {
-                    ConcurrentOptionSet();
+                    CurrentDrumMode = DrumMode.FunctionAnalysis;
                 }
-                SetProperty(ref _useFunctionAnalysis, value);
+                else
+                {
+                    CurrentDrumMode = DrumMode.None;
+                }
             }
         }
 
-        private void ConcurrentOptionSet()
-        {
-            UseTeachement = false;
-            UseFunctionAnalysis = false;
-            UseRandom = false;
-            UsePosition = false;
-        }
+        //private void ConcurrentOptionSet()
+        //{
+        //    UseTeachement = false;
+        //    UseFunctionAnalysis = false;
+        //    UseRandom = false;
+        //    UsePosition = false;
+        //}
 
         public uint ResponseTime
         {
@@ -296,5 +372,15 @@ namespace Beatshake.ViewModels
             set { SetProperty(ref _title, value); }
         }
 
+    }
+
+    [Flags]
+    public enum DrumMode // todo: add Flags and allow additive combination of some modes
+    {
+        None = 1,
+        Position = 2,
+        Random = 4,
+        FunctionAnalysis = 8,
+        Jolt = 16,
     }
 }

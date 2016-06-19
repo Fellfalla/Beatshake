@@ -228,9 +228,12 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
 
     private void CalculateVelocityRot(double newTimestamp)
     {
-        Velocity.Rot[0] = _currentGyro.AngularVelocityX;
-        Velocity.Rot[1] = _currentGyro.AngularVelocityY;
-        Velocity.Rot[2] = _currentGyro.AngularVelocityZ;
+        if (_currentGyro != null)
+        {
+            Velocity.Rot[0] = _currentGyro.AngularVelocityX;
+            Velocity.Rot[1] = _currentGyro.AngularVelocityY;
+            Velocity.Rot[2] = _currentGyro.AngularVelocityZ;
+        }
 
         Velocity.Timestamp = newTimestamp;
     }
