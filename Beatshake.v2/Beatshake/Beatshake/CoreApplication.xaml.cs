@@ -38,7 +38,7 @@ namespace Beatshake
         protected Page CreateMainPage()
         {
 
-            var mainMenuView = new MainMenuView(); //Container.Resolve<MainMenuView>();
+            var mainMenuView = Container.Resolve<MainMenuView>();
             var navPage = new NavigationPage(mainMenuView);
             //var navPage = new NavigationPage();
             return navPage;
@@ -46,14 +46,17 @@ namespace Beatshake
 
         protected override INavigationService CreateNavigationService()
         {
+            //var service = base.CreateNavigationService();
+
             if (_navigationService == null)
             {
                 var applicationProvider = new ApplicationProvider();
                 _navigationService = new UnityPageNavigationService(Container, applicationProvider, Logger);
-
+                
                 // if _navigationService is not set before MainMenuView is Resolved there will be a endless loop
-                applicationProvider.MainPage = CreateMainPage();
+                applicationProvider.MainPage = new NavigationPage();//CreateMainPage();
             }
+
             return _navigationService;
         }
 
@@ -61,6 +64,7 @@ namespace Beatshake
 
         protected override void OnInitialized()
         {
+            NavigationService.NavigateAsync<MainMenuViewModel>();
         }
 
         protected override void ConfigureViewModelLocator()

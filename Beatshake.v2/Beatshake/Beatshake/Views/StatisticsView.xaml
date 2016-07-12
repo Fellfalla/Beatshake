@@ -7,6 +7,8 @@
              xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
              x:Class="Beatshake.Views.StatisticsView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
+                       NavigationPage.HasBackButton="True"
+                        
                        >
   <views:BaseCarouselPage.Resources>
     <ResourceDictionary>

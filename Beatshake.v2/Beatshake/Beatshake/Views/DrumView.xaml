@@ -9,8 +9,6 @@
                        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                        x:Class="Beatshake.Views.DrumView"
                        NavigationPage.HasBackButton="True"
-                       NavigationPage.HasNavigationBar="True"
-
                        mvvm:ViewModelLocator.AutowireViewModel="True">
     <views:BaseContentPage.Resources>
         <ResourceDictionary>
