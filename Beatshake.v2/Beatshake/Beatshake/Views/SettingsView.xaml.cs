@@ -1,6 +1,6 @@
 ﻿namespace Beatshake.Views
 {
-    public partial class SettingsView
+    public partial class SettingsView : BaseContentPage
     {
         public SettingsView()
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Devices.Sensors;
+using Windows.UI.Popups;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
 using MathNet.Numerics.LinearAlgebra;
@@ -74,7 +75,15 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
             _gyrometer.ReadingChanged += OnNewSensorData;
         }
 
-        Calibrate();
+        try
+        {
+            Calibrate();
+        }
+        catch (NotSupportedException e)
+        {
+            var dialog = new MessageDialog(e.ToString(), "Motion data error");
+            var _ = dialog.ShowAsync();
+        }
         RefreshRate = BeatshakeSettings.SensorRefreshInterval;
     }
 

@@ -3,28 +3,29 @@ using Xamarin.Forms;
 
 namespace Beatshake.Views
 {
-    public partial class DrumView
+    public partial class DrumView : BaseContentPage
     {
         public DrumView()
         {
-            NavigationPage.SetHasBackButton(this, true);
             InitializeComponent();
+            NavigationPage.SetHasBackButton(this, true);
+
         }
+
         public DrumViewModel ViewModel { get { return (DrumViewModel) BindingContext; } }
 
         protected override void OnAppearing()
         {
+            if (ViewModel != null) ViewModel.IsProcessingMotionData = true;
             base.OnAppearing();
         }
 
-        //protected override bool OnBackButtonPressed()
-        //{
-        //    var task = ViewModel.NavigateBackCommand.Execute();
-        //    task.Wait();
-        //    //((Navigation.Application.Current.MainPage = new MainView();
-        //    return true;
-        //    //return base.OnBackButtonPressed();
-        //}
+        protected override bool OnBackButtonPressed()
+        {
+            if (ViewModel != null) ViewModel.IsProcessingMotionData = false;
+            return base.OnBackButtonPressed();
+        }
+
         //private async void TeachingStart(object sender, EventArgs e)
         //{
         //    await ViewModel.TeachCommand.Execute();

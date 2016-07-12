@@ -59,16 +59,25 @@ namespace Beatshake
         {
         }
 
+        public ContainerControlledLifetimeManager MainMenuViewModelLifetimeManager = new ContainerControlledLifetimeManager();
+        public ContainerControlledLifetimeManager DrumViewModelLifetimeManager = new ContainerControlledLifetimeManager();
+        public ContainerControlledLifetimeManager DrumViewLifetimeManager = new ContainerControlledLifetimeManager();
+        public ContainerControlledLifetimeManager StatisticsViewModelLifetimeManager = new ContainerControlledLifetimeManager();
+        public ContainerControlledLifetimeManager SettingsViewModelLifetimeManager = new ContainerControlledLifetimeManager();
+
+
         protected override void RegisterTypes()
         {
             Container.RegisterInstance<IMotionDataProvider>(
     Xamarin.Forms.DependencyService.Get<IMotionDataProvider>(DependencyFetchTarget.GlobalInstance));
-
+            
             //Container.RegisterInstance(CreateNavigationService());
-            Container.RegisterType<DrumViewModel>(new ContainerControlledLifetimeManager());
-            Container.RegisterType<MainMenuViewModel>(new ContainerControlledLifetimeManager());
-            Container.RegisterType<StatisticsViewModel>(new ContainerControlledLifetimeManager());
-            Container.RegisterType<SettingsViewModel>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<DrumViewModel>(DrumViewModelLifetimeManager);
+            Container.RegisterType<MainMenuViewModel>(MainMenuViewModelLifetimeManager);
+            Container.RegisterType<StatisticsViewModel>(StatisticsViewModelLifetimeManager);
+            Container.RegisterType<SettingsViewModel>(SettingsViewModelLifetimeManager);
+
+            Container.RegisterType<DrumView>(DrumViewLifetimeManager);
 
             Container.RegisterTypeForNavigation<DrumView, DrumViewModel>();
             Container.RegisterTypeForNavigation<MainMenuView, MainMenuViewModel>();

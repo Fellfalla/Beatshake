@@ -21,7 +21,6 @@ namespace Beatshake.ViewModels
         {
             _timeElapsedStopwatch.Start();
             
-            Components = new ObservableCollection<InstrumentalComponent>();
             Title = "DrumKit 1";
             Kit = "Kit1";
 
@@ -33,6 +32,7 @@ namespace Beatshake.ViewModels
             }
 
             ResponseTime = BeatshakeSettings.SensorRefreshInterval;
+            //IsProcessingMotionData = false;
         }
 
         private string _heading = "Shake your Drums!";
@@ -86,7 +86,7 @@ namespace Beatshake.ViewModels
             set { SetProperty(ref _heading, value); }
         }
 
-        private ObservableCollection<InstrumentalComponent> _components;
+        private readonly ObservableCollection<InstrumentalComponent> _components = new ObservableCollection<InstrumentalComponent>();
         private string _title;
         private string _kit;
         private double _teachementTolerance = 50;
@@ -128,7 +128,7 @@ namespace Beatshake.ViewModels
 
         public int MaxTeachementTolerance { get { return 150; } }
 
-        public override async void ProcessMotionData(IMotionDataProvider motionDataProvider)
+        public override void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
             _cycleStopwatch.Start();
             _timestamps.Add((long) motionDataProvider.RelAcceleration.Timestamp);
@@ -154,22 +154,22 @@ namespace Beatshake.ViewModels
             // todo: use Strategy pattern
             if (UseTeachement)
             {
-                await TriggerOnTeachementMatch(activatedComponents);
+                TriggerOnTeachementMatch(activatedComponents).ConfigureAwait(false);
             }
             if (UsePosition)
             {
-                await TriggerOnPositionMatch(activatedComponents);
+                TriggerOnPositionMatch(activatedComponents).ConfigureAwait(false);
             }
             else if (UseFunctionAnalysis)
             {
-                await TriggerOnHighFunctionDerivation(activatedComponents);
+                TriggerOnHighFunctionDerivation(activatedComponents).ConfigureAwait(false);
             }
 
             else if (UseRandom)
             {
                 if (motionDataProvider.RelAcceleration.Trans.Any(d => d > TeachementTolerance / 100))
                 {
-                    await activatedComponents.Random().PlaySoundCommand.Execute();
+                    activatedComponents.Random().PlaySoundCommand.Execute().ConfigureAwait(false);
                 }
             }
             CycleTime = _cycleStopwatch.ElapsedMilliseconds;
@@ -260,7 +260,7 @@ namespace Beatshake.ViewModels
                 SetProperty(ref _kit, value);
                 foreach (var instrumentalComponent in Components)
                 {
-                    instrumentalComponent.PreLoadAudio(); // the whole Kit has changed
+                    instrumentalComponent.PreLoadAudio().ConfigureAwait(false); // the whole Kit has changed
                 }
             }
         }
@@ -274,7 +274,7 @@ namespace Beatshake.ViewModels
         public ObservableCollection<InstrumentalComponent> Components
         {
             get { return _components; }
-            set { SetProperty(ref _components, value); }
+            //set { SetProperty(ref _components, value); }
         }
 
         public bool UseTeachement

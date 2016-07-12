@@ -9,7 +9,7 @@
                        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                        x:Class="Beatshake.Views.DrumView"
                        mvvm:ViewModelLocator.AutowireViewModel="True">
-    <ContentPage.Resources>
+  <views:BaseContentPage.Resources>
         <ResourceDictionary>
             <converter:ToStringConverter x:Key="ToStringConverter" />
             <converter:EnumBoolConverter x:Key="EnumBoolConverter" />
@@ -32,7 +32,7 @@
         </ResourceDictionary>
                                 
 
-    </ContentPage.Resources>
+    </views:BaseContentPage.Resources>
 
     <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand">
         <Grid>

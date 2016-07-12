@@ -2,14 +2,12 @@
 
 namespace Beatshake.Views
 {
-    public partial class MainMenuView
+    public partial class MainMenuView : BaseContentPage
     {
         public MainMenuView()
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
-
-
         }
 
         protected override bool OnBackButtonPressed()

@@ -72,7 +72,7 @@ namespace Beatshake.Core
             Name = name;
             ContainingInstrument = containingInstrument;
 
-            var audioLoader = PreLoadAudio();
+            _audionInstance = _player.PreLoadAudio(this);
 
             PropertyChanged += OnPropertyChanged;
 
@@ -93,7 +93,8 @@ namespace Beatshake.Core
 
         public async Task PreLoadAudio()
         {
-            _audionInstance = await _player.PreLoadAudio(this).ConfigureAwait(false);
+            _audionInstance = await _player.PreLoadAudioAsync(this).ConfigureAwait(false);
+            //_audionInstance = await _player.PreLoadAudio(this).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Beatshake.Core
         /// <returns></returns>
         public async Task PlaySound()
         {
-            cooldown.TryAddAsyncRequest(async () => await _player.Play(_audionInstance).ConfigureAwait(false));
+            cooldown.TryAddAsyncRequest(async () => await _player.PlayAsync(_audionInstance).ConfigureAwait(false));
 
             if (cooldown.IsCoolingDown)
             {

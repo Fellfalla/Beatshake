@@ -19,7 +19,7 @@ namespace Beatshake.ViewModels
             //NavigateBackCommand = DelegateCommand.FromAsyncHandler(NavigationService.GoBackAsync);
         }
 
-#region Facade-Pattern for Navigation
+        #region Facade-Pattern for Navigation
 
         public async Task GoBackAsync(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {

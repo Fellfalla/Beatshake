@@ -5,8 +5,14 @@ namespace Beatshake.DependencyServices
 {
     public interface IInstrumentPlayer
     {
-        Task Play(object audioData);
+        void Play(object audioData);
 
-        Task<object> PreLoadAudio(IInstrumentalComponentIdentification component);
+        Task PlayAsync(object audioData);
+
+        object PreLoadAudio(IInstrumentalComponentIdentification component);
+
+        Task<object> PreLoadAudioAsync(IInstrumentalComponentIdentification component);
+
+
     }
 }
