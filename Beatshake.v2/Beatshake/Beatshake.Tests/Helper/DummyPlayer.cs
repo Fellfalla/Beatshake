@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Beatshake.Core;
@@ -7,16 +8,32 @@ namespace Beatshake.Tests.ViewModels
 {
     class DummyPlayer : IInstrumentPlayer
     {
-        public Task Play(object audioData)
+        public IInstrumentalComponentIdentification Component { get; set; }
+
+        public void Play()
         {
-            Trace.WriteLine("Audio played for " + audioData.ToString());
-            return new Task(() => {});
+            Trace.WriteLine("Audio played for " + Component.ToString());
         }
 
-        public Task<object> PreLoadAudio(IInstrumentalComponentIdentification component)
+        public Task PlayAsync()
         {
-            Trace.WriteLine("Audio Preloaded for " + component.ToString());
-            return new Task<object>(component.ToString);
+            return Task.Factory.StartNew(Play);
         }
+
+        public void PreLoadAudio()
+        {
+            Trace.WriteLine("Audio Preloaded for " + Component.ToString());
+        }
+
+        public Task PreLoadAudioAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }

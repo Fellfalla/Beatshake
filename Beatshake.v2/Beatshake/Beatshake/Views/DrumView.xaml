@@ -8,8 +8,11 @@
                        xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
                        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                        x:Class="Beatshake.Views.DrumView"
+                       NavigationPage.HasBackButton="True"
+                       NavigationPage.HasNavigationBar="True"
+
                        mvvm:ViewModelLocator.AutowireViewModel="True">
-  <views:BaseContentPage.Resources>
+    <views:BaseContentPage.Resources>
         <ResourceDictionary>
             <converter:ToStringConverter x:Key="ToStringConverter" />
             <converter:EnumBoolConverter x:Key="EnumBoolConverter" />
@@ -23,14 +26,14 @@
             <Style TargetType="StackLayout" x:Key="SettingStackLayout">
                 <Setter Property="Orientation" Value="Horizontal" />
             </Style>
-            <Style TargetType="{x:Type ListView}" >
-              <Setter Property="RowHeight" Value="31"></Setter>
-              <Setter Property="HasUnevenRows" Value="True"></Setter>
-              <Setter Property="VerticalOptions" Value="Start"></Setter>
-              <Setter Property="HorizontalOptions" Value="CenterAndExpand"></Setter>
+            <Style TargetType="{x:Type ListView}">
+                <Setter Property="RowHeight" Value="31" />
+                <Setter Property="HasUnevenRows" Value="True" />
+                <Setter Property="VerticalOptions" Value="Start" />
+                <Setter Property="HorizontalOptions" Value="CenterAndExpand" />
             </Style>
         </ResourceDictionary>
-                                
+
 
     </views:BaseContentPage.Resources>
 
@@ -92,7 +95,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </Frame>
-          
+
             <!--Second Row-->
             <StackLayout Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="FillAndExpand" Grid.Row="2">
                 <Frame Style="{StaticResource MenuFrame}" VerticalOptions="Fill">
@@ -111,25 +114,29 @@
                             </DataTemplate>
                           </ListView.ItemTemplate>
                         </ListView>-->
-                      
+
                         <StackLayout Style="{StaticResource SettingStackLayout}">
                             <Label Text="{Binding Source={x:Static viewModels:DrumMode.Jolt}}" />
-                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Jolt}}" />
+                            <Switch
+                                IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Jolt}}" />
                         </StackLayout>
 
                         <StackLayout Style="{StaticResource SettingStackLayout}">
                             <Label Text="{Binding Source={x:Static viewModels:DrumMode.FunctionAnalysis}}" />
-                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.FunctionAnalysis}}" />
+                            <Switch
+                                IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.FunctionAnalysis}}" />
                         </StackLayout>
 
                         <StackLayout Style="{StaticResource SettingStackLayout}">
                             <Label Text="{Binding Source={x:Static viewModels:DrumMode.Position}}" />
-                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Position}}" />
+                            <Switch
+                                IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Position}}" />
                         </StackLayout>
 
                         <StackLayout Style="{StaticResource SettingStackLayout}">
                             <Label Text="{Binding Source={x:Static viewModels:DrumMode.Random}}" />
-                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Random}}" />
+                            <Switch
+                                IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.Random}}" />
                         </StackLayout>
 
                         <!--<StackLayout Orientation="Horizontal">
@@ -160,19 +167,20 @@
                         <Label HorizontalOptions="Center" VerticalOptions="Start">Preferences</Label>
 
                         <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                            <Label Text="Teachement tolerance" VerticalOptions="Center"/>
-                            <Slider Value="{Binding TeachementTolerance}" Minimum="0" Maximum="{Binding MaxTeachementTolerance}"
-                                    HorizontalOptions="FillAndExpand" VerticalOptions="Center"/>
+                            <Label Text="Teachement tolerance" VerticalOptions="Center" />
+                            <Slider Value="{Binding TeachementTolerance}" Minimum="0"
+                                    Maximum="{Binding MaxTeachementTolerance}"
+                                    HorizontalOptions="FillAndExpand" VerticalOptions="Center" />
                         </StackLayout>
-                        
+
                         <StackLayout Orientation="Horizontal">
-                            <Label Text="Normalize" VerticalOptions="Center"/>
-                            <Switch IsToggled="{Binding Normalize}" VerticalOptions="Center"/>
+                            <Label Text="Normalize" VerticalOptions="Center" />
+                            <Switch IsToggled="{Binding Normalize}" VerticalOptions="Center" />
                         </StackLayout>
 
                         <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                            <Label Text="Response Time" VerticalOptions="Center"/>
-                            <Label Text="{Binding ResponseTime}" VerticalOptions="Center"/>
+                            <Label Text="Response Time" VerticalOptions="Center" />
+                            <Label Text="{Binding ResponseTime}" VerticalOptions="Center" />
                             <Slider Value="{Binding ResponseTime}"
                                     VerticalOptions="Center"
                                     HorizontalOptions="FillAndExpand"

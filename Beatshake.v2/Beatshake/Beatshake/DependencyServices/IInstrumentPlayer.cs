@@ -1,17 +1,20 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Beatshake.Core;
 
 namespace Beatshake.DependencyServices
 {
-    public interface IInstrumentPlayer
+    public interface IInstrumentPlayer : IDisposable
     {
-        void Play(object audioData);
+        IInstrumentalComponentIdentification Component { get; set; }
 
-        Task PlayAsync(object audioData);
+        void Play();
 
-        object PreLoadAudio(IInstrumentalComponentIdentification component);
+        Task PlayAsync();
 
-        Task<object> PreLoadAudioAsync(IInstrumentalComponentIdentification component);
+        void PreLoadAudio();
+
+        Task PreLoadAudioAsync();
 
 
     }

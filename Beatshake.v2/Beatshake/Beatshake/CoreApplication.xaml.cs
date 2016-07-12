@@ -37,18 +37,22 @@ namespace Beatshake
 
         protected Page CreateMainPage()
         {
-            var mainMenuView = Container.Resolve<MainMenuView>();
+
+            var mainMenuView = new MainMenuView(); //Container.Resolve<MainMenuView>();
             var navPage = new NavigationPage(mainMenuView);
+            //var navPage = new NavigationPage();
             return navPage;
         }
 
-        protected override Prism.Navigation.INavigationService CreateNavigationService()
+        protected override INavigationService CreateNavigationService()
         {
             if (_navigationService == null)
             {
                 var applicationProvider = new ApplicationProvider();
+                _navigationService = new UnityPageNavigationService(Container, applicationProvider, Logger);
+
+                // if _navigationService is not set before MainMenuView is Resolved there will be a endless loop
                 applicationProvider.MainPage = CreateMainPage();
-                _navigationService = new UnityPageNavigationService(Container, applicationProvider);
             }
             return _navigationService;
         }
@@ -59,7 +63,14 @@ namespace Beatshake
         {
         }
 
+        protected override void ConfigureViewModelLocator()
+        {
+            base.ConfigureViewModelLocator();
+        }
+
+
         public ContainerControlledLifetimeManager MainMenuViewModelLifetimeManager = new ContainerControlledLifetimeManager();
+        public ContainerControlledLifetimeManager MainMenuViewLifetimeManager = new ContainerControlledLifetimeManager();
         public ContainerControlledLifetimeManager DrumViewModelLifetimeManager = new ContainerControlledLifetimeManager();
         public ContainerControlledLifetimeManager DrumViewLifetimeManager = new ContainerControlledLifetimeManager();
         public ContainerControlledLifetimeManager StatisticsViewModelLifetimeManager = new ContainerControlledLifetimeManager();
@@ -78,6 +89,7 @@ namespace Beatshake
             Container.RegisterType<SettingsViewModel>(SettingsViewModelLifetimeManager);
 
             Container.RegisterType<DrumView>(DrumViewLifetimeManager);
+            Container.RegisterType<MainMenuView>(MainMenuViewLifetimeManager);
 
             Container.RegisterTypeForNavigation<DrumView, DrumViewModel>();
             Container.RegisterTypeForNavigation<MainMenuView, MainMenuViewModel>();

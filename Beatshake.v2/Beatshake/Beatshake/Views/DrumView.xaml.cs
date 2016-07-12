@@ -1,4 +1,6 @@
-﻿using Beatshake.ViewModels;
+﻿using System.Linq;
+using Beatshake.ViewModels;
+using Microsoft.Practices.ObjectBuilder2;
 using Xamarin.Forms;
 
 namespace Beatshake.Views
@@ -8,8 +10,7 @@ namespace Beatshake.Views
         public DrumView()
         {
             InitializeComponent();
-            NavigationPage.SetHasBackButton(this, true);
-
+            //NavigationPage.SetHasBackButton(this, true);
         }
 
         public DrumViewModel ViewModel { get { return (DrumViewModel) BindingContext; } }
@@ -22,7 +23,11 @@ namespace Beatshake.Views
 
         protected override bool OnBackButtonPressed()
         {
-            if (ViewModel != null) ViewModel.IsProcessingMotionData = false;
+            if (ViewModel != null)
+            {
+                ViewModel.IsProcessingMotionData = false;
+            }
+
             return base.OnBackButtonPressed();
         }
 

@@ -21,15 +21,17 @@ namespace Beatshake.ViewModels
 
         #region Facade-Pattern for Navigation
 
-        public async Task GoBackAsync(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
+        public async Task<bool> GoBackAsync(NavigationParameters parameters, bool? useModalNavigation, bool animated)
         {
-            await NavigationService.GoBackAsync(parameters, useModalNavigation, animated);
+            return await NavigationService.GoBackAsync(parameters, useModalNavigation, animated);
         }
 
-        public async Task NavigateAsync<T>(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
+        public async Task NavigateAsync<TViewModel>(NavigationParameters parameters = null, bool? useModalNavigation = null,
+            bool animated = true) where TViewModel : BindableBase
         {
-            await NavigationService.NavigateAsync<T>(parameters, useModalNavigation, animated);
+            await NavigationService.NavigateAsync<TViewModel>(parameters, useModalNavigation, animated);
         }
+
 
         public async Task NavigateAsync(Uri uri, NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {
@@ -41,6 +43,6 @@ namespace Beatshake.ViewModels
             await NavigationService.NavigateAsync(name, parameters, useModalNavigation, animated);
         }
 
-#endregion
+        #endregion
     }
 }
