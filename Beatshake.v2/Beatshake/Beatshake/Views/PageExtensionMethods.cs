@@ -1,4 +1,5 @@
 using System;
+using Beatshake.ExtensionMethods;
 using Prism.Navigation;
 using Xamarin.Forms;
 
@@ -11,7 +12,8 @@ namespace Beatshake.Views
             var navigator = page.BindingContext as INavigationService;
             if (navigator != null)
             {
-                var task = navigator.GoBackAsync();
+                bool useModal = page.FindParentOfType<NavigationPage>() == null;
+                var task = navigator.GoBackAsync(useModalNavigation: useModal);
                 try
                 {
                     task.Wait(); // todo: find out why this throws AggregateException on second back navigation command from same view

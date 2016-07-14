@@ -10,12 +10,12 @@ namespace Beatshake.ViewModels
     {
         protected readonly INavigationService NavigationService;
 
-        public DelegateCommand NavigateBackCommand { get; set; }
+        //public DelegateCommand NavigateBackCommand { get; set; }
 
         public BaseViewModel(INavigationService navigationService)
         {
             NavigationService = navigationService;
-            NavigateBackCommand = DelegateCommand.FromAsyncHandler(async () => { await NavigationService.GoBackAsync(); });
+            //NavigateBackCommand = DelegateCommand.FromAsyncHandler(async () => { await NavigationService.GoBackAsync(); });
             //NavigateBackCommand = DelegateCommand.FromAsyncHandler(NavigationService.GoBackAsync);
         }
 

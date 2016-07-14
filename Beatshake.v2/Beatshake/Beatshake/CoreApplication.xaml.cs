@@ -55,7 +55,8 @@ namespace Beatshake
 
                 // if _navigationService is not set before MainMenuView is Resolved there will be a endless loop
                 //var mainMenu = Container.Resolve<MainMenuView>();
-                applicationProvider.MainPage = new NavigationPage();//CreateMainPage();
+                var navPage = new NavigationPage(Container.Resolve<MainMenuView>());
+                applicationProvider.MainPage = navPage;//CreateMainPage();
             }
 
             return _navigationService;
@@ -66,7 +67,7 @@ namespace Beatshake
         protected override void OnInitialized()
         {
             InitializeComponent();
-            NavigationService.NavigateAsync<MainMenuViewModel>();
+            //NavigationService.NavigateAsync<MainMenuViewModel>(useModalNavigation: false);
         }
 
         protected override void ConfigureViewModelLocator()
@@ -75,12 +76,12 @@ namespace Beatshake
         }
 
 
-        public ContainerControlledLifetimeManager MainMenuViewModelLifetimeManager = new ContainerControlledLifetimeManager();
-        public ContainerControlledLifetimeManager MainMenuViewLifetimeManager = new ContainerControlledLifetimeManager();
-        public ContainerControlledLifetimeManager DrumViewModelLifetimeManager = new ContainerControlledLifetimeManager();
-        public ContainerControlledLifetimeManager DrumViewLifetimeManager = new ContainerControlledLifetimeManager();
-        public ContainerControlledLifetimeManager StatisticsViewModelLifetimeManager = new ContainerControlledLifetimeManager();
-        public ContainerControlledLifetimeManager SettingsViewModelLifetimeManager = new ContainerControlledLifetimeManager();
+        public LifetimeManager MainMenuViewModelLifetimeManager = new PerResolveLifetimeManager();
+        public LifetimeManager MainMenuViewLifetimeManager = new PerResolveLifetimeManager();
+        public LifetimeManager DrumViewModelLifetimeManager = new PerResolveLifetimeManager();
+        public LifetimeManager DrumViewLifetimeManager = new PerResolveLifetimeManager();
+        public LifetimeManager StatisticsViewModelLifetimeManager = new PerResolveLifetimeManager();
+        public LifetimeManager SettingsViewModelLifetimeManager = new PerResolveLifetimeManager();
 
 
         protected override void RegisterTypes()

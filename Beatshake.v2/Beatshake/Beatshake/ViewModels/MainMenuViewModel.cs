@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Beatshake.Core;
-using Beatshake.DependencyServices;
-using Beatshake.Views;
+﻿using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Navigation;
 
@@ -32,25 +25,30 @@ namespace Beatshake.ViewModels
         /// <param name="navigationService">This parameter has to be named navigationService for Prism injecting the right one.</param>
         public MainMenuViewModel(INavigationService navigationService) : base(navigationService)
         {
-            NavigateCommand = new DelegateCommand(Navigate);
-            ShowStatisticsCommand = new DelegateCommand(ShowStatistics);
-            NavigateToSettingsCommand = new DelegateCommand(NavigateToSettings);
+            NavigateCommand = DelegateCommand.FromAsyncHandler(Navigate);
+            ShowStatisticsCommand = DelegateCommand.FromAsyncHandler(ShowStatistics);
+            NavigateToSettingsCommand = DelegateCommand.FromAsyncHandler(NavigateToSettings);
 
         }
 
-        void Navigate()
+        async Task Navigate()
         {
-            NavigationService.NavigateAsync<DrumViewModel>();
+            await NavigateAsync<DrumViewModel>(useModalNavigation: false);
+            //NavigationService.NavigateAsync<DrumViewModel>();
         }
 
-        void ShowStatistics()
+        async Task ShowStatistics()
         {
-            NavigationService.NavigateAsync<StatisticsViewModel>();
+            //NavigationService.NavigateAsync<StatisticsViewModel>();
+            await NavigateAsync<StatisticsViewModel>(useModalNavigation: false);
+
         }
 
-        void NavigateToSettings()
+        async Task NavigateToSettings()
         {
-            NavigationService.NavigateAsync<SettingsViewModel>();
+            //NavigationService.NavigateAsync<SettingsViewModel>();
+            await NavigateAsync<SettingsViewModel>(useModalNavigation: false);
+
         }
     }
 }
