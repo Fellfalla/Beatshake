@@ -29,9 +29,14 @@ namespace Beatshake.ViewModels
         public async Task NavigateAsync<TViewModel>(NavigationParameters parameters = null, bool? useModalNavigation = null,
             bool animated = true) where TViewModel : BindableBase
         {
-            await NavigationService.NavigateAsync<TViewModel>(parameters, useModalNavigation, animated);
-        }
+            //Prism.Navigation.
+            string toTrim = "Model";
+            string viewModelName = typeof(TViewModel).Name;
+            var viewName = viewModelName.Substring(0, viewModelName.Length - toTrim.Length);
 
+            await this.NavigateAsync(viewName, parameters, useModalNavigation, animated);
+            //await NavigationService.NavigateAsync<TViewModel>(parameters, useModalNavigation, animated);
+        }
 
         public async Task NavigateAsync(Uri uri, NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {

@@ -7,13 +7,13 @@
     "OxyPlot.Core": "1.0.0-unstable2100",
     "OxyPlot.Windows": "1.0.0-unstable2100",
     "OxyPlot.Xamarin.Forms": "1.0.0-unstable1983",
-    "Prism.Core": "6.1.0",
-    "Prism.Forms": "6.1.0-pre5",
-    "Prism.Unity.Forms": "6.2.0-pre5",
+    "Prism.Core": "6.2.0-pre1",
+    "Prism.Forms": "6.1.0-pre7",
+    "Prism.Unity.Forms": "6.2.0-pre7",
     "SharpDX": "3.0.2",
     "SharpDX.XAudio2": "3.0.2",
     "Unity": "4.0.1",
-    "Xamarin.Forms": "2.3.1.114"
+    "Xamarin.Forms": "2.3.2.118-pre1"
   },
   "frameworks": {
     "uap10.0": {}

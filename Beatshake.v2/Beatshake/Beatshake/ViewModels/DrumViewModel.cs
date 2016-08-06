@@ -161,7 +161,7 @@ namespace Beatshake.ViewModels
             }
             else if (UseNeuralNetwork)
             {
-                await TriggerOnNeuralNetworkMatch(activatedComponents);
+                TriggerOnNeuralNetworkMatch(activatedComponents).ConfigureAwait(false);
             }
             else if (UsePosition)
             {
@@ -222,6 +222,7 @@ namespace Beatshake.ViewModels
             }
             await Task.WhenAll(tasks);
         }
+
         private async Task TriggerOnNeuralNetworkMatch(InstrumentalComponent[] activatedComponents)
         {
 

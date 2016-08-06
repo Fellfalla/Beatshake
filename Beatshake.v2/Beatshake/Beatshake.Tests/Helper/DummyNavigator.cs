@@ -6,10 +6,7 @@ namespace Beatshake.Tests.ViewModels
 {
     class DummyNavigator : INavigationService
     {
-        public Task GoBackAsync(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public Task NavigateAsync<T>(NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {
@@ -24,6 +21,11 @@ namespace Beatshake.Tests.ViewModels
 
         public Task NavigateAsync(string name, NavigationParameters parameters = null, bool? useModalNavigation = null,
             bool animated = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> INavigationService.GoBackAsync(NavigationParameters parameters, bool? useModalNavigation, bool animated)
         {
             throw new NotImplementedException();
         }

@@ -140,7 +140,6 @@ namespace Beatshake.Core
         private bool _isActivated = true;
         private int _number;
         private NeuralTeachement _neuralTeachement;
-        private NeuralTeachement _neuralTeachement;
         private IInstrumentPlayer _player;
 
         public DelegateCommand PlaySoundCommand
