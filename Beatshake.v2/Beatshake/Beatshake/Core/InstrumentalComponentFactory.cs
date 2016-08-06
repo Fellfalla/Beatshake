@@ -34,6 +34,7 @@ namespace Beatshake.Core
             }
 
             var newPlayerInstance = _container.Resolve<IInstrumentPlayer>();
+            //IInstrumentPlayer newPlayerInstance = null;
             return new InstrumentalComponent(_containingInstrument,_dataProcessor, _dataProvider, newPlayerInstance, name);
         }
     }

@@ -1,42 +1,133 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
 using Beatshake.ExtensionMethods;
+using Microsoft.Practices.Unity;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 
 
-class InstrumentPlayerImplementation : IInstrumentPlayer
+class InstrumentPlayerImplementation : IInstrumentPlayer, IDisposable
 {
     //private readonly InstancePool<SoundEffect> _mediaElementPool = new InstancePool<SoundEffect>(200);
     private Random random = new Random();
-    public async Task Play(object audioData)
+    private SoundEffect _soundEffect;
+    private IInstrumentalComponentIdentification _component;
+    private bool _isAudioPreloaded;
+
+    [InjectionConstructor]
+    public InstrumentPlayerImplementation()
+    {
+        
+    }
+
+    public InstrumentPlayerImplementation(IInstrumentalComponentIdentification component)
+    {
+        Component = component;
+    }
+
+    public IInstrumentalComponentIdentification Component
+    {
+        get { return _component; }
+        set
+        {
+            if (_component != value)
+            {
+                _component = value;
+
+                if (_isAudioPreloaded)
+                {
+                    PreLoadAudio(); // load again if audio component has changed
+                }
+            }
+        }
+    }
+
+    public void Play()
     {
         
         //var soundElement = _mediaElementPool.GetInstance(out nr);
 
-        var transmitter = audioData as AudioTransmitter;
+        //var transmitter = audioData as AudioTransmitter;
 
-        if (transmitter != null)
-        {
-            //transmitter.Stream.Seek(0);
-            
-            //var soundElement = SoundEffect.FromStream(transmitter.Stream.AsStreamForRead());
-            
-            transmitter.SoundEffect.Play(1f, 
-                (float) random.NextDouble(-BeatshakeSettings.RandomPitchRange, BeatshakeSettings.RandomPitchRange), 
-                (float)random.NextDouble(-BeatshakeSettings.RandomPan, BeatshakeSettings.RandomPan));
-            //soundElement.SetSource(transmitter.Stream, transmitter.StorageFile.ContentType);
-            //soundElement.Play();
-        }
-        //var soundElement = (MediaElement) audioData;
-        //if (soundElement != null) await soundElement.Dispatcher.RunAsync(CoreDispatcherPriority.High, soundElement.Play);
-        else
+        //if (transmitter != null)
+        if (_component == null || string.IsNullOrWhiteSpace(_component.Name))
         {
             throw new ArgumentNullException("Sound media has not been set");
         }
+
+        if (_soundEffect == null)
+        {
+            PreLoadAudio();
+            if (_soundEffect == null)
+            {
+                throw new FileNotFoundException("The audiofile was not loaded.", GetFilePath());
+            }
+            //soundElement.Play();
+        }
+
+        //var soundElement = (MediaElement) audioData;
+        //if (soundElement != null) await soundElement.Dispatcher.RunAsync(CoreDispatcherPriority.High, soundElement.Play);
+        //transmitter.Stream.Seek(0);
+
+        //var soundElement = SoundEffect.FromStream(transmitter.Stream.AsStreamForRead());
+        _soundEffect.Play(1f,
+            (float)random.NextDouble(-BeatshakeSettings.RandomPitchRange, BeatshakeSettings.RandomPitchRange),
+            (float)random.NextDouble(-BeatshakeSettings.RandomPan, BeatshakeSettings.RandomPan));
+            //transmitter.SoundEffect.Play(1f, 
+            //    (float) random.NextDouble(-BeatshakeSettings.RandomPitchRange, BeatshakeSettings.RandomPitchRange), 
+            //    (float)random.NextDouble(-BeatshakeSettings.RandomPan, BeatshakeSettings.RandomPan));
+            //soundElement.SetSource(transmitter.Stream, transmitter.StorageFile.ContentType);
         //_mediaElementPool.Unlock(nr);
+    }
+
+    public async Task PlayAsync()
+    {
+        await Task.Factory.StartNew(Play);
+    }
+
+    private string GetFilePath()
+    {
+        string fileName = Component.Name + Component.Number + ".wav";
+
+        string path = string.Format(@"Assets\{0}\{1}", Component.ContainingInstrument.Kit, fileName);
+
+        return path;
+    }
+
+    private bool IsComponentIdentifierValid()
+    {
+        return Component != null &&
+            Component.ContainingInstrument != null &&
+               !string.IsNullOrWhiteSpace(Component.ContainingInstrument.Kit) &&
+               !string.IsNullOrWhiteSpace(Component.Name);
+    }
+
+    public void PreLoadAudio()
+    {
+        // todo: change accessing this method directly to Property of type bool and set loading mode there
+        if (!IsComponentIdentifierValid())
+        {
+            return;
+        }
+
+        // return prefetched stream
+        //var transmitter = new AudioTransmitter();
+        try
+        {
+            // bug: this line causes a crash at backNavigationCommand
+            _soundEffect = SoundEffect.FromStream(TitleContainer.OpenStream(GetFilePath()));
+            _isAudioPreloaded = true;
+
+            //transmitter.SoundEffect = SoundEffect.FromStream(TitleContainer.OpenStream(path));
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Debug.WriteLine(e);
+        }
+        //return transmitter;
     }
 
     /// <summary>
@@ -44,52 +135,17 @@ class InstrumentPlayerImplementation : IInstrumentPlayer
     /// </summary>
     /// <param name="component"></param>
     /// <returns></returns>
-    public async Task<object> PreLoadAudio(IInstrumentalComponentIdentification component)
+    public async Task PreLoadAudioAsync()
     {
-        if (component.ContainingInstrument == null ||
-            string.IsNullOrWhiteSpace(component.ContainingInstrument.Kit) ||
-            string.IsNullOrWhiteSpace(component.Name))
+        await Task.Factory.StartNew(PreLoadAudio);
+    }
+
+    public void Dispose()
+    {
+        if (_soundEffect != null)
         {
-            return null;
+            _soundEffect.Dispose();
+            _isAudioPreloaded = false;
         }
-
-        string fileName = component.Name + component.Number + ".wav";
-
-        // Load file into stream
-        //StorageFolder Folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-        //Folder = await Folder.GetFolderAsync("Assets");
-        //Folder = await Folder.GetFolderAsync(component.ContainingInstrument.Kit);
-        //StorageFile sf = await Folder.GetFileAsync(fileName);
-        //var stream = await sf.OpenStreamForReadAsync();
-
-        // prefetch stream into memory
-        //IBuffer buffer = new Buffer((uint) stream.Size);
-        //await stream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.ReadAhead);
-        //var memoryStream = new InMemoryRandomAccessStream();
-        //await memoryStream.WriteAsync(buffer);
-
-        string path = string.Format(@"Assets\{0}\{1}", component.ContainingInstrument.Kit, fileName);
-        // return prefetched stream
-        return await Task.Factory.StartNew(() =>
-        {
-            var transmitter = new AudioTransmitter();
-            try
-            {
-                transmitter.SoundEffect = SoundEffect.FromStream(TitleContainer.OpenStream(path));
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e);
-            }
-            return transmitter;
-        });
-
-        //if (transmitter.SoundEffect == null)
-        //{
-        //    var buffer = new byte[stream.Length];
-        //    stream.Read(buffer, 0, buffer.Length);
-        //    transmitter.SoundEffect = new SoundEffect(buffer, 44000, AudioChannels.Stereo);
-        //}
-        //return transmitter;
     }
 }

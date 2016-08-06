@@ -7,8 +7,10 @@
              xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
              x:Class="Beatshake.Views.StatisticsView"
              mvvm:ViewModelLocator.AutowireViewModel="True"
+                       NavigationPage.HasBackButton="True"
+                        
                        >
-  <CarouselPage.Resources>
+  <views:BaseCarouselPage.Resources>
     <ResourceDictionary>
       <converter:ToStringConverter x:Key="ToStringConverter"></converter:ToStringConverter>
       <Style TargetType="Frame">
@@ -17,7 +19,7 @@
         <Setter Property="HorizontalOptions" Value="Center"></Setter>
       </Style>
     </ResourceDictionary>
-  </CarouselPage.Resources>
+  </views:BaseCarouselPage.Resources>
   
   <ContentPage Title="Numberchaos">
     <Grid HorizontalOptions="FillAndExpand" VerticalOptions="Center">

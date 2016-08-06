@@ -5,6 +5,8 @@
                        xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
                        xmlns:mvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
                        x:Class="Beatshake.Views.SettingsView"
+                       NavigationPage.HasBackButton="True"
+                       
                        mvvm:ViewModelLocator.AutowireViewModel="True">
     <StackLayout Orientation="Vertical">
         <Label Text="Settings" VerticalOptions="Start" FontSize="30" HorizontalOptions="Center" />

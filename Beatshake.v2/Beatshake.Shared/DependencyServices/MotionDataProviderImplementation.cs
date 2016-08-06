@@ -80,9 +80,10 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
         {
             Calibrate();
         }
-        catch (NotSupportedException)
+        catch (NotSupportedException e)
         {
-            MessageBox.Show("Calibration Error", "Some Sensors are missing", new []{"Ok"});
+            var dialog = new MessageDialog(e.ToString(), "Motion data error");
+            var _ = dialog.ShowAsync();
         }
         RefreshRate = BeatshakeSettings.SensorRefreshInterval;
     }

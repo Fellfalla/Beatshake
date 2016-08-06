@@ -10,9 +10,18 @@ using DependencyService = Prism.Services.DependencyService;
 
 namespace Beatshake.Core
 {
-    public class InstrumentalComponent : BindableBase, IInstrumentalComponentIdentification
+    public class InstrumentalComponent : BindableBase, IInstrumentalComponentIdentification, IDisposable
     {
-        private readonly IInstrumentPlayer _player;
+        protected IInstrumentPlayer Player
+        {
+            get { return _player; }
+            set
+            {
+                _player = value;
+                _player.Component = this;
+            }
+        }
+
         private object _audionInstance;
         private Teachement _teachement;
         private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -64,7 +73,7 @@ namespace Beatshake.Core
             IMotionDataProcessor dataProcessor, IMotionDataProvider dataProvider, IInstrumentPlayer player, string name)
         {
             //_player = Xamarin.Forms.DependencyService.Get<IInstrumentPlayer>(DependencyFetchTarget.NewInstance);
-            _player = player;
+            Player = player;
             MotionDataProcessor = dataProcessor;
             MotionDataProvider = dataProvider;
 
@@ -72,7 +81,7 @@ namespace Beatshake.Core
             Name = name;
             ContainingInstrument = containingInstrument;
 
-            var audioLoader = PreLoadAudio();
+            Player.PreLoadAudio();
 
             PropertyChanged += OnPropertyChanged;
 
@@ -93,7 +102,8 @@ namespace Beatshake.Core
 
         public async Task PreLoadAudio()
         {
-            _audionInstance = await _player.PreLoadAudio(this).ConfigureAwait(false);
+            await Player.PreLoadAudioAsync().ConfigureAwait(false);
+            //_audionInstance = await _player.PreLoadAudio(this).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -103,7 +113,10 @@ namespace Beatshake.Core
         /// <returns></returns>
         public async Task PlaySound()
         {
-            cooldown.TryAddAsyncRequest(async () => await _player.Play(_audionInstance).ConfigureAwait(false));
+            cooldown.TryAddAsyncRequest(async () =>
+            {
+                await Player.PlayAsync().ConfigureAwait(false);
+            });
 
             if (cooldown.IsCoolingDown)
             {
@@ -127,6 +140,7 @@ namespace Beatshake.Core
         private bool _isActivated = true;
         private int _number;
         private NeuralTeachement _neuralTeachement;
+        private IInstrumentPlayer _player;
 
         public DelegateCommand PlaySoundCommand
         {
@@ -160,5 +174,9 @@ namespace Beatshake.Core
             MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
         }
 
+        public void Dispose()
+        {
+            _player.Dispose();
+        }
     }
 }
