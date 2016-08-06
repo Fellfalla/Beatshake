@@ -18,10 +18,11 @@ namespace Beatshake.Views
             //NavigationPage.SetHasNavigationBar(this, true);
             ViewModel = viewModel;
             InitializeComponent();
-            Menu.ItemSelected += (sender, e) => {
-                                                    if (MenuItemSelected != null)
-                                                        MenuItemSelected(this, e.SelectedItem as MenuItem);
-            };
+            //Menu.ItemSelected += (sender, e) =>
+            //{
+            //    if (MenuItemSelected != null)
+            //        MenuItemSelected(this, e.SelectedItem as MenuItem);
+            //};
 
         }
 

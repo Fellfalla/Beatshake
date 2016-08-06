@@ -19,19 +19,21 @@ namespace Beatshake
     {
         public CoreApplication()
         {
+            // instanciate staring views
             var rootPage = Container.Resolve<RootPage>();
-            //_navigationService.NavigateAsync("DrumView");
             var mainMenu = Container.Resolve<MainMenuView>();
+            var firstPage = Container.Resolve<DrumView>();
+            var navPage = ((NavigationPageNavigationService)NavigationService).NavigationPage = new NavigationPage(firstPage);
+
+            // set events and other mechanism
             mainMenu.MenuItemSelected += (sender, e) => _navigationService.NavigateAsync(((Type)e.BindingContext).Name);
-            rootPage.Master = Container.Resolve<DrumView>();
 
-            //var navPage = (NavigationPage) _rootNavigationPage.MainPage;//new NavigationPage(Container.Resolve<DrumView>());
-            //rootPage.Detail = navPage;
-            rootPage.Detail = _rootNavigationPage;
-
+            // Assign all staring views
+            rootPage.Master = mainMenu;
+            rootPage.Detail = navPage;
             MainPage = rootPage;
 
-            NavigationService.NavigateAsync(nameof(DrumView));
+            NavigationService.NavigateAsync(nameof(SettingsView));
         }
 
         //protected override void OnStart()
@@ -60,7 +62,7 @@ namespace Beatshake
         //}
 
         //private ApplicationProvider _applicationProvider;
-        private NavigationPage _rootNavigationPage;
+        //private NavigationPage _rootNavigationPage;
 
         protected override INavigationService CreateNavigationService()
         {
@@ -69,11 +71,11 @@ namespace Beatshake
             if (_navigationService == null)
             {
                 //_applicationProvider = new ApplicationProvider();
-                _rootNavigationPage = new NavigationPage(new ContentPage());
+                //_rootNavigationPage = new NavigationPage(new ContentPage());
                 // var navPage = new NavigationPage();
                 //_applicationProvider.MainPage = navPage;
                 //_navigationService = new UnityPageNavigationService(Container, _applicationProvider, Logger);                
-                _navigationService = new NavigationPageNavigationService(Container, _rootNavigationPage);
+                _navigationService = new NavigationPageNavigationService(Container);
                 
                 //// if _navigationService is not set before MainMenuView is Resolved there will be a endless loop
                 ////var mainMenu = Container.Resolve<MainMenuView>();
@@ -147,7 +149,16 @@ namespace Beatshake
         private IUnityContainer _container;
         private NavigationPage _navigationPage;
 
-        public NavigationPageNavigationService(IUnityContainer container, NavigationPage navigationPage)
+        public NavigationPage NavigationPage
+        {
+            get { return _navigationPage; }
+            set
+            {
+                _navigationPage = value;
+            }
+        }
+
+        public NavigationPageNavigationService(IUnityContainer container, NavigationPage navigationPage = null)
         {
             _container = container;
             _navigationPage = navigationPage;
