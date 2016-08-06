@@ -141,6 +141,11 @@
                             <Label Text="{Binding Source={x:Static viewModels:DrumMode.NeuralNetwork}}" />
                             <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.NeuralNetwork}}" />
                         </StackLayout>
+                      
+                        <StackLayout Style="{StaticResource SettingStackLayout}">
+                            <Label Text="{Binding Source={x:Static viewModels:DrumMode.NeuralNetwork}}" />
+                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.NeuralNetwork}}" />
+                        </StackLayout>
 
                         <!--<StackLayout Orientation="Horizontal">
                             <Label Text="Use Randomizer" />
