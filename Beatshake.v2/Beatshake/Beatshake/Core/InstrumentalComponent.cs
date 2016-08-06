@@ -126,6 +126,7 @@ namespace Beatshake.Core
         private IInstrumentalIdentification _containingInstrument;
         private bool _isActivated = true;
         private int _number;
+        private NeuralTeachement _neuralTeachement;
 
         public DelegateCommand PlaySoundCommand
         {
@@ -138,6 +139,13 @@ namespace Beatshake.Core
             get { return _teachement; }
             set { SetProperty(ref _teachement, value); }
         }
+
+        public NeuralTeachement NeuralTeachement
+        {
+            get { return _neuralTeachement; }
+            set { SetProperty(ref _neuralTeachement, value); }
+        }
+
 
         protected async Task Teach()
         {

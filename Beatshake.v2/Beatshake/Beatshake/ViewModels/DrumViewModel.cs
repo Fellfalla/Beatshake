@@ -61,6 +61,9 @@ namespace Beatshake.ViewModels
 
         private static void ConfigureMotionDataProviderForMode(DrumMode mode, IMotionDataProvider provider)
         {
+            provider.MotionDataNeeds = ModeNeeds[mode];
+            return;
+
             switch (mode)
             {
                 case DrumMode.FunctionAnalysis:
@@ -156,7 +159,11 @@ namespace Beatshake.ViewModels
             {
                 await TriggerOnTeachementMatch(activatedComponents);
             }
-            if (UsePosition)
+            else if (UseNeuralNetwork)
+            {
+                await TriggerOnNeuralNetworkMatch(activatedComponents);
+            }
+            else if (UsePosition)
             {
                 await TriggerOnPositionMatch(activatedComponents);
             }
@@ -207,6 +214,23 @@ namespace Beatshake.ViewModels
             {
                 var result = instrumentalComponent.Teachement.FitsDataSet(TeachementTolerance/10,
                     normalizedTimestamps.Last(), 0, ComparisonStrategy.PeakNormalized, @group);
+                if (result)
+                {
+                    var task = instrumentalComponent.PlaySoundCommand.Execute();
+                    tasks.Add(task);
+                }
+            }
+            await Task.WhenAll(tasks);
+        }
+        private async Task TriggerOnNeuralNetworkMatch(InstrumentalComponent[] activatedComponents)
+        {
+
+            var teachedOnes = activatedComponents.Where(component => component.NeuralTeachement != null);
+            var tasks = new List<Task>();
+            foreach (var instrumentalComponent in teachedOnes)
+            {
+                var data = NeuralTeachement.TransformFunctionsToNetworkInputs(_xHistory, _yHistory, _zHistory);
+                var result = instrumentalComponent.NeuralTeachement.FitsDataSet(TeachementTolerance/10, data);
                 if (result)
                 {
                     var task = instrumentalComponent.PlaySoundCommand.Execute();
@@ -282,11 +306,6 @@ namespace Beatshake.ViewModels
             get { return CurrentDrumMode == DrumMode.Jolt; }
             set
             {
-                //if (value)
-                //{
-                //    ConcurrentOptionSet();
-                //}
-                //SetProperty(ref _useTeachement, value);
                 if (value)
                 {
                     CurrentDrumMode = DrumMode.Jolt;
@@ -321,12 +340,28 @@ namespace Beatshake.ViewModels
             {
                 if (value)
                 {
-                    MotionDataProvider.MotionDataNeeds |= MotionData.PoseTrans;
+                    //MotionDataProvider.MotionDataNeeds |= MotionData.PoseTrans;
                     CurrentDrumMode = DrumMode.Position;
                 }
                 else
                 {
-                    MotionDataProvider.MotionDataNeeds ^= MotionData.PoseTrans;
+                    //MotionDataProvider.MotionDataNeeds ^= MotionData.PoseTrans;
+                    CurrentDrumMode = DrumMode.None;
+                }
+            }
+        }
+
+        public bool UseNeuralNetwork
+        {
+            get { return CurrentDrumMode == DrumMode.NeuralNetwork; }
+            set
+            {
+                if (value)
+                {
+                    CurrentDrumMode = DrumMode.NeuralNetwork;
+                }
+                else
+                {
                     CurrentDrumMode = DrumMode.None;
                 }
             }
@@ -372,7 +407,19 @@ namespace Beatshake.ViewModels
             set { SetProperty(ref _title, value); }
         }
 
+        private static readonly Dictionary<DrumMode, MotionData> ModeNeeds = 
+            new Dictionary<DrumMode, MotionData>()
+            {
+                { DrumMode.NeuralNetwork, MotionData.All },
+                { DrumMode.None, MotionData.None },
+                { DrumMode.Jolt, MotionData.JoltTrans },
+                { DrumMode.Position, MotionData.PoseTrans },
+                { DrumMode.FunctionAnalysis, MotionData.RelAccelerationTrans },
+                { DrumMode.Random, MotionData.RelAccelerationTrans },
+            };
     }
+
+    
 
     [Flags]
     public enum DrumMode // todo: add Flags and allow additive combination of some modes
@@ -382,5 +429,7 @@ namespace Beatshake.ViewModels
         Random = 4,
         FunctionAnalysis = 8,
         Jolt = 16,
+        NeuralNetwork = 32,
     }
+
 }

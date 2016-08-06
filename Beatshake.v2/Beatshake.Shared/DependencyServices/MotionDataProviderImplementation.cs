@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Devices.Sensors;
+using Windows.UI.Popups;
 using Beatshake.Core;
 using Beatshake.DependencyServices;
 using MathNet.Numerics.LinearAlgebra;
+using Microsoft.Xna.Framework.Input;
 
 internal class MotionDataProviderImplementation : IMotionDataProvider
 {
@@ -74,7 +76,14 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
             _gyrometer.ReadingChanged += OnNewSensorData;
         }
 
-        Calibrate();
+        try
+        {
+            Calibrate();
+        }
+        catch (NotSupportedException)
+        {
+            MessageBox.Show("Calibration Error", "Some Sensors are missing", new []{"Ok"});
+        }
         RefreshRate = BeatshakeSettings.SensorRefreshInterval;
     }
 
