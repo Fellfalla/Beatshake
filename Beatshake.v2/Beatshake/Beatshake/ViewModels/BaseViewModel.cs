@@ -34,7 +34,7 @@ namespace Beatshake.ViewModels
             string viewModelName = typeof(TViewModel).Name;
             var viewName = viewModelName.Substring(0, viewModelName.Length - toTrim.Length);
 
-            await this.NavigateAsync(viewName, parameters, useModalNavigation, animated);
+            await NavigateAsync(viewName, parameters, useModalNavigation, animated);
             //await NavigationService.NavigateAsync<TViewModel>(parameters, useModalNavigation, animated);
         }
 

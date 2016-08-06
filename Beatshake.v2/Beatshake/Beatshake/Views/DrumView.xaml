@@ -8,7 +8,9 @@
                        xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
                        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                        x:Class="Beatshake.Views.DrumView"
+                       Title="Default Drum Kit"
                        NavigationPage.HasBackButton="True"
+                       NavigationPage.HasNavigationBar="True"
                        mvvm:ViewModelLocator.AutowireViewModel="True">
     <views:BaseContentPage.Resources>
         <ResourceDictionary>
@@ -141,12 +143,7 @@
                             <Label Text="{Binding Source={x:Static viewModels:DrumMode.NeuralNetwork}}" />
                             <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.NeuralNetwork}}" />
                         </StackLayout>
-                      
-                        <StackLayout Style="{StaticResource SettingStackLayout}">
-                            <Label Text="{Binding Source={x:Static viewModels:DrumMode.NeuralNetwork}}" />
-                            <Switch IsToggled="{Binding CurrentDrumMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModels:DrumMode.NeuralNetwork}}" />
-                        </StackLayout>
-
+    
                         <!--<StackLayout Orientation="Horizontal">
                             <Label Text="Use Randomizer" />
                             <Switch IsToggled="{Binding UseRandom}" />

@@ -22,4 +22,18 @@ namespace Beatshake.Views
             return true;
         }
     }
+
+    public abstract class BaseSideNavPage : MasterDetailPage
+    {
+
+        //protected override bool OnBackButtonPressed()
+        //{
+        //    if (!this.NavigateBackWithViewModel())
+        //    {
+        //        return base.OnBackButtonPressed();
+        //    }
+        //    return true;
+        //}
+    }
+    
 }
