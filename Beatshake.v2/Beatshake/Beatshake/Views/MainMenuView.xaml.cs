@@ -39,6 +39,14 @@ namespace Beatshake.Views
 
         //}
 
- 
+
+        private void OnMenuItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem) e.SelectedItem;
+
+            if (MenuItemSelected != null) MenuItemSelected(this, menuItem);
+
+
+        }
     }
 }

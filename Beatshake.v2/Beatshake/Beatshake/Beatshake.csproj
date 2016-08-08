@@ -93,12 +93,16 @@
     <Compile Include="Views\BaseCarouselPage.cs" />
     <Compile Include="Views\BaseContentPage.cs" />
     <Compile Include="Views\Behaviors\EffectBehavior.cs" />
+    <Compile Include="Views\CreditsView.xaml.cs">
+      <DependentUpon>CreditsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DrumView.xaml.cs">
       <DependentUpon>DrumView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainMenuView.xaml.cs">
       <DependentUpon>MainMenuView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MenuItem.cs" />
     <Compile Include="Views\PageExtensionMethods.cs" />
     <Compile Include="Views\RootPage.xaml.cs">
       <DependentUpon>RootPage.xaml</DependentUpon>
@@ -207,6 +211,18 @@
     <Content Include="..\..\..\Resources\BeatshakeLogo.png">
       <Link>Assets\BeatshakeLogo.png</Link>
     </Content>
+    <Content Include="..\..\..\Resources\IconCredits.png">
+      <Link>Assets\IconCredits.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\IconDrum.png">
+      <Link>Assets\IconDrum.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\IconSettings.png">
+      <Link>Assets\IconSettings.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\IconStatistics.png">
+      <Link>Assets\IconStatistics.png</Link>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\StatisticsView.xaml">
@@ -228,6 +244,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\RootPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\CreditsView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>

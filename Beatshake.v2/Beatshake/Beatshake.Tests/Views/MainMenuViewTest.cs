@@ -1,4 +1,5 @@
-﻿using Beatshake.Views;
+﻿using Beatshake.ViewModels;
+using Beatshake.Views;
 using Xunit;
 
 namespace Beatshake.Tests.Views
@@ -8,7 +9,7 @@ namespace Beatshake.Tests.Views
         [Fact]
         public void SmokeTest()
         {
-            var _ = new MainMenuView();
+            var _ = new MainMenuView(new MainMenuViewModel(null));
         }
     }
 }

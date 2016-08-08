@@ -116,6 +116,18 @@
     <Content Include="..\..\..\Resources\BeatshakeLogo.png">
       <Link>BeatshakeLogo.png</Link>
     </Content>
+    <Content Include="..\..\..\Resources\IconCredits.png">
+      <Link>IconCredits.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\IconDrum.png">
+      <Link>IconDrum.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\IconSettings.png">
+      <Link>IconSettings.png</Link>
+    </Content>
+    <Content Include="..\..\..\Resources\IconStatistics.png">
+      <Link>IconStatistics.png</Link>
+    </Content>
     <Content Include="..\..\..\Resources\Logo\106x106.png">
       <Link>Assets\106x106.png</Link>
     </Content>

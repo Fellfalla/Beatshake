@@ -24,15 +24,15 @@ namespace Beatshake
             var mainMenu = Container.Resolve<MainMenuView>();
             var firstPage = Container.Resolve<DrumView>();
             var navPage = ((NavigationPageNavigationService)NavigationService).NavigationPage = new NavigationPage(firstPage);
-
+            navPage.Pushed += (sender, args) => rootPage.IsPresented = false;
             // set events and other mechanism
-            mainMenu.MenuItemSelected += (sender, e) => _navigationService.NavigateAsync(((Type)e.BindingContext).Name);
+            mainMenu.MenuItemSelected += (sender, e) => _navigationService.NavigateAsync(e.TargetType);
 
             // Assign all staring views
             rootPage.Master = mainMenu;
             rootPage.Detail = navPage;
             MainPage = rootPage;
-
+            
             NavigationService.NavigateAsync(nameof(SettingsView));
         }
 
@@ -100,7 +100,7 @@ namespace Beatshake
             return _navigationService;
         }
 
-        private INavigationService _navigationService;
+        private IBeatshakeNavigationServie _navigationService;
 
         protected override void OnInitialized()
         {
@@ -143,8 +143,14 @@ namespace Beatshake
         }
     }
 
+    public interface IBeatshakeNavigationServie : INavigationService
+    {
 
-    public class NavigationPageNavigationService : INavigationService, IPageAware
+        Task NavigateAsync(Type type, NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true);
+
+    }
+
+    public class NavigationPageNavigationService : IBeatshakeNavigationServie, IPageAware
     {
         private IUnityContainer _container;
         private NavigationPage _navigationPage;
@@ -186,6 +192,12 @@ namespace Beatshake
             bool animated = true)
         {
             var type = _container.Registrations.First(registration => registration.MappedToType.Name.Equals(name)).MappedToType;
+            await this.NavigateAsync(type, parameters, useModalNavigation, animated);
+        }
+
+        public async Task NavigateAsync(Type type, NavigationParameters parameters = null, bool? useModalNavigation = null,
+            bool animated = true)
+        {
             var page = _container.Resolve(type) as Page;
             Page = page;
             await _navigationPage.PushAsync(page);

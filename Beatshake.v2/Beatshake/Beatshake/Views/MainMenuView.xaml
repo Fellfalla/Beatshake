@@ -1,46 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                       xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-                       xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
-                       x:Class="Beatshake.Views.MainMenuView"
-                       prism:ViewModelLocator.AutowireViewModel="True"
-                       NavigationPage.HasNavigationBar="False"
-                        Padding="0"
-                      Title="Beatshake"
-                       >
-  <ContentPage.Resources>
-    <ResourceDictionary>
-      
-      <Style TargetType="Button" x:Key="MenuButtonStyle">
-        <Setter Property="VerticalOptions" Value="Center" />
-        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
-        <Setter Property="BackgroundColor" Value="#44444444" />
-        <Setter Property="BorderColor" Value="#88444444" />
-      </Style>
-      
-    </ResourceDictionary>
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:views="clr-namespace:Beatshake.Views;assembly=Beatshake"
+             x:Class="Beatshake.Views.MainMenuView"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             NavigationPage.HasNavigationBar="False"
+             Padding="0"
+             Title="Beatshake">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="Button" x:Key="MenuButtonStyle">
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="BackgroundColor" Value="#44444444" />
+                <Setter Property="BorderColor" Value="#88444444" />
+            </Style>
+
+        </ResourceDictionary>
     </ContentPage.Resources>
-  
-  
+
+
     <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Padding="0" Margin="0">
         <Grid.RowDefinitions>
-          <RowDefinition Height="*"></RowDefinition>
-          <RowDefinition Height="3*"/>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Image Source="Beatshake.png" Grid.Row="0" Grid.RowSpan="1"
-               Aspect="AspectFit" 
+               Aspect="AspectFit"
                Margin="0"
                VerticalOptions="Center"
                HorizontalOptions="Center" />
-      
-      
-      <StackLayout Grid.Row="1"
+
+
+        <!--<StackLayout Grid.Row="1"
                VerticalOptions="Center"
                HorizontalOptions="Center"
                    >
@@ -51,30 +50,70 @@
                 Style="{StaticResource MenuButtonStyle}" />
         <Button Command="{Binding NavigateToSettingsCommand}" Text="Settings"
                 Style="{StaticResource MenuButtonStyle}" />
-      </StackLayout>
-      
-        <ListView Grid.Row="2" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" x:Name="Menu">
-          
-          <MenuItem Text="Start that shit!">
-          <MenuItem.BindingContext>
-              <x:Type>views:DrumView</x:Type>
-            </MenuItem.BindingContext>
-          
-          </MenuItem>
-            <MenuItem Text="Statistics">
-              <MenuItem.BindingContext>
-                <x:Type>views:StatisticsView</x:Type>
-              </MenuItem.BindingContext>
-            </MenuItem>
-            <MenuItem Text="Settings">
-              <MenuItem.BindingContext>
-                <x:Type>views:SettingsView</x:Type>
-              </MenuItem.BindingContext>
-            </MenuItem>
-            
+      </StackLayout>-->
+
+        <ListView
+            x:Name="Menu"
+            Grid.Row="1"
+            VerticalOptions="FillAndExpand"
+            BackgroundColor="Transparent"
+            HasUnevenRows="False"
+            ItemSelected="OnMenuItemSelected">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                  <ImageCell Text="{Binding Title}"
+                             ImageSource="{Binding IconSource}"
+                             Height="20">
+                  </ImageCell>
+                  <!--<Grid >
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"></ColumnDefinition>
+                      <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+               
+                    --><!--<Grid.Resources>
+                      <ResourceDictionary>
+                        <x:Double x:Key="ImageSize">15</x:Double>
+                      </ResourceDictionary>
+                    </Grid.Resources>--><!--
+                    <Image Grid.Column="0" Source="{Binding IconSource}"
+                            HeightRequest="15"
+                            WidthRequest="15"
+                         
+                           MinimumHeightRequest="15"
+                           MinimumWidthRequest="15">
+                    </Image>
+                      <Label Grid.Column="1" Text="{Binding Title}" FontAttributes="Bold"/>
+                      <Label Grid.Column="1" Text="Test" FontAttributes="Bold"/>
+                  </Grid>-->
+
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.ItemsSource>
+                <x:Array Type="{x:Type views:MenuItem}">
+
+                    <views:MenuItem Title="Start that shit!"
+                                    IconSource="IconDrum.png"
+                                    TargetType="{x:Type views:DrumView}" />
+
+                    <views:MenuItem Title="Statistics"
+                                    IconSource="IconStatistics.png"
+                                    TargetType="{x:Type views:StatisticsView}" />
+
+                    <views:MenuItem Title="Settings"
+                                    IconSource="IconSettings.png"
+                                    TargetType="{x:Type views:SettingsView}" />
+
+                    <views:MenuItem Title="Credits"
+                                    IconSource="IconCredits.png"
+                                    TargetType="{x:Type views:CreditsView}" />
+
+                </x:Array>
+            </ListView.ItemsSource>
+
         </ListView>
 
-  
+
     </Grid>
 
 </ContentPage>

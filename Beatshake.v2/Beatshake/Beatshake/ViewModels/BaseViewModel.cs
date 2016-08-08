@@ -29,6 +29,8 @@ namespace Beatshake.ViewModels
         public async Task NavigateAsync<TViewModel>(NavigationParameters parameters = null, bool? useModalNavigation = null,
             bool animated = true) where TViewModel : BindableBase
         {
+            
+
             //Prism.Navigation.
             string toTrim = "Model";
             string viewModelName = typeof(TViewModel).Name;
@@ -45,6 +47,13 @@ namespace Beatshake.ViewModels
 
         public async Task NavigateAsync(string name, NavigationParameters parameters = null, bool? useModalNavigation = null, bool animated = true)
         {
+            if (name.EndsWith("ViewModel"))
+            {
+                // Trim target name from *ViewModel to *View
+                string toTrim = "Model";
+                name = name.Substring(0, name.Length - toTrim.Length);
+            }
+
             await NavigationService.NavigateAsync(name, parameters, useModalNavigation, animated);
         }
 

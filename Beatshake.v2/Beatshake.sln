@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beatshake.Droid", "Beatshake\Beatshake.Droid\Beatshake.Droid.csproj", "{943B23C3-2AE9-4A04-8D4C-5D847AC65385}"
 EndProject
@@ -21,6 +21,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 	ProjectSection(SolutionItems) = preProject
 		..\Resources\Beatshake ico.png = ..\Resources\Beatshake ico.png
 		..\Resources\Beatshake.png = ..\Resources\Beatshake.png
+		..\Resources\IconCredits.png = ..\Resources\IconCredits.png
+		..\Resources\IconDrum.png = ..\Resources\IconDrum.png
+		..\Resources\IconSettings.png = ..\Resources\IconSettings.png
+		..\Resources\IconStatistics.png = ..\Resources\IconStatistics.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logo", "Logo", "{AC7CED37-C4EB-4675-A6CB-3B269D182205}"
@@ -42,9 +46,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beatshake.Tests", "Beatshak
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Beatshake.Shared\Beatshake.Shared.projitems*{df0f0350-5eae-442b-9ec0-6374245f6659}*SharedItemsImports = 13
-		Beatshake.Shared\Beatshake.Shared.projitems*{6315e38b-c7f2-4d68-b9fa-4ee3ff813263}*SharedItemsImports = 4
 		Beatshake.Shared\Beatshake.Shared.projitems*{0e1790fb-0dcb-4d7d-8a8d-2518f5b5a486}*SharedItemsImports = 4
+		Beatshake.Shared\Beatshake.Shared.projitems*{6315e38b-c7f2-4d68-b9fa-4ee3ff813263}*SharedItemsImports = 4
+		Beatshake.Shared\Beatshake.Shared.projitems*{df0f0350-5eae-442b-9ec0-6374245f6659}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
