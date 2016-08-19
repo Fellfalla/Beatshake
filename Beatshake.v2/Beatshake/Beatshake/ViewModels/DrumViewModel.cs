@@ -411,12 +411,12 @@ namespace Beatshake.ViewModels
         private static readonly Dictionary<DrumMode, MotionData> ModeNeeds = 
             new Dictionary<DrumMode, MotionData>()
             {
-                { DrumMode.NeuralNetwork, MotionData.All },
-                { DrumMode.None, MotionData.None },
-                { DrumMode.Jolt, MotionData.JoltTrans },
-                { DrumMode.Position, MotionData.PoseTrans },
-                { DrumMode.FunctionAnalysis, MotionData.RelAccelerationTrans },
-                { DrumMode.Random, MotionData.RelAccelerationTrans },
+                { DrumMode.NeuralNetwork,       MotionData.All },
+                { DrumMode.None,                MotionData.None },
+                { DrumMode.Jolt,                MotionData.JoltTrans },
+                { DrumMode.Position,            MotionData.PoseTrans },
+                { DrumMode.FunctionAnalysis,    MotionData.RelAccelerationTrans },
+                { DrumMode.Random,              MotionData.RelAccelerationTrans },
             };
     }
 

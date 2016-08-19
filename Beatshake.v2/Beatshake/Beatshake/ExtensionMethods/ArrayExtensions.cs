@@ -20,6 +20,23 @@ namespace Beatshake.ExtensionMethods
             return result;
         }
 
+        /// <summary>
+        /// Instanciates the Array with <paramref name="value"/> in each entry
+        /// Source: http://stackoverflow.com/a/1014015
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <param name="value"></param>
+        /// <returns>The same array as the input array</returns>
+        public static T[] Populate<T>(this T[] arr, T value)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] = value;
+            }
+            return arr;
+        }
+
         public static void ForEach(this Array array, Action<Array, int[]> action)
         {
             if (array.Length == 0) return;
@@ -28,7 +45,7 @@ namespace Beatshake.ExtensionMethods
             while (walker.Step());
         }
 
-        internal class ArrayTraverse
+        private class ArrayTraverse
         {
             public int[] Position;
             private int[] maxLengths;

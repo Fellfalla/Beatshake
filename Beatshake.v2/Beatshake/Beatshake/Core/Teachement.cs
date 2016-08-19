@@ -11,6 +11,12 @@ namespace Beatshake.Core
 {
     public class NeuralTeachement
     {
+        public static readonly int NumberOfPhysicalDatasets = Enum.GetNames(typeof(MotionData)).Length - 2; // minus MotionData.All & MotionData.None
+        public static readonly int HiddenLayers = 1;
+        public static readonly int InputNeurons = NumberOfPhysicalDatasets * 3; 
+        public static readonly int OutputNeurons = 1;
+        public static readonly int HiddenNeurons = (InputNeurons + OutputNeurons)/2;
+
         public NeuralTeachement()
         {
             ConfigureBrain();
@@ -20,7 +26,9 @@ namespace Beatshake.Core
 
         private void ConfigureBrain()
         {
-             _brain = new ActivationNetwork(new ThresholdFunction(), 50, 10,4,4,1);
+            var hidden = new int[HiddenLayers].Populate(HiddenNeurons);
+            int[] layerSizes = hidden.Concat(new int[] {OutputNeurons}).ToArray();
+             _brain = new ActivationNetwork(new ThresholdFunction(), InputNeurons, layerSizes);
         }
 
         public bool FitsDataSet(double tolerance, double[] data)
@@ -172,11 +180,11 @@ namespace Beatshake.Core
             set { Functions[2] = value; }
         }
 
-        public double XPosition { get; private set; }
+        private double _xPosition;
 
-        public double YPosition { get; private set; }
+        private double _yPosition;
 
-        public double ZPosition { get; private set; }
+        private double _zPosition;
 
         /// <summary>
         /// <exception cref="InsufficientDataException">Thrown if a peak is to close to the start of the data</exception>
@@ -281,9 +289,9 @@ namespace Beatshake.Core
 
                 int peakPos = DataAnalyzer.GetPeak(xAcc, yAcc, zAcc);
 
-                teachement.XPosition = xPos[peakPos];
-                teachement.YPosition = yPos[peakPos];
-                teachement.ZPosition = zPos[peakPos];
+                teachement._xPosition = xPos[peakPos];
+                teachement._yPosition = yPos[peakPos];
+                teachement._zPosition = zPos[peakPos];
             }
             catch (InsufficientDataException) // thrown if the peak is to near at beginning data
             {
@@ -337,9 +345,9 @@ namespace Beatshake.Core
 
         public bool FitsPositionData(double tolerance, IMotionDataProvider motionData)
         {
-            return motionData.Pose.Trans[0].IsAlmostEqual(XPosition, tolerance) &&
-                   motionData.Pose.Trans[1].IsAlmostEqual(YPosition, tolerance) &&
-                   motionData.Pose.Trans[2].IsAlmostEqual(ZPosition, tolerance);
+            return motionData.Pose.Trans[0].IsAlmostEqual(_xPosition, tolerance) &&
+                   motionData.Pose.Trans[1].IsAlmostEqual(_yPosition, tolerance) &&
+                   motionData.Pose.Trans[2].IsAlmostEqual(_zPosition, tolerance);
         }
     }
 }
