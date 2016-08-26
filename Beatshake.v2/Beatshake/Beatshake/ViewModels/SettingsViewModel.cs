@@ -17,7 +17,10 @@ namespace Beatshake.ViewModels
         public int FunctionSamples
         {
             get { return BeatshakeSettings.SamplePoints; }
-            set { SetProperty(ref BeatshakeSettings.SamplePoints, value); }
+            set
+            {
+                SetProperty(ref BeatshakeSettings.SamplePoints, value);
+            }
         }
     }
 }

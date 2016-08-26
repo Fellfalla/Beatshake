@@ -7,5 +7,7 @@ namespace Beatshake.DependencyServices
     {
         Task Notify (string message);
         Task Notify (Exception exception);
+
+        Task<int> DecisionNotification(string message, params string[] buttons);
     }
 }

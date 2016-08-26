@@ -47,6 +47,7 @@
     <Compile Include="Core\DataAnalyzer.cs" />
     <Compile Include="Core\DataContainer.cs" />
     <Compile Include="Core\DataFittingStrategy.cs" />
+    <Compile Include="Core\DropOutStack.cs" />
     <Compile Include="Core\FunctionGroup.cs" />
     <Compile Include="Core\GlobalFactory.cs" />
     <Compile Include="Core\GravityEliminationMode.cs" />

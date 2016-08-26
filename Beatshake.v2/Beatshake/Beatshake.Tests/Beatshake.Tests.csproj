@@ -114,6 +114,7 @@
     <Compile Include="FunctionGroupTest.cs" />
     <Compile Include="Helper\AutoFixture.cs" />
     <Compile Include="Helper\DataGenerator.cs" />
+    <Compile Include="LanguageTests.cs" />
     <Compile Include="PolynomialFunctionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuadraticFunctionTest.cs" />

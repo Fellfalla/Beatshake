@@ -4,8 +4,8 @@ using Windows.UI.Core;
 using Windows.UI.Popups;
 using Beatshake.DependencyServices;
 
-    class UserTextNotifierImplementation : IUserTextNotifier
-    {
+class UserTextNotifierImplementation : IUserTextNotifier
+{
 
         public async Task Notify(string message)
         {
@@ -36,4 +36,37 @@ using Beatshake.DependencyServices;
         {
             await Notify(exception.ToString());
         }
+
+    /// <summary>
+    /// Creates a decision dialog with buttons
+    /// </summary>
+    /// <param name="message">Overall message for the dialog</param>
+    /// <param name="buttons">All buttons that have to be shown</param>
+    /// <returns>the array index of the pressed button</returns>
+    public async Task<int> DecisionNotification(string message, params string[] buttons)
+    {
+        var tsc = new TaskCompletionSource<int>();
+        var dialogTask = tsc.Task;
+
+        await
+                Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal,
+                    async () =>
+                    {
+
+                        var dialog = new MessageDialog(message);
+                        UICommand[] uiButtonObjects = new UICommand[buttons.Length];
+
+                        for (int i = 0; i < buttons.Length; i++)
+                        {
+                            uiButtonObjects[i] = new UICommand(buttons[i]);
+                            uiButtonObjects[i].Id = i;
+                        }
+
+                        var result = await dialog.ShowAsync();
+                        tsc.SetResult((int) result.Id);
+                    });
+
+        return await dialogTask;
     }
+}

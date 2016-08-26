@@ -47,7 +47,7 @@ namespace Beatshake.Core
         /// <summary>
         /// This is the amount of points which are used to create a function aproximation upon measure values.
         /// </summary>
-        public static int SamplePoints = InstrumentalCooldown;
+        public static int SamplePoints = (int) SensorRefreshInterval / InstrumentalCooldown + 1; // bug: Setting this Field leads to unpredictable behavior -> insert event handling or somethink similar
 
         /// <summary>
         /// The device accelleration state is every measure step damped by this value to avoid 

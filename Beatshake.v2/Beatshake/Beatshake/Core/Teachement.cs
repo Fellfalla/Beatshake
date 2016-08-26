@@ -5,15 +5,18 @@ using System.Threading.Tasks;
 using AForge.Neuro;
 using Beatshake.DependencyServices;
 using Beatshake.ExtensionMethods;
+using MathNet.Numerics;
 
 
 namespace Beatshake.Core
 {
     public class NeuralTeachement
     {
+        private static readonly int numberOfDimensions = 3;
+
         public static readonly int NumberOfPhysicalDatasets = Enum.GetNames(typeof(MotionData)).Length - 2; // minus MotionData.All & MotionData.None
         public static readonly int HiddenLayers = 1;
-        public static readonly int InputNeurons = NumberOfPhysicalDatasets * 3; 
+        public static readonly int InputNeurons = NumberOfPhysicalDatasets * numberOfDimensions * BeatshakeSettings.SamplePoints; 
         public static readonly int OutputNeurons = 1;
         public static readonly int HiddenNeurons = (InputNeurons + OutputNeurons)/2;
 
@@ -85,27 +88,39 @@ namespace Beatshake.Core
                     startIndex = 0;
                 }
             }
-
-
             return teachement;
         }
 
+        public void Train(double[] timesteps, int output, params IList<double>[] valueArrays)
+        {
+            var learner = new AForge.Neuro.Learning.BackPropagationLearning(_brain);
+            learner.Run(TransformFunctionsToNetworkInputs(valueArrays), new double[] { output });
+        }
+
+
         public static async Task<NeuralTeachement> TeachMovement(IMotionDataProvider motionDataProvider)
         {
+            const int finishButtonIndex = 0;
+            const int continueButtonIndex = 1;
+            var buttons = new string[2];
+            buttons[finishButtonIndex] =  "Finish";
+            buttons[continueButtonIndex] = "Teach";
+            const string message = "Click OK when you finished teaching";
 
             // record movement
             NeuralTeachement teachement = null;
 
-            List<double> xAcc = new List<double>();
-            List<double> yAcc = new List<double>();
-            List<double> zAcc = new List<double>();
-
-            List<double> xPos = new List<double>();
-            List<double> yPos = new List<double>();
-            List<double> zPos = new List<double>();
+            var xAcc = new Stack<double>();
+            var yAcc = new Stack<double>();
+            var zAcc = new Stack<double>();
+            var xPos = new Stack<double>();
+            var yPos = new Stack<double>();
+            var zPos = new Stack<double>();
 
             List<double> timesteps = new List<double>();
-            var userConfirmation = Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
+
+            IUserTextNotifier notifier = Xamarin.Forms.DependencyService.Get<IUserTextNotifier>();
+            var userConfirmation = notifier.DecisionNotification(message, buttons);
 
             var measureTask = Task.Factory.StartNew(() =>
             {
@@ -114,14 +129,14 @@ namespace Beatshake.Core
                     timesteps.Add(motionDataProvider.RelAcceleration.Timestamp);
 
                     // Set Accelerations
-                    xAcc.Add(motionDataProvider.RelAcceleration.Trans[0]);
-                    yAcc.Add(motionDataProvider.RelAcceleration.Trans[1]);
-                    zAcc.Add(motionDataProvider.RelAcceleration.Trans[2]);
+                    xAcc.Push(motionDataProvider.RelAcceleration.Trans[0]);
+                    yAcc.Push(motionDataProvider.RelAcceleration.Trans[1]);
+                    zAcc.Push(motionDataProvider.RelAcceleration.Trans[2]);
 
                     // Set Positions
-                    xPos.Add(motionDataProvider.Pose.Trans[0]);
-                    yPos.Add(motionDataProvider.Pose.Trans[1]);
-                    zPos.Add(motionDataProvider.Pose.Trans[2]);
+                    xPos.Push(motionDataProvider.Pose.Trans[0]);
+                    yPos.Push(motionDataProvider.Pose.Trans[1]);
+                    zPos.Push(motionDataProvider.Pose.Trans[2]);
 
                     var task = Task.Delay((int)motionDataProvider.RefreshRate);
                     task.Wait();
@@ -143,7 +158,7 @@ namespace Beatshake.Core
             try
             {
                 var normalizedTimestamps = Utility.NormalizeTimeStamps(timesteps);
-                teachement = NeuralTeachement.Create(normalizedTimestamps.ToArray(), false, xAcc, yAcc, zAcc);
+                teachement = NeuralTeachement.Create(normalizedTimestamps.ToArray(), false, xAcc.ToList(), yAcc.ToList(), zAcc.ToList()); // todo: improve performance by avoiding conversion to list
 
 
             }
