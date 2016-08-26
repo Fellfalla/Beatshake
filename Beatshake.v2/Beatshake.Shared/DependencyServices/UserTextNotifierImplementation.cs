@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Beatshake.DependencyServices;
+using Microsoft.Xna.Framework.Input;
 
 class UserTextNotifierImplementation : IUserTextNotifier
 {
@@ -48,23 +49,31 @@ class UserTextNotifierImplementation : IUserTextNotifier
         var tsc = new TaskCompletionSource<int>();
         var dialogTask = tsc.Task;
 
+
         await
-                Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().Dispatcher.RunAsync(
+                Windows.ApplicationModel.Core.CoreApplication.MainView.Dispatcher.RunAsync(
                     CoreDispatcherPriority.Normal,
                     async () =>
                     {
 
-                        var dialog = new MessageDialog(message);
-                        UICommand[] uiButtonObjects = new UICommand[buttons.Length];
+                        //var dialog = new MessageDialog(message);
+                        //UICommand[] uiButtonObjects = new UICommand[buttons.Length];
 
-                        for (int i = 0; i < buttons.Length; i++)
-                        {
-                            uiButtonObjects[i] = new UICommand(buttons[i]);
-                            uiButtonObjects[i].Id = i;
-                        }
+                        //for (int i = 0; i < buttons.Length; i++)
+                        //{
+                        //    uiButtonObjects[i] = new UICommand(buttons[i]);
+                        //    uiButtonObjects[i].Id = i;
+                        //}
+                        //dialog.Options
 
-                        var result = await dialog.ShowAsync();
-                        tsc.SetResult((int) result.Id);
+
+                        //var result = await dialog.ShowAsync();
+
+                        var a = MessageBox.Show("", message, buttons);
+
+                        var result = await a;
+
+                        tsc.SetResult((int) result);
                     });
 
         return await dialogTask;

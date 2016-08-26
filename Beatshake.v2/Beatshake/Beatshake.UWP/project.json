@@ -12,6 +12,7 @@
     "Prism.Unity.Forms": "6.2.0-pre7",
     "SharpDX": "3.0.2",
     "SharpDX.XAudio2": "3.0.2",
+    "shim": "2.0.1",
     "Unity": "4.0.1",
     "Xamarin.Forms": "2.3.1.114"
   },

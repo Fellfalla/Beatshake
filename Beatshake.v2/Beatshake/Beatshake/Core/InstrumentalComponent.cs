@@ -80,7 +80,6 @@ namespace Beatshake.Core
             Number = 1;
             Name = name;
             ContainingInstrument = containingInstrument;
-
             Player.PreLoadAudio();
 
             PropertyChanged += OnPropertyChanged;
@@ -167,7 +166,8 @@ namespace Beatshake.Core
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
             MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
 
-            Teachement = await Teachement.TeachMovement(MotionDataProvider);
+            //Teachement = await Teachement.TeachMovement(MotionDataProvider);
+            NeuralTeachement = await NeuralTeachement.TeachMovement(MotionDataProvider);
 
             // reenable motion processing 
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;
