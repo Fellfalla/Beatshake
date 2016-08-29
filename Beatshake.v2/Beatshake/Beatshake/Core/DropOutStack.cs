@@ -87,6 +87,10 @@ namespace Beatshake.Core
             return GetEnumerator();
         }
 
+
+        /// <summary>
+        ///  bug: First element is no returned
+        /// </summary>
         private class DropOutStackEnumerator : IEnumerator<T>
         {
             private int _currentIndex;

@@ -69,30 +69,35 @@ namespace Beatshake.Core
                         motionDataProvider.Jolt.XRot                ).Concat(
                         motionDataProvider.Jolt.YRot                ).Concat(
                         motionDataProvider.Jolt.ZRot                ).Concat(
+                        
                         motionDataProvider.AbsAcceleration.XTrans   ).Concat(
                         motionDataProvider.AbsAcceleration.YTrans   ).Concat(
                         motionDataProvider.AbsAcceleration.ZTrans   ).Concat(
                         motionDataProvider.AbsAcceleration.XRot     ).Concat(
                         motionDataProvider.AbsAcceleration.YRot     ).Concat(
                         motionDataProvider.AbsAcceleration.ZRot     ).Concat(
+                        
                         motionDataProvider.RelAcceleration.XTrans   ).Concat(
                         motionDataProvider.RelAcceleration.YTrans   ).Concat(
                         motionDataProvider.RelAcceleration.ZTrans   ).Concat(
                         motionDataProvider.RelAcceleration.XRot     ).Concat(
                         motionDataProvider.RelAcceleration.YRot     ).Concat(
                         motionDataProvider.RelAcceleration.ZRot     ).Concat(
+                        
                         motionDataProvider.Velocity.XTrans          ).Concat(
                         motionDataProvider.Velocity.YTrans          ).Concat(
                         motionDataProvider.Velocity.ZTrans          ).Concat(
                         motionDataProvider.Velocity.XRot            ).Concat(
                         motionDataProvider.Velocity.YRot            ).Concat(
                         motionDataProvider.Velocity.ZRot            ).Concat(
+                        
                         motionDataProvider.Pose.XTrans              ).Concat(
                         motionDataProvider.Pose.YTrans              ).Concat(
                         motionDataProvider.Pose.ZTrans              ).Concat(
                         motionDataProvider.Pose.XRot                ).Concat(
                         motionDataProvider.Pose.YRot                ).Concat(
                         motionDataProvider.Pose.ZRot                ).Concat(
+                        
                         motionDataProvider.Timestamps               );
                 //motionDataProvider.RelAcceleration).Concat(
                 //    motionDataProvider.AbsAcceleration).Concat(

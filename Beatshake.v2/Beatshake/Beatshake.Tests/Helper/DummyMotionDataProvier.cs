@@ -15,6 +15,7 @@ namespace Beatshake.Tests.Helper
         public bool HasAccelerometer { get; }
         public bool HasGyrometer { get; }
         public bool HasOrientationSensor { get; }
+        public DropOutStack<double> Timestamps { get; }
 
         public uint RefreshRate { get; set; }
         public uint MinInterval { get; }
