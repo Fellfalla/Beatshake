@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Beatshake.Core
 {
@@ -22,6 +24,27 @@ namespace Beatshake.Core
             _items = new T[capacity];
         }
 
+        public T this[int i]
+        {
+            get
+            {
+                if (i < 0 || i > _items.Length - 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(i));
+                }
+
+                int accessedItem = LowerStackIndex(_top, _items.Length);
+
+                while (i > 0)
+                {
+                    accessedItem = LowerStackIndex(accessedItem, _items.Length);
+                    i--;
+                }
+
+                return _items[accessedItem];
+            }
+        }
+
         public void Push(T item)
         {
             _items[_top] = item;
@@ -33,6 +56,15 @@ namespace Beatshake.Core
         {
             _top = LowerStackIndex(_top, _items.Length);
             return _items[_top];
+        }
+
+        /// <summary>
+        /// Get topmost element without removing it
+        /// </summary>
+        /// <returns></returns>
+        public T Peek()
+        {
+            return _items[LowerStackIndex(_top, _items.Length)];
         }
 
         private static int RaiseStackIndex(int index, int max)

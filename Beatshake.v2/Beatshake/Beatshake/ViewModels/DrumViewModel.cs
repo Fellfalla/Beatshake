@@ -59,6 +59,20 @@ namespace Beatshake.ViewModels
             }
         }
 
+        public ITeachable TeachementMode
+        {
+            get
+            {
+                switch (CurrentDrumMode)
+                {
+                    case DrumMode.NeuralNetwork:
+                         return new NeuralTeachement();
+                    default:
+                        return new Teachement();
+                }
+            }
+        }
+
         private static void ConfigureMotionDataProviderForMode(DrumMode mode, IMotionDataProvider provider)
         {
             provider.MotionDataNeeds = ModeNeeds[mode];
@@ -93,10 +107,13 @@ namespace Beatshake.ViewModels
         private string _title;
         private string _kit;
         private double _teachementTolerance = 50;
-        private readonly List<double> _xHistory = new List<double>(); 
-        private readonly List<double> _yHistory = new List<double>(); 
-        private readonly List<double> _zHistory = new List<double>(); 
-        private readonly List<long> _timestamps = new List<long>(); 
+
+        //private readonly List<double> _xHistory = new List<double>(); 
+        //private readonly List<double> _yHistory = new List<double>(); 
+        //private readonly List<double> _zHistory = new List<double>(); 
+
+        //private readonly List<long> _timestamps = new List<long>(); 
+
         private readonly Stopwatch _timeElapsedStopwatch = new Stopwatch();
         private uint _responseTime;
         private double _lastGradient;
@@ -134,19 +151,19 @@ namespace Beatshake.ViewModels
         public override void ProcessMotionData(IMotionDataProvider motionDataProvider)
         {
             _cycleStopwatch.Start();
-            _timestamps.Add((long) motionDataProvider.RelAcceleration.Timestamp);
-            _xHistory.Add(motionDataProvider.RelAcceleration.Trans[0]);
-            _yHistory.Add(motionDataProvider.RelAcceleration.Trans[1]);
-            _zHistory.Add(motionDataProvider.RelAcceleration.Trans[2]);
-            var cap = BeatshakeSettings.SamplePoints;
-            var tooMuch = _xHistory.Count - cap;
-            if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
-            {
-                _xHistory.RemoveRange(0, tooMuch);
-                _yHistory.RemoveRange(0, tooMuch);
-                _zHistory.RemoveRange(0, tooMuch);
-                _timestamps.RemoveRange(0, tooMuch);
-            }
+            //_timestamps.Add((long) motionDataProvider.RelAcceleration.Timestamp);
+            //_xHistory.Add(motionDataProvider.RelAcceleration.Trans[0]);
+            //_yHistory.Add(motionDataProvider.RelAcceleration.Trans[1]);
+            //_zHistory.Add(motionDataProvider.RelAcceleration.Trans[2]);
+            //var cap = BeatshakeSettings.SamplePoints;
+            //var tooMuch = _xHistory.Count - cap;
+            //if (tooMuch > 0) // todo: always remove 1, becaause we know, that we always add 1 element
+            //{
+            //    _xHistory.RemoveRange(0, tooMuch);
+            //    _yHistory.RemoveRange(0, tooMuch);
+            //    _zHistory.RemoveRange(0, tooMuch);
+            //    _timestamps.RemoveRange(0, tooMuch);
+            //}
 
             var activatedComponents = Components.Where(component => component.IsActivated).ToArray();
             if (activatedComponents.Length == 0)
@@ -161,7 +178,7 @@ namespace Beatshake.ViewModels
             }
             else if (UseNeuralNetwork)
             {
-                TriggerOnNeuralNetworkMatch(activatedComponents).ConfigureAwait(false);
+                TriggerOnNeuralNetworkMatch(activatedComponents).Wait();
             }
             else if (UsePosition)
             {
@@ -174,7 +191,7 @@ namespace Beatshake.ViewModels
 
             else if (UseRandom)
             {
-                if (motionDataProvider.RelAcceleration.Trans.Any(d => d > TeachementTolerance / 100))
+                if (motionDataProvider.RelAcceleration.Any(d => d > TeachementTolerance / 100))
                 {
                     activatedComponents.Random().PlaySoundCommand.Execute().ConfigureAwait(false);
                 }
@@ -202,10 +219,11 @@ namespace Beatshake.ViewModels
 
         private async Task TriggerOnTeachementMatch(InstrumentalComponent[] activatedComponents)
         {
-            var normalizedTimestamps = Utility.NormalizeTimeStamps(_timestamps);
-            var xCoeff = new PolynomialFunction(normalizedTimestamps, _xHistory);
-            var yCoeff = new PolynomialFunction(normalizedTimestamps, _yHistory);
-            var zCoeff = new PolynomialFunction(normalizedTimestamps, _zHistory);
+            var a = MotionDataProvider.Jolt[1];
+            var normalizedTimestamps = Utility.NormalizeTimeStamps(MotionDataProvider.Timestamps.ToList());
+            var xCoeff = new PolynomialFunction(normalizedTimestamps, MotionDataProvider.RelAcceleration.XTrans);
+            var yCoeff = new PolynomialFunction(normalizedTimestamps, MotionDataProvider.RelAcceleration.YTrans);
+            var zCoeff = new PolynomialFunction(normalizedTimestamps, MotionDataProvider.RelAcceleration.ZTrans);
             var group = new FunctionGroup(xCoeff, yCoeff, zCoeff);
 
             var teachedOnes = activatedComponents.Where(component => component.Teachement != null);
@@ -230,7 +248,7 @@ namespace Beatshake.ViewModels
             var tasks = new List<Task>();
             foreach (var instrumentalComponent in teachedOnes)
             {
-                var data = NeuralTeachement.TransformFunctionsToNetworkInputs(_xHistory, _yHistory, _zHistory);
+                var data = NeuralTeachement.TransformToNetworkInputs(MotionDataProvider);
                 var result = instrumentalComponent.NeuralTeachement.FitsDataSet(TeachementTolerance/10, data);
                 if (result)
                 {
@@ -248,10 +266,10 @@ namespace Beatshake.ViewModels
             var zFunction = new QuadraticFunction();
 
             // Get Coefficients
-            var normaliedTimestamps = Utility.NormalizeTimeStamps(_timestamps);
-            xFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _xHistory);
-            yFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _yHistory);
-            zFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, _zHistory);
+            var normaliedTimestamps = Utility.NormalizeTimeStamps(MotionDataProvider.Timestamps.ToList());
+            xFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, MotionDataProvider.RelAcceleration.XTrans);
+            yFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, MotionDataProvider.RelAcceleration.YTrans);
+            zFunction.Coefficients = DataAnalyzer.CalculateCoefficients(normaliedTimestamps, MotionDataProvider.RelAcceleration.ZTrans);
 
             // Set start and Endpoints
             var start = normaliedTimestamps[0];

@@ -11,7 +11,13 @@ using Xamarin.Forms;
 
 namespace Beatshake.Core
 {
-    public class NeuralTeachement
+    public interface ITeachable
+    {
+        Task<ITeachable> TeachMovement(IMotionDataProvider motionDataProvider);
+        //bool FitsDataSet(double tolerance, double[] data);
+    }
+
+    public class NeuralTeachement : ITeachable
     {
         private static readonly int numberOfDimensions = 3;
 
@@ -52,50 +58,45 @@ namespace Beatshake.Core
             return tempList.ToArray();
         }
 
+
+        public static double[] TransformToNetworkInputs(IMotionDataProvider motionDataProvider)
+        {
+            var data = motionDataProvider.Jolt.Concat(
+                motionDataProvider.RelAcceleration).Concat(
+                    motionDataProvider.AbsAcceleration).Concat(
+                        motionDataProvider.Velocity).Concat(
+                            motionDataProvider.Pose).Concat(motionDataProvider.Timestamps);
+            return data.ToArray();
+        }
+
+        public static NeuralTeachement Create()
+        {
+            return new NeuralTeachement();
+        }
+
         /// <summary>
         /// <exception cref="InsufficientDataException">Thrown if a peak is to close to the start of the data</exception>
         /// </summary>
-        /// <param name="timesteps"></param>
+        /// <param name="outputs"></param>
         /// <param name="throwOnThinData"></param>
-        /// <param name="valueArrays"></param>
+        /// <param name="inputs"></param>
         /// <returns></returns>
-        public static NeuralTeachement Create(double[] timesteps, int output, bool throwOnThinData = false,  params IEnumerable<double>[] valueArrays)
+        public static NeuralTeachement Create(double[] inputs, double[] outputs, bool throwOnThinData = false)
         {
-            //trainingData.SetTrainData();
-
             var teachement = new NeuralTeachement();
-            var learner = new AForge.Neuro.Learning.BackPropagationLearning(teachement._brain);
-            learner.Run(TransformFunctionsToNetworkInputs(valueArrays),new double []{ output });
-
-            //IList<double> xValues = valueArrays[0];
-            //IList<double> yValues = valueArrays[1];
-            //IList<double> zValues = valueArrays[2];
-            //// Get point with highest absolute Acceleration
-            //var endIndex = DataAnalyzer.GetPeak(xValues, yValues, zValues);
-            //int startIndex = endIndex - BeatshakeSettings.SamplePoints;
-
-            //if (endIndex == -1)
-            //{
-            //    throw new InvalidOperationException("No peak value could be detected.");
-            //}
-            //if (startIndex < 0)
-            //{
-            //    if (throwOnThinData)
-            //    {
-            //        throw new InsufficientDataException();
-            //    }
-            //    else
-            //    {
-            //        startIndex = 0;
-            //    }
-            //}
+            teachement.Train(inputs, outputs);
             return teachement;
         }
 
-        public void Train(double[] timesteps, int output, params IEnumerable<double>[] valueArrays)
+        async Task<ITeachable> ITeachable.TeachMovement(IMotionDataProvider motionDataProvider)
+        {
+            return await TeachMovement(motionDataProvider);
+        }
+
+        public void Train(double[] inputs, double[] outputs, bool throwOnThinData = false)
         {
             var learner = new AForge.Neuro.Learning.BackPropagationLearning(_brain);
-            learner.Run(TransformFunctionsToNetworkInputs(valueArrays), new double[] { output });
+            learner.Run(inputs, outputs);
         }
 
 
@@ -108,91 +109,10 @@ namespace Beatshake.Core
             buttons[continueButtonIndex] = "Teach";
             const string message = "Click \"Finish\" when you finished train the neural network, otherwise \"Teach\".";
 
-            // record movement
-
-            var xAccTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yAccTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zAccTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-            var xAccRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yAccRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zAccRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-            var xAccTransAbs    = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yAccTransAbs    = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zAccTransAbs    = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-            var xAccRotAbs      = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yAccRotAbs      = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zAccRotAbs      = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-            var xVelTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yVelTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zVelTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-            var xVelRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yVelRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zVelRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-
-            var xPosTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yPosTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zPosTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var xPosRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yPosRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zPosRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-            var xJoltTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yJoltTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zJoltTrans       = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var xJoltRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var yJoltRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-            var zJoltRot         = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-            var measureData = new DropOutStack<double>[]
-            {
-                xAccTrans   ,
-                yAccTrans   ,
-                zAccTrans   ,
-                xAccRot     ,
-                yAccRot     ,
-                zAccRot     ,
-                xAccTransAbs,
-                yAccTransAbs,
-                zAccTransAbs,
-                xAccRotAbs  ,
-                yAccRotAbs  ,
-                zAccRotAbs  ,
-                xVelTrans   ,
-                yVelTrans   ,
-                zVelTrans   ,
-                xVelRot     ,
-                yVelRot     ,
-                zVelRot     ,
-                xPosTrans   ,
-                yPosTrans   ,
-                zPosTrans   ,
-                xPosRot     ,
-                yPosRot     ,
-                zPosRot     ,
-                xJoltTrans  ,
-                yJoltTrans  ,
-                zJoltTrans  ,
-                xJoltRot    ,
-                yJoltRot    ,
-                zJoltRot    ,
-            };
-
-            var timestamps = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
-
-
-            List<double> timesteps = new List<double>();
-
-
             var trainingTask = Task<NeuralTeachement>.Factory.StartNew(() =>
             {
                 // init training task
-                NeuralTeachement teachement = null;
+                NeuralTeachement teachement = NeuralTeachement.Create();
                 IUserTextNotifier notifier = Xamarin.Forms.DependencyService.Get<IUserTextNotifier>();
 
 
@@ -200,76 +120,16 @@ namespace Beatshake.Core
                 var userConfirmation = notifier.DecisionNotification(message, buttons);
                 while (!userConfirmation.IsCompleted)
                 {
-                    timesteps.Add(motionDataProvider.RelAcceleration.Timestamp);
-
-                    // Set Accelerations
-                    xAccTrans       .Push(motionDataProvider.RelAcceleration.Trans[0]);
-                    yAccTrans       .Push(motionDataProvider.RelAcceleration.Trans[1]);
-                    zAccTrans       .Push(motionDataProvider.RelAcceleration.Trans[2]);
-
-                    xAccRot         .Push(motionDataProvider.RelAcceleration.Rot[0]);
-                    yAccRot         .Push(motionDataProvider.RelAcceleration.Rot[1]);
-                    zAccRot         .Push(motionDataProvider.RelAcceleration.Rot[2]);
-
-                    xAccTransAbs    .Push(motionDataProvider.AbsAcceleration.Trans[0]);
-                    yAccTransAbs    .Push(motionDataProvider.AbsAcceleration.Trans[1]);
-                    zAccTransAbs    .Push(motionDataProvider.AbsAcceleration.Trans[2]);
-
-                    xAccRotAbs      .Push(motionDataProvider.AbsAcceleration.Rot[0]);
-                    yAccRotAbs      .Push(motionDataProvider.AbsAcceleration.Rot[1]);
-                    zAccRotAbs      .Push(motionDataProvider.AbsAcceleration.Rot[2]);
-
-                    // Set Velocities
-                    xVelTrans       .Push(motionDataProvider.Velocity.Trans[0]);
-                    yVelTrans       .Push(motionDataProvider.Velocity.Trans[1]);
-                    zVelTrans       .Push(motionDataProvider.Velocity.Trans[2]);
-                    xVelRot         .Push(motionDataProvider.Velocity.Rot[0]);
-                    yVelRot         .Push(motionDataProvider.Velocity.Rot[1]);
-                    zVelRot         .Push(motionDataProvider.Velocity.Rot[2]);
-
-
-                    // Set Positions
-                    xPosTrans       .Push(motionDataProvider.Pose.Trans[0]);
-                    yPosTrans       .Push(motionDataProvider.Pose.Trans[1]);
-                    zPosTrans       .Push(motionDataProvider.Pose.Trans[2]);
-                    xPosRot         .Push(motionDataProvider.Pose.Rot[0]);
-                    yPosRot         .Push(motionDataProvider.Pose.Rot[1]);
-                    zPosRot         .Push(motionDataProvider.Pose.Rot[2]);
-
-                    // Set Jolt
-                    xJoltTrans       .Push(motionDataProvider.Jolt.Trans[0]);
-                    yJoltTrans       .Push(motionDataProvider.Jolt.Trans[1]);
-                    zJoltTrans       .Push(motionDataProvider.Jolt.Trans[2]);
-                    xJoltRot         .Push(motionDataProvider.Jolt.Rot[0]);
-                    yJoltRot         .Push(motionDataProvider.Jolt.Rot[1]);
-                    zJoltRot         .Push(motionDataProvider.Jolt.Rot[2]);
-
-                    timestamps.Push(motionDataProvider.RelAcceleration.Timestamp);
 
                     var task = Task.Delay((int)motionDataProvider.RefreshRate);
 
                     // Teach
-                    if (teachement == null)
-                    {
-                        teachement = NeuralTeachement.Create(timestamps.ToArray(), 0, true, measureData);
-                    }
-                    else
-                    {
-                        teachement.Train(timestamps.ToArray(), 0, measureData);
-                    }
+                    teachement.Train(NeuralTeachement.TransformToNetworkInputs(motionDataProvider),  new double[] {0}); // 0 cause nothing is triggered by user
 
                     task.Wait();
                 }
 
-                // Teach
-                if (teachement == null)
-                {
-                    teachement = NeuralTeachement.Create(timestamps.ToArray(), 1, true, measureData);
-                }
-                else
-                {
-                    teachement.Train(timestamps.ToArray(), 1, measureData);
-                }
+                teachement.Train(NeuralTeachement.TransformToNetworkInputs(motionDataProvider), new double[] { 1 });
 
                 userConfirmation.Wait();
                 if (userConfirmation.Result == continueButtonIndex )
@@ -328,7 +188,7 @@ namespace Beatshake.Core
 
     }
 
-    public class Teachement : FunctionGroup
+    public class Teachement : FunctionGroup, ITeachable
     {
         public PolynomialFunction XCurve
         {
@@ -359,13 +219,13 @@ namespace Beatshake.Core
         /// <param name="throwOnThinData"></param>
         /// <param name="valueArrays"></param>
         /// <returns></returns>
-        public static Teachement Create(double[] timesteps, bool throwOnThinData = false, params IList<double>[] valueArrays)
+        public static Teachement Create(double[] timesteps, bool throwOnThinData = false, params IEnumerable<double>[] valueArrays)
         {
             var teachement = new Teachement();
 
-            IList<double> xValues = valueArrays[0];
-            IList<double> yValues = valueArrays[1];
-            IList<double> zValues = valueArrays[2];
+            IEnumerable<double> xValues = valueArrays[0];
+            IEnumerable<double> yValues = valueArrays[1];
+            IEnumerable<double> zValues = valueArrays[2];
             // Get point with highest absolute Acceleration
             var endIndex = DataAnalyzer.GetPeak(xValues , yValues, zValues);
             int startIndex = endIndex - BeatshakeSettings.SamplePoints;
@@ -387,16 +247,20 @@ namespace Beatshake.Core
             }
             teachement.Functions.Clear();
             teachement.Functions.Add(new PolynomialFunction(timesteps.SubArray(startIndex, endIndex),
-                xValues.SubList(startIndex, endIndex)));
+                xValues.SubEnumerable(startIndex, endIndex)));
             teachement.Functions.Add(new PolynomialFunction(timesteps.SubArray(startIndex, endIndex),
-                yValues.SubList(startIndex, endIndex)));
+                yValues.SubEnumerable(startIndex, endIndex)));
             teachement.Functions.Add(new PolynomialFunction(timesteps.SubArray(startIndex, endIndex),
-                zValues.SubList(startIndex, endIndex)));
+                zValues.SubEnumerable(startIndex, endIndex)));
 
 
             return teachement;
         }
 
+        async Task<ITeachable> ITeachable.TeachMovement(IMotionDataProvider motionDataProvider)
+        {
+            return await Teachement.TeachMovement(motionDataProvider);
+        }
 
         public static async Task<Teachement> TeachMovement(IMotionDataProvider motionDataProvider)
         {
@@ -404,60 +268,64 @@ namespace Beatshake.Core
             // record movement
             Teachement teachement = null;
 
-            List<double> xAcc = new List<double>();
-            List<double> yAcc = new List<double>();
-            List<double> zAcc = new List<double>();
+            //List<double> xAcc = new List<double>();
+            //List<double> yAcc = new List<double>();
+            //List<double> zAcc = new List<double>();
 
-            List<double> xPos = new List<double>();
-            List<double> yPos = new List<double>();
-            List<double> zPos = new List<double>();
+            //List<double> xPos = new List<double>();
+            //List<double> yPos = new List<double>();
+            //List<double> zPos = new List<double>();
 
-            List<double> timesteps = new List<double>();
+            //List<double> timesteps = new List<double>();
             var userConfirmation = Xamarin.Forms.DependencyService.Get<IUserTextNotifier>().Notify("Click OK when you finished teaching");
 
-            var measureTask = Task.Factory.StartNew(() =>
-            {
-                while (!userConfirmation.IsCompleted)
-                {
-                    timesteps.Add(motionDataProvider.RelAcceleration.Timestamp);
+            //var measureTask = Task.Factory.StartNew(() =>
+            //{
+            //    while (!userConfirmation.IsCompleted)
+            //    {
+            //        timesteps.Add(motionDataProvider.RelAcceleration.Timestamp);
 
-                    // Set Accelerations
-                    xAcc.Add(motionDataProvider.RelAcceleration.Trans[0]);
-                    yAcc.Add(motionDataProvider.RelAcceleration.Trans[1]);
-                    zAcc.Add(motionDataProvider.RelAcceleration.Trans[2]);
+            //        // Set Accelerations
+            //        xAcc.Add(motionDataProvider.RelAcceleration.Trans[0]);
+            //        yAcc.Add(motionDataProvider.RelAcceleration.Trans[1]);
+            //        zAcc.Add(motionDataProvider.RelAcceleration.Trans[2]);
 
-                    // Set Positions
-                    xPos.Add(motionDataProvider.Pose.Trans[0]);
-                    yPos.Add(motionDataProvider.Pose.Trans[1]);
-                    zPos.Add(motionDataProvider.Pose.Trans[2]);
+            //        // Set Positions
+            //        xPos.Add(motionDataProvider.Pose.Trans[0]);
+            //        yPos.Add(motionDataProvider.Pose.Trans[1]);
+            //        zPos.Add(motionDataProvider.Pose.Trans[2]);
 
-                    var task = Task.Delay((int)motionDataProvider.RefreshRate);
-                    task.Wait();
-                }
-            });
+            //        var task = Task.Delay((int)motionDataProvider.RefreshRate);
+            //        task.Wait();
+            //    }
+            //});
 
             //userConfirmation.Wait(30000);
             await userConfirmation.ConfigureAwait(true);
+            //try
+            //{
+            //    //Task.WaitAll(userConfirmation, measureTask);
+
+            //    await measureTask;
+            //}
+            //catch (TaskCanceledException)
+            //{
+            //}
+
             try
             {
-                //Task.WaitAll(userConfirmation, measureTask);
+                var normalizedTimestamps = Utility.NormalizeTimeStamps(motionDataProvider.Timestamps);
+                teachement = Teachement.Create(normalizedTimestamps.ToArray(), false, motionDataProvider.RelAcceleration.XTrans, 
+                    motionDataProvider.RelAcceleration.YTrans, 
+                    motionDataProvider.RelAcceleration.ZTrans);
 
-                await measureTask;
-            }
-            catch (TaskCanceledException)
-            {
-            }
+                int peakPos = DataAnalyzer.GetPeak(motionDataProvider.RelAcceleration.XTrans,
+                    motionDataProvider.RelAcceleration.YTrans,
+                    motionDataProvider.RelAcceleration.ZTrans);
 
-            try
-            {
-                var normalizedTimestamps = Utility.NormalizeTimeStamps(timesteps);
-                teachement = Teachement.Create(normalizedTimestamps.ToArray(), false, xAcc, yAcc, zAcc);
-
-                int peakPos = DataAnalyzer.GetPeak(xAcc, yAcc, zAcc);
-
-                teachement._xPosition = xPos[peakPos];
-                teachement._yPosition = yPos[peakPos];
-                teachement._zPosition = zPos[peakPos];
+                teachement._xPosition = motionDataProvider.Pose.XTrans[peakPos];
+                teachement._yPosition = motionDataProvider.Pose.YTrans[peakPos];
+                teachement._zPosition = motionDataProvider.Pose.ZTrans[peakPos];
             }
             catch (InsufficientDataException) // thrown if the peak is to near at beginning data
             {
@@ -511,9 +379,9 @@ namespace Beatshake.Core
 
         public bool FitsPositionData(double tolerance, IMotionDataProvider motionData)
         {
-            return motionData.Pose.Trans[0].IsAlmostEqual(_xPosition, tolerance) &&
-                   motionData.Pose.Trans[1].IsAlmostEqual(_yPosition, tolerance) &&
-                   motionData.Pose.Trans[2].IsAlmostEqual(_zPosition, tolerance);
+            return motionData.Pose.XTrans.Peek().IsAlmostEqual(_xPosition, tolerance) &&
+                   motionData.Pose.YTrans.Peek().IsAlmostEqual(_yPosition, tolerance) &&
+                   motionData.Pose.ZTrans.Peek().IsAlmostEqual(_zPosition, tolerance);
         }
     }
 }

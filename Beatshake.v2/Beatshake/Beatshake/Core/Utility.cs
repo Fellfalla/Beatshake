@@ -18,6 +18,11 @@ namespace Beatshake.Core
             return timestamps.Select(l => (l -  timestamps.First())).ToList();
         }
 
+        public static List<double> NormalizeTimeStamps(IEnumerable<double> timestamps)
+        {
+            return timestamps.Select(l => (l -  timestamps.First())).ToList();
+        }
+
         public static IEnumerable<double> MidnightFormula(double a, double b, double c)
         {
             var radicand = b * b - 4 * a * c; //b^2 -4ac

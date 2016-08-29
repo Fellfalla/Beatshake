@@ -152,7 +152,7 @@ namespace Beatshake.Core
         /// </summary>
         /// <param name="values">All input value arrays have to be of same size.</param>
         /// <returns>-1 if no peak was detected</returns>
-        public static int GetPeak(params IList<double>[] values)
+        public static int GetPeak(params IEnumerable<double>[] values)
         {
             int dataSetCount = values.Count();
             int resultIndex = -1;
@@ -174,7 +174,7 @@ namespace Beatshake.Core
                 // take same index from the different data sets
                 for (int j = 0; j < dataSetCount; j++) 
                 {
-                    curVal += Math.Abs(values[j][i]);
+                    curVal += Math.Abs(values.ElementAt(j).ElementAt(i));
                 }
                 if (curVal > maxVal)
                 {

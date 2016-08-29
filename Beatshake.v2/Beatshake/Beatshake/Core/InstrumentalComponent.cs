@@ -39,8 +39,8 @@ namespace Beatshake.Core
         private IMotionDataProcessor MotionDataProcessor { get; set; }
         private IMotionDataProvider MotionDataProvider { get; set; }
 
-        private DelegateCommand _teachCommand;
-        public DelegateCommand TeachCommand
+        private DelegateCommand<ITeachable> _teachCommand;
+        public DelegateCommand<ITeachable> TeachCommand
         {
             get { return _teachCommand; }
             set { SetProperty(ref _teachCommand, value); }
@@ -85,8 +85,7 @@ namespace Beatshake.Core
             PropertyChanged += OnPropertyChanged;
 
             PlaySoundCommand = DelegateCommand.FromAsyncHandler(PlaySound);
-            TeachCommand = DelegateCommand.FromAsyncHandler(Teach);
-
+            TeachCommand = DelegateCommand<ITeachable>.FromAsyncHandler(Teach);
             //Task.WaitAll(audioLoader);
         }
 
@@ -159,15 +158,29 @@ namespace Beatshake.Core
             set { SetProperty(ref _neuralTeachement, value); }
         }
 
+        
 
-        protected async Task Teach()
+        protected async Task Teach(ITeachable teachement)
         {
             // unregister current processing
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
             MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
 
+            if (teachement == null && _containingInstrument is DrumViewModel)
+            { 
+                // bug: workaround cause Command Parameter isn correctly transferred.
+                teachement = ((DrumViewModel) _containingInstrument).TeachementMode;
+            }
+
             //Teachement = await Teachement.TeachMovement(MotionDataProvider);
-            NeuralTeachement = await NeuralTeachement.TeachMovement(MotionDataProvider);
+            if (teachement is NeuralTeachement)
+            {
+                NeuralTeachement = await NeuralTeachement.TeachMovement(MotionDataProvider);
+            }
+            else
+            {
+                Teachement = await Teachement.TeachMovement(MotionDataProvider);
+            }
 
             // reenable motion processing 
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed += MotionDataProcessor.ProcessMotionData;

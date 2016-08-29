@@ -15,5 +15,17 @@ namespace Beatshake.ExtensionMethods
             return array.ElementAtOrDefault(random.Next(0, array.Length));
         }
 
+        public static IEnumerable<T> SubEnumerable<T>(this IEnumerable<T> data, int startIndex, int endIndex)
+        {
+            List<T> result = new List<T>();
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                result.Add(data.ElementAt(i));
+            }
+
+            return result;
+        }
+
     }
 }

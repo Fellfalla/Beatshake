@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using Windows.ApplicationModel.Background;
 using Windows.Devices.Sensors;
 using Windows.UI.Popups;
 using Beatshake.Core;
@@ -14,6 +16,7 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
     /// and dT, the event delivery rate
     private const double Alpha = 0.8;
 
+    private Timer _readingTimer;
     private readonly Accelerometer _accelerometer = Accelerometer.GetDefault();
     private readonly Gyrometer _gyrometer = Gyrometer.GetDefault();
     private readonly OrientationSensor _orientationSensor = OrientationSensor.GetDefault();
@@ -21,7 +24,7 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
     private readonly IDictionary<MotionData, Action<double>> _calculators;
     private AccelerometerReading _currentAcceleration;
     private GyrometerReading _currentGyro;
-    private uint _currentInterval;
+    private uint _currentInterval = BeatshakeSettings.SensorRefreshInterval;
 
     private OrientationSensorReading _currentOrientation;
     private AccelerometerReading _initialAcceleration;
@@ -35,10 +38,12 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
 
     public MotionData MotionDataNeeds { get; set; } = MotionData.JoltTrans | MotionData.VelocityRot;
 
+    public DropOutStack<double> Timestamps { get; } = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
+
     public MotionDataProviderImplementation()
     {
-        MinInterval = 0;
-
+        MinInterval = 10;
+        _readingTimer = new Timer(new TimerCallback(state => ProcessCurrentMeasurements()), null, 450, (int) RefreshRate);
         // Set CalucationActions. Pay attention about the order
         _calculators = new SortedDictionary<MotionData, Action<double>>
         {
@@ -62,18 +67,21 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
 
             MinInterval = Math.Max(MinInterval, _accelerometer.MinimumReportInterval);
             _accelerometer.ReadingChanged += OnNewSensorData;
+            _currentAcceleration = _accelerometer.GetCurrentReading();
         }
 
         if (_orientationSensor != null)
         {
             MinInterval = Math.Max(MinInterval, _orientationSensor.MinimumReportInterval);
             _orientationSensor.ReadingChanged += OnNewSensorData;
+            _currentOrientation = _orientationSensor.GetCurrentReading();
         }
 
         if (_gyrometer != null)
         {
             MinInterval = Math.Max(MinInterval, _gyrometer.MinimumReportInterval);
             _gyrometer.ReadingChanged += OnNewSensorData;
+            _currentGyro = _gyrometer.GetCurrentReading();
         }
 
         try
@@ -86,6 +94,9 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
             var _ = dialog.ShowAsync();
         }
         RefreshRate = BeatshakeSettings.SensorRefreshInterval;
+
+
+        ProcessCurrentMeasurements();
     }
 
     public uint MinInterval { get; }
@@ -126,7 +137,11 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
 
     public uint RefreshRate
     {
-        get { return _accelerometer != null ? _accelerometer.ReportInterval : _currentInterval; }
+        get
+        {
+            return _currentInterval;
+            //return _accelerometer != null ? _accelerometer.ReportInterval : _currentInterval;
+        }
         set
         {
             _currentInterval = Math.Max(value, MinInterval);
@@ -134,6 +149,8 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
             if (_accelerometer != null) _accelerometer.ReportInterval = _currentInterval;
             if (_gyrometer != null) _gyrometer.ReportInterval = _currentInterval;
             if (_orientationSensor != null) _orientationSensor.ReportInterval = _currentInterval;
+
+            _readingTimer.Change(10, (int) _currentInterval);
         }
     }
 
@@ -153,7 +170,7 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
             _initialRotationMatrix = _initialOrientation.RotationMatrix.BuildMatrix();
 
             _initialTransformedAccelerationVector =
-                _initialRotationMatrix.Transpose().Multiply(_initialAccelerationVector);
+            _initialRotationMatrix.Transpose().Multiply(_initialAccelerationVector);
         }
         else
         {
@@ -180,6 +197,8 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
                 calcucationPair.Value.Invoke(newTimestamp);
             }
         }
+        
+        Timestamps.Add(newTimestamp);
 
         MotionDataRefreshed?.Invoke(this);
 
@@ -189,87 +208,119 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
 
     private void CalculateJoltRot(double newTimestamp)
     {
-        Jolt.Timestamp = newTimestamp;
+        //Jolt.Timestamp.Add(newTimestamp);
         // todo: implement
     } 
 
     private void CalculatePoseTrans(double newTimestamp)
     {
         // Integrate velocity and acceleration to get current pose
-        var posDeltaT = newTimestamp - Pose.Timestamp;
+        var posDeltaT = newTimestamp - Timestamps.Peek();
+        //var posDeltaT = newTimestamp - Pose.Timestamp.Peek();
         var posDeltaTAcc = posDeltaT*posDeltaT*0.5;
+        double tempValue;
 
-        Pose.Trans[0] *= BeatshakeSettings.PositionDamp;
-        Pose.Trans[0] += RelAcceleration.Trans[0]*posDeltaTAcc + Velocity.Trans[0]*posDeltaT;
+        tempValue = Pose.XTrans.Peek()*BeatshakeSettings.PositionDamp + RelAcceleration.XTrans.Peek() * posDeltaTAcc + Velocity.XTrans.Peek() * posDeltaT;
+        Pose.XTrans.Add(tempValue);
 
-        Pose.Trans[1] *= BeatshakeSettings.PositionDamp;
-        Pose.Trans[1] += RelAcceleration.Trans[1]*posDeltaTAcc + Velocity.Trans[1]*posDeltaT;
+        tempValue = Pose.YTrans.Peek() * BeatshakeSettings.PositionDamp + RelAcceleration.YTrans.Peek() * posDeltaTAcc + Velocity.YTrans.Peek() * posDeltaT;
+        Pose.YTrans.Add(tempValue);
 
-        Pose.Trans[2] *= BeatshakeSettings.PositionDamp;
-        Pose.Trans[2] += RelAcceleration.Trans[2]*posDeltaTAcc + Velocity.Trans[2]*posDeltaT;
+        tempValue = Pose.ZTrans.Peek() * BeatshakeSettings.PositionDamp + RelAcceleration.ZTrans.Peek() * posDeltaTAcc + Velocity.ZTrans.Peek() * posDeltaT;
+        Pose.ZTrans.Add(tempValue);
 
-        Pose.Timestamp = newTimestamp;
+        //Pose.Trans[1] *= BeatshakeSettings.PositionDamp;
+        //Pose.Trans[1] += RelAcceleration.Trans[1]*posDeltaTAcc + Velocity.Trans[1]*posDeltaT;
+
+        //Pose.Trans[2] *= BeatshakeSettings.PositionDamp;
+        //Pose.Trans[2] += RelAcceleration.Trans[2]*posDeltaTAcc + Velocity.Trans[2]*posDeltaT;
+
+        //Pose.Timestamp.Add(newTimestamp);
     }
 
     private void CalculatePoseRot(double newTimestamp)
     {
-        Pose.Rot[0] = _currentOrientation.Quaternion.X;
-        Pose.Rot[1] = _currentOrientation.Quaternion.Y;
-        Pose.Rot[2] = _currentOrientation.Quaternion.Z;
+        //Pose.Rot[0] = _currentOrientation.Quaternion.X;
+        //Pose.Rot[1] = _currentOrientation.Quaternion.Y;
+        //Pose.Rot[2] = _currentOrientation.Quaternion.Z;
+        Pose.XRot.Add(_currentOrientation.Quaternion.X);
+        Pose.YRot.Add(_currentOrientation.Quaternion.Y);
+        Pose.ZRot.Add(_currentOrientation.Quaternion.Z);
 
-        Pose.Timestamp = newTimestamp;
+        //Pose.Timestamp.Add(newTimestamp);
     }
 
     private void CalculateVelocityTrans(double newTimestamp)
     {
         // Integrate Acceleration to get velocity
-        var velDeltaT = newTimestamp - Velocity.Timestamp;
-        Velocity.Trans[0] *= BeatshakeSettings.VelocityDamp;
-        Velocity.Trans[0] += RelAcceleration.Trans[0] * velDeltaT;
+        //var velDeltaT = newTimestamp - Velocity.Timestamp;
+        var velDeltaT = newTimestamp - Timestamps.Peek();
 
-        Velocity.Trans[1] *= BeatshakeSettings.VelocityDamp;
-        Velocity.Trans[1] += RelAcceleration.Trans[1] * velDeltaT;
+        double tempValue;
 
-        Velocity.Trans[2] *= BeatshakeSettings.VelocityDamp;
-        Velocity.Trans[2] += RelAcceleration.Trans[2] * velDeltaT;
+        tempValue = Velocity.XTrans.Peek() * BeatshakeSettings.VelocityDamp + RelAcceleration.XTrans.Peek() * velDeltaT;
+        Velocity.XTrans.Add(tempValue);
 
-        Velocity.Timestamp = newTimestamp;
+        tempValue = Velocity.YTrans.Peek() * BeatshakeSettings.VelocityDamp + RelAcceleration.YTrans.Peek() * velDeltaT;
+        Velocity.YTrans.Add(tempValue);
+
+        tempValue = Velocity.ZTrans.Peek() * BeatshakeSettings.VelocityDamp + RelAcceleration.ZTrans.Peek() * velDeltaT;
+        Velocity.ZTrans.Add(tempValue);
+
+        //Velocity.Trans[1] *= BeatshakeSettings.VelocityDamp;
+        //Velocity.Trans[1] += RelAcceleration.Trans[1] * velDeltaT;
+
+        //Velocity.Trans[2] *= BeatshakeSettings.VelocityDamp;
+        //Velocity.Trans[2] += RelAcceleration.Trans[2] * velDeltaT;
+
+        //Velocity.Timestamp = newTimestamp;
     }
 
     private void CalculateVelocityRot(double newTimestamp)
     {
         if (_currentGyro != null)
         {
-            Velocity.Rot[0] = _currentGyro.AngularVelocityX;
-            Velocity.Rot[1] = _currentGyro.AngularVelocityY;
-            Velocity.Rot[2] = _currentGyro.AngularVelocityZ;
+            Velocity.XRot.Add(_currentGyro.AngularVelocityX); 
+            Velocity.YRot.Add(_currentGyro.AngularVelocityY); 
+            Velocity.ZRot.Add(_currentGyro.AngularVelocityZ); 
+            //Velocity.Rot[0] = _currentGyro.AngularVelocityX;
+            //Velocity.Rot[1] = _currentGyro.AngularVelocityY;
+            //Velocity.Rot[2] = _currentGyro.AngularVelocityZ;
         }
 
-        Velocity.Timestamp = newTimestamp;
+        //Velocity.Timestamp = newTimestamp;
     }
 
     private void CalculateJoltTrans(double newTimestamp)
     {
-        Jolt.Trans[0] = _currentAcceleration.AccelerationX - AbsAcceleration.Trans[0];
-        Jolt.Trans[1] = _currentAcceleration.AccelerationY - AbsAcceleration.Trans[1];
-        Jolt.Trans[2] = _currentAcceleration.AccelerationZ - AbsAcceleration.Trans[2];
-        Jolt.Timestamp = newTimestamp;
+        Jolt.XTrans.Add(_currentAcceleration.AccelerationX - AbsAcceleration.XTrans.Peek());
+        Jolt.YTrans.Add(_currentAcceleration.AccelerationY - AbsAcceleration.YTrans.Peek());
+        Jolt.ZTrans.Add(_currentAcceleration.AccelerationZ - AbsAcceleration.ZTrans.Peek());
+
+        //Jolt.Trans[1] = _currentAcceleration.AccelerationY - AbsAcceleration.Trans[1];
+        //Jolt.Trans[2] = _currentAcceleration.AccelerationZ - AbsAcceleration.Trans[2];
+        //Jolt.Timestamp = newTimestamp;
     }
 
     private void CalculateAbsAccelerationTrans(double newTimestamp)
     {
         // Assign Acceleration (no dump needed, cause values are measured, not calculated)
-        AbsAcceleration.Trans[0] = _currentAcceleration.AccelerationX;
-        AbsAcceleration.Trans[1] = _currentAcceleration.AccelerationY;
-        AbsAcceleration.Trans[2] = _currentAcceleration.AccelerationZ;
-        AbsAcceleration.Timestamp = newTimestamp;
+        //AbsAcceleration.Trans[0] = _currentAcceleration.AccelerationX;
+        //AbsAcceleration.Trans[1] = _currentAcceleration.AccelerationY;
+        //AbsAcceleration.Trans[2] = _currentAcceleration.AccelerationZ;
+
+        AbsAcceleration.XTrans.Add(_currentAcceleration.AccelerationX);
+        AbsAcceleration.YTrans.Add(_currentAcceleration.AccelerationY);
+        AbsAcceleration.ZTrans.Add(_currentAcceleration.AccelerationZ);
+
+        //AbsAcceleration.Timestamp = newTimestamp;
     }
 
     private void CalculateAbsAccelerationRot(double newTimestamp)
     {
         // Assign Acceleration (no dump needed, cause values are measured, not calculated)
         //todo: implement
-        AbsAcceleration.Timestamp = newTimestamp;
+        //AbsAcceleration.Timestamp = newTimestamp;
     }
 
     private void CalculateRelAccelerationTrans(double newTimestamp)
@@ -288,9 +339,12 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
             var gravityVector = orientation.Multiply(_initialTransformedAccelerationVector);
 
             // use the orientation to substract gravity
-            RelAcceleration.Trans[0] = _currentAcceleration.AccelerationX - gravityVector[0];
-            RelAcceleration.Trans[1] = _currentAcceleration.AccelerationY - gravityVector[1];
-            RelAcceleration.Trans[2] = _currentAcceleration.AccelerationZ - gravityVector[2];
+            //RelAcceleration.Trans[0] = _currentAcceleration.AccelerationX - gravityVector[0];
+            //RelAcceleration.Trans[1] = _currentAcceleration.AccelerationY - gravityVector[1];
+            //RelAcceleration.Trans[2] = _currentAcceleration.AccelerationZ - gravityVector[2];
+            RelAcceleration.XTrans.Add(_currentAcceleration.AccelerationX - gravityVector[0]);
+            RelAcceleration.YTrans.Add(_currentAcceleration.AccelerationY - gravityVector[1]);
+            RelAcceleration.ZTrans.Add(_currentAcceleration.AccelerationZ - gravityVector[2]);
         }
         else
         {
@@ -298,18 +352,25 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
             _gravity[1] = Alpha*_gravity[1] + (1 - Alpha)*_currentAcceleration.AccelerationY;
             _gravity[2] = Alpha*_gravity[2] + (1 - Alpha)*_currentAcceleration.AccelerationZ;
 
-            RelAcceleration.Trans[0] = _currentAcceleration.AccelerationX - _gravity[0];
-            RelAcceleration.Trans[1] = _currentAcceleration.AccelerationY - _gravity[1];
-            RelAcceleration.Trans[2] = _currentAcceleration.AccelerationZ - _gravity[2];
+            //RelAcceleration.Trans[0] = _currentAcceleration.AccelerationX - _gravity[0];
+            //RelAcceleration.Trans[1] = _currentAcceleration.AccelerationY - _gravity[1];
+            //RelAcceleration.Trans[2] = _currentAcceleration.AccelerationZ - _gravity[2];
+
+            RelAcceleration.XTrans.Add(_currentAcceleration.AccelerationX - _gravity[0]);
+            RelAcceleration.YTrans.Add(_currentAcceleration.AccelerationY - _gravity[0]);
+            RelAcceleration.ZTrans.Add(_currentAcceleration.AccelerationZ - _gravity[0]);
         }
 
-        RelAcceleration.Timestamp = newTimestamp;
+        //RelAcceleration.Timestamp = newTimestamp;
     }
 
     private void CalculateRelAccelerationRot(double newTimestamp)
     {
-        RelAcceleration.Rot = AbsAcceleration.Rot;
-        RelAcceleration.Timestamp = newTimestamp;
+        RelAcceleration.XRot.Add(AbsAcceleration.XRot.Peek());
+        RelAcceleration.YRot.Add(AbsAcceleration.YRot.Peek());
+        RelAcceleration.ZRot.Add(AbsAcceleration.ZRot.Peek());
+
+        //RelAcceleration.Timestamp = newTimestamp;
     }
 
     private void ResetReadings()
@@ -332,6 +393,5 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
     private void OnNewSensorData(OrientationSensor sender, OrientationSensorReadingChangedEventArgs args)
     {
         _currentOrientation = args.Reading;
-        ProcessCurrentMeasurements();
     }
 }

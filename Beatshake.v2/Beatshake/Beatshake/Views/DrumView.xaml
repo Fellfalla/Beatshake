@@ -77,7 +77,8 @@
                                     <Switch Grid.Column="2" IsToggled="{Binding IsActivated}" />
                                     <Button Grid.Column="3" Text="Teach me!" VerticalOptions="Center">
                                         <Button.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding TeachCommand}" />
+                                            <TapGestureRecognizer Command="{Binding TeachCommand}" 
+                                                                  CommandParameter="{Binding TeachementMode}"/>
                                         </Button.GestureRecognizers>
                                     </Button>
 

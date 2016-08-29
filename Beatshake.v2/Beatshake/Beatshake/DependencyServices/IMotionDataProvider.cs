@@ -24,6 +24,8 @@ namespace Beatshake.DependencyServices
 
         bool HasOrientationSensor { get; }
 
+        DropOutStack<double> Timestamps { get; }
+
         /// <summary>
         /// The refresh rate in milliseconds.
         /// </summary>
