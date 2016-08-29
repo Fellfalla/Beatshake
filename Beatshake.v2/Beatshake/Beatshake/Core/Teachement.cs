@@ -23,7 +23,9 @@ namespace Beatshake.Core
 
         public static readonly int NumberOfPhysicalDatasets = Enum.GetNames(typeof(MotionData)).Length - 2; // minus MotionData.All & MotionData.None
         public static readonly int HiddenLayers = 1;
-        public static readonly int InputNeurons = NumberOfPhysicalDatasets * numberOfDimensions * BeatshakeSettings.SamplePoints; 
+
+        // + BeatshakeSettings cause this is the amount of Timestamps
+        public static readonly int InputNeurons = NumberOfPhysicalDatasets * numberOfDimensions * BeatshakeSettings.SamplePoints + BeatshakeSettings.SamplePoints; 
         public static readonly int OutputNeurons = 1;
         public static readonly int HiddenNeurons = (InputNeurons + OutputNeurons)/2;
 
@@ -61,11 +63,41 @@ namespace Beatshake.Core
 
         public static double[] TransformToNetworkInputs(IMotionDataProvider motionDataProvider)
         {
-            var data = motionDataProvider.Jolt.Concat(
-                motionDataProvider.RelAcceleration).Concat(
-                    motionDataProvider.AbsAcceleration).Concat(
-                        motionDataProvider.Velocity).Concat(
-                            motionDataProvider.Pose).Concat(motionDataProvider.Timestamps);
+            var data =  motionDataProvider.Jolt.XTrans              .Concat(
+                        motionDataProvider.Jolt.YTrans              ).Concat(
+                        motionDataProvider.Jolt.ZTrans              ).Concat(
+                        motionDataProvider.Jolt.XRot                ).Concat(
+                        motionDataProvider.Jolt.YRot                ).Concat(
+                        motionDataProvider.Jolt.ZRot                ).Concat(
+                        motionDataProvider.AbsAcceleration.XTrans   ).Concat(
+                        motionDataProvider.AbsAcceleration.YTrans   ).Concat(
+                        motionDataProvider.AbsAcceleration.ZTrans   ).Concat(
+                        motionDataProvider.AbsAcceleration.XRot     ).Concat(
+                        motionDataProvider.AbsAcceleration.YRot     ).Concat(
+                        motionDataProvider.AbsAcceleration.ZRot     ).Concat(
+                        motionDataProvider.RelAcceleration.XTrans   ).Concat(
+                        motionDataProvider.RelAcceleration.YTrans   ).Concat(
+                        motionDataProvider.RelAcceleration.ZTrans   ).Concat(
+                        motionDataProvider.RelAcceleration.XRot     ).Concat(
+                        motionDataProvider.RelAcceleration.YRot     ).Concat(
+                        motionDataProvider.RelAcceleration.ZRot     ).Concat(
+                        motionDataProvider.Velocity.XTrans          ).Concat(
+                        motionDataProvider.Velocity.YTrans          ).Concat(
+                        motionDataProvider.Velocity.ZTrans          ).Concat(
+                        motionDataProvider.Velocity.XRot            ).Concat(
+                        motionDataProvider.Velocity.YRot            ).Concat(
+                        motionDataProvider.Velocity.ZRot            ).Concat(
+                        motionDataProvider.Pose.XTrans              ).Concat(
+                        motionDataProvider.Pose.YTrans              ).Concat(
+                        motionDataProvider.Pose.ZTrans              ).Concat(
+                        motionDataProvider.Pose.XRot                ).Concat(
+                        motionDataProvider.Pose.YRot                ).Concat(
+                        motionDataProvider.Pose.ZRot                ).Concat(
+                        motionDataProvider.Timestamps               );
+                //motionDataProvider.RelAcceleration).Concat(
+                //    motionDataProvider.AbsAcceleration).Concat(
+                //        motionDataProvider.Velocity).Concat(
+                //            motionDataProvider.Pose).Concat(motionDataProvider.Timestamps);
             return data.ToArray();
         }
 

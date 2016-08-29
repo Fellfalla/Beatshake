@@ -164,7 +164,7 @@ namespace Beatshake.ViewModels
             //    _zHistory.RemoveRange(0, tooMuch);
             //    _timestamps.RemoveRange(0, tooMuch);
             //}
-
+            // bug: Components change during loading -> Exception cause IEnumerable changes
             var activatedComponents = Components.Where(component => component.IsActivated).ToArray();
             if (activatedComponents.Length == 0)
             {
