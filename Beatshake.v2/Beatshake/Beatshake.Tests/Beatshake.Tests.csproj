@@ -111,6 +111,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAnalyzerTest.cs" />
+    <Compile Include="DataContainerTests.cs" />
+    <Compile Include="DropOutStackTests.cs" />
     <Compile Include="FunctionGroupTest.cs" />
     <Compile Include="Helper\AutoFixture.cs" />
     <Compile Include="Helper\DataGenerator.cs" />

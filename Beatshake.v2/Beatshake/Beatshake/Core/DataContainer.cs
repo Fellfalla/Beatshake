@@ -1,18 +1,26 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Beatshake.Core
 {
-    public class DataContainer<TDataType> : IEnumerable<TDataType>
+    public abstract class DataContainer
     {
-        public readonly DropOutStack<TDataType> XTrans = new DropOutStack<TDataType>(BeatshakeSettings.SamplePoints);
-        public readonly DropOutStack<TDataType> YTrans = new DropOutStack<TDataType>(BeatshakeSettings.SamplePoints);
-        public readonly DropOutStack<TDataType> ZTrans = new DropOutStack<TDataType>(BeatshakeSettings.SamplePoints);
+        public static int HistorySize = BeatshakeSettings.SamplePoints;
+    }
 
-        public readonly DropOutStack<TDataType> XRot = new DropOutStack<TDataType>(BeatshakeSettings.SamplePoints);
-        public readonly DropOutStack<TDataType> YRot = new DropOutStack<TDataType>(BeatshakeSettings.SamplePoints);
-        public readonly DropOutStack<TDataType> ZRot = new DropOutStack<TDataType>(BeatshakeSettings.SamplePoints);
+    public class DataContainer<TDataType> : DataContainer, IEnumerable<TDataType>
+    {
+        
+
+        public readonly DropOutStack<TDataType> XTrans = new DropOutStack<TDataType>(HistorySize);
+        public readonly DropOutStack<TDataType> YTrans = new DropOutStack<TDataType>(HistorySize);
+        public readonly DropOutStack<TDataType> ZTrans = new DropOutStack<TDataType>(HistorySize);
+
+        public readonly DropOutStack<TDataType> XRot = new DropOutStack<TDataType>(HistorySize);
+        public readonly DropOutStack<TDataType> YRot = new DropOutStack<TDataType>(HistorySize);
+        public readonly DropOutStack<TDataType> ZRot = new DropOutStack<TDataType>(HistorySize);
 
         //public TDataType[] Trans = new TDataType[3];
 
@@ -63,7 +71,12 @@ namespace Beatshake.Core
         //}
         public IEnumerator<TDataType> GetEnumerator()
         {
-            return new DataContainerEnumerator(this);
+            return XTrans.ToArray()     .Concat(YTrans      .ToArray()    )
+                                        .Concat(ZTrans      .ToArray()    )
+                                        .Concat(XRot        .ToArray()    )
+                                        .Concat(YRot        .ToArray()    )
+                                        .Concat(ZRot        .ToArray()    ).GetEnumerator();
+
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -71,53 +84,53 @@ namespace Beatshake.Core
             return GetEnumerator();
         }
 
-        private class DataContainerEnumerator : IEnumerator<TDataType>
-        {
+        //private class DataContainerEnumerator : IEnumerator<TDataType>
+        //{
 
-            public DataContainerEnumerator(DataContainer<TDataType> dataContainer)
-            {
-                _container = dataContainer;
-                Counter = 0;
-            }
+        //    public DataContainerEnumerator(DataContainer<TDataType> dataContainer)
+        //    {
+        //        _container = dataContainer;
+        //        Counter = 0;
+        //    }
 
-            private int Counter { get; set; }
+        //    private int Counter { get; set; }
 
-            private DataContainer<TDataType> _container;
-            private readonly int _counter;
+        //    private DataContainer<TDataType> _container;
+        //    private readonly int _counter;
 
-            public bool MoveNext()
-            {
-                if (Counter <= 5) // DataContainer has 6 fields, counter starts at 0
-                {
-                    Counter += 1;
-                    return true;
-                }
-                else
-                {
-                    Counter = -1;
-                    return false;
-                }
-            }
+        //    public bool MoveNext()
+        //    {
+        //        if (Counter <= 5) // DataContainer has 6 fields, counter starts at 0
+        //        {
+        //            Counter += 1;
+        //            return true;
+        //        }
+        //        else
+        //        {
+        //            Counter = -1;
+        //            return false;
+        //        }
+        //    }
 
-            public void Reset()
-            {
-                Counter = 0;
-            }
+        //    public void Reset()
+        //    {
+        //        Counter = 0;
+        //    }
 
-            public TDataType Current
-            {
-                get { return _container[Counter]; }
-            }
+        //    public TDataType Current
+        //    {
+        //        get { return _container[Counter]; }
+        //    }
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+        //    object IEnumerator.Current
+        //    {
+        //        get { return Current; }
+        //    }
 
-            public void Dispose()
-            {
-            }
-        }
+        //    public void Dispose()
+        //    {
+        //    }
+        //}
     }
 
 }

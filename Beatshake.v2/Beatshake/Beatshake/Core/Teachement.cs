@@ -63,42 +63,42 @@ namespace Beatshake.Core
 
         public static double[] TransformToNetworkInputs(IMotionDataProvider motionDataProvider)
         {
-            var data =  motionDataProvider.Jolt.XTrans              .Concat(
-                        motionDataProvider.Jolt.YTrans              ).Concat(
-                        motionDataProvider.Jolt.ZTrans              ).Concat(
-                        motionDataProvider.Jolt.XRot                ).Concat(
-                        motionDataProvider.Jolt.YRot                ).Concat(
-                        motionDataProvider.Jolt.ZRot                ).Concat(
-                        
-                        motionDataProvider.AbsAcceleration.XTrans   ).Concat(
-                        motionDataProvider.AbsAcceleration.YTrans   ).Concat(
-                        motionDataProvider.AbsAcceleration.ZTrans   ).Concat(
-                        motionDataProvider.AbsAcceleration.XRot     ).Concat(
-                        motionDataProvider.AbsAcceleration.YRot     ).Concat(
-                        motionDataProvider.AbsAcceleration.ZRot     ).Concat(
-                        
-                        motionDataProvider.RelAcceleration.XTrans   ).Concat(
-                        motionDataProvider.RelAcceleration.YTrans   ).Concat(
-                        motionDataProvider.RelAcceleration.ZTrans   ).Concat(
-                        motionDataProvider.RelAcceleration.XRot     ).Concat(
-                        motionDataProvider.RelAcceleration.YRot     ).Concat(
-                        motionDataProvider.RelAcceleration.ZRot     ).Concat(
-                        
-                        motionDataProvider.Velocity.XTrans          ).Concat(
-                        motionDataProvider.Velocity.YTrans          ).Concat(
-                        motionDataProvider.Velocity.ZTrans          ).Concat(
-                        motionDataProvider.Velocity.XRot            ).Concat(
-                        motionDataProvider.Velocity.YRot            ).Concat(
-                        motionDataProvider.Velocity.ZRot            ).Concat(
-                        
-                        motionDataProvider.Pose.XTrans              ).Concat(
-                        motionDataProvider.Pose.YTrans              ).Concat(
-                        motionDataProvider.Pose.ZTrans              ).Concat(
-                        motionDataProvider.Pose.XRot                ).Concat(
-                        motionDataProvider.Pose.YRot                ).Concat(
-                        motionDataProvider.Pose.ZRot                ).Concat(
-                        
-                        motionDataProvider.Timestamps               );
+            var data =  motionDataProvider.Jolt.XTrans              .ToArray()  .Concat(
+                        motionDataProvider.Jolt.YTrans              .ToArray()  ).Concat(
+                        motionDataProvider.Jolt.ZTrans              .ToArray()  ).Concat(
+                        motionDataProvider.Jolt.XRot                .ToArray()  ).Concat(
+                        motionDataProvider.Jolt.YRot                .ToArray()  ).Concat(
+                        motionDataProvider.Jolt.ZRot                .ToArray()  ).Concat(
+
+                        motionDataProvider.AbsAcceleration.XTrans   .ToArray()  ).Concat(
+                        motionDataProvider.AbsAcceleration.YTrans   .ToArray()  ).Concat(
+                        motionDataProvider.AbsAcceleration.ZTrans   .ToArray()  ).Concat(
+                        motionDataProvider.AbsAcceleration.XRot     .ToArray()  ).Concat(
+                        motionDataProvider.AbsAcceleration.YRot     .ToArray()  ).Concat(
+                        motionDataProvider.AbsAcceleration.ZRot     .ToArray()  ).Concat(
+
+                        motionDataProvider.RelAcceleration.XTrans   .ToArray()  ).Concat(
+                        motionDataProvider.RelAcceleration.YTrans   .ToArray()  ).Concat(
+                        motionDataProvider.RelAcceleration.ZTrans   .ToArray()  ).Concat(
+                        motionDataProvider.RelAcceleration.XRot     .ToArray()  ).Concat(
+                        motionDataProvider.RelAcceleration.YRot     .ToArray()  ).Concat(
+                        motionDataProvider.RelAcceleration.ZRot     .ToArray()  ).Concat(
+
+                        motionDataProvider.Velocity.XTrans          .ToArray()  ).Concat(
+                        motionDataProvider.Velocity.YTrans          .ToArray()  ).Concat(
+                        motionDataProvider.Velocity.ZTrans          .ToArray()  ).Concat(
+                        motionDataProvider.Velocity.XRot            .ToArray()  ).Concat(
+                        motionDataProvider.Velocity.YRot            .ToArray()  ).Concat(
+                        motionDataProvider.Velocity.ZRot            .ToArray()  ).Concat(
+
+                        motionDataProvider.Pose.XTrans              .ToArray()  ).Concat(
+                        motionDataProvider.Pose.YTrans              .ToArray()  ).Concat(
+                        motionDataProvider.Pose.ZTrans              .ToArray()  ).Concat(
+                        motionDataProvider.Pose.XRot                .ToArray()  ).Concat(
+                        motionDataProvider.Pose.YRot                .ToArray()  ).Concat(
+                        motionDataProvider.Pose.ZRot                .ToArray()  ).Concat(
+
+                        motionDataProvider.Timestamps               .ToArray()  );
                 //motionDataProvider.RelAcceleration).Concat(
                 //    motionDataProvider.AbsAcceleration).Concat(
                 //        motionDataProvider.Velocity).Concat(
