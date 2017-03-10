@@ -36,7 +36,7 @@ internal class MotionDataProviderImplementation : IMotionDataProvider
 
     private readonly double[] _gravity = {0, 0, 0};
 
-    public MotionData MotionDataNeeds { get; set; } = MotionData.JoltTrans | MotionData.VelocityRot;
+    public MotionData MotionDataNeeds { get; set; } // = MotionData.JoltTrans | MotionData.VelocityRot;
 
     public DropOutStack<double> Timestamps { get; } = new DropOutStack<double>(BeatshakeSettings.SamplePoints);
 

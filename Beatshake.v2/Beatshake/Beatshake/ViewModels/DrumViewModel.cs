@@ -193,7 +193,8 @@ namespace Beatshake.ViewModels
             {
                 if (motionDataProvider.RelAcceleration.Any(d => d > TeachementTolerance / 100))
                 {
-                    activatedComponents.Random().PlaySoundCommand.Execute().ConfigureAwait(false);
+                    //activatedComponents.Random().PlaySoundCommand.Execute().ConfigureAwait(false);
+                    activatedComponents.Random().PlaySoundCommand.Execute();
                 }
             }
             CycleTime = _cycleStopwatch.ElapsedMilliseconds;
@@ -211,7 +212,9 @@ namespace Beatshake.ViewModels
                 var transformedTolerance = TeachementTolerance*(10E5/(MaxTeachementTolerance*BeatshakeGlobals.G));
                 if (instrumentalComponent.Teachement.FitsPositionData(transformedTolerance, MotionDataProvider))
                 {
-                    tasks.Add(instrumentalComponent.PlaySound());
+                    // var task = instrumentalComponent.PlaySound();
+                    var task = Task.Factory.StartNew(instrumentalComponent.PlaySound);
+                    tasks.Add(task);
                 }
             }
             await Task.WhenAll(tasks);
@@ -234,7 +237,8 @@ namespace Beatshake.ViewModels
                     normalizedTimestamps.Last(), 0, ComparisonStrategy.PeakNormalized, @group);
                 if (result)
                 {
-                    var task = instrumentalComponent.PlaySoundCommand.Execute();
+                    //var task = instrumentalComponent.PlaySoundCommand.Execute();
+                    var task = Task.Factory.StartNew(instrumentalComponent.PlaySoundCommand.Execute);
                     tasks.Add(task);
                 }
             }
@@ -252,7 +256,9 @@ namespace Beatshake.ViewModels
                 var result = instrumentalComponent.NeuralTeachement.FitsDataSet(TeachementTolerance/10, data);
                 if (result)
                 {
-                    var task = instrumentalComponent.PlaySoundCommand.Execute();
+                    //var task = instrumentalComponent.PlaySoundCommand.Execute();
+                    var task = Task.Factory.StartNew(instrumentalComponent.PlaySoundCommand.Execute);
+
                     tasks.Add(task);
                 }
             }
@@ -289,7 +295,7 @@ namespace Beatshake.ViewModels
 
             if (absGrad < _lastGradient && absGrad > TeachementTolerance/200)
             {
-                await activatedComponents.Random().PlaySoundCommand.Execute();
+                await Task.Factory.StartNew(activatedComponents.Random().PlaySoundCommand.Execute);
             }
 
             _lastGradient = absGrad;

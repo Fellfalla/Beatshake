@@ -4,17 +4,17 @@
     "MathNet.Numerics": "3.12.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "MonoGame.Framework.WindowsUniversal": "3.5.1.1679",
-    "OxyPlot.Core": "1.0.0-unstable2100",
-    "OxyPlot.Windows": "1.0.0-unstable2100",
-    "OxyPlot.Xamarin.Forms": "1.0.0-unstable1983",
-    "Prism.Core": "6.2.0-pre1",
-    "Prism.Forms": "6.1.0-pre7",
-    "Prism.Unity.Forms": "6.2.0-pre7",
+    "OxyPlot.Core": "2.0.0-unstable0956",
+    "OxyPlot.Windows": "2.0.0-unstable0956",
+    "OxyPlot.Xamarin.Forms": "1.1.0-unstable0011",
+    "Prism.Core": "6.3.0-pre2",
+    "Prism.Forms": "6.3.0-pre2",
+    "Prism.Unity.Forms": "6.3.0-pre2",
     "SharpDX": "3.0.2",
     "SharpDX.XAudio2": "3.0.2",
     "shim": "2.0.1",
     "Unity": "4.0.1",
-    "Xamarin.Forms": "2.3.1.114"
+    "Xamarin.Forms": "2.3.4.212-pre4"
   },
   "frameworks": {
     "uap10.0": {}

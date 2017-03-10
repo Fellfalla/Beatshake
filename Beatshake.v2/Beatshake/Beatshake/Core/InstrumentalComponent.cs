@@ -84,8 +84,9 @@ namespace Beatshake.Core
 
             PropertyChanged += OnPropertyChanged;
 
-            PlaySoundCommand = DelegateCommand.FromAsyncHandler(PlaySound);
-            TeachCommand = DelegateCommand<ITeachable>.FromAsyncHandler(Teach);
+            PlaySoundCommand = new DelegateCommand(PlaySound);
+            //TeachCommand = DelegateCommand<ITeachable>.FromAsyncHandler(Teach);
+            TeachCommand = new DelegateCommand<ITeachable>(Teach);
             //Task.WaitAll(audioLoader);
         }
 
@@ -109,7 +110,8 @@ namespace Beatshake.Core
         /// Theres no common Sound API in Xamarin, so the play-logic has to be implemented specific by each platform implementation seperately
         /// </summary>
         /// <returns></returns>
-        public async Task PlaySound()
+        //public async Task PlaySound()
+        public async void PlaySound()
         {
             cooldown.TryAddAsyncRequest(async () =>
             {
@@ -160,7 +162,8 @@ namespace Beatshake.Core
 
         
 
-        protected async Task Teach(ITeachable teachement)
+        //protected async Task Teach(ITeachable teachement)
+        protected async void Teach(ITeachable teachement)
         {
             // unregister current processing
             MotionDataProcessor.MotionDataProvider.MotionDataRefreshed -= MotionDataProcessor.ProcessMotionData;
